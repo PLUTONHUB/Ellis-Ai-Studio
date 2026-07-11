@@ -7,6 +7,7 @@ import {
   SevenFrictionPillars,
 } from "~/components/friction-framework";
 import { PortfolioShowcase } from "~/components/portfolio-showcase";
+import { PlutoCommandConsole } from "~/components/pluto-command-console";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -234,6 +235,8 @@ function Home() {
           <p className="mt-6 text-sm font-semibold text-blue-300">
             Meet Pluto, your AI Systems Engineer.
           </p>
+
+          <PlutoCommandConsole />
         </div>
       </section>
 

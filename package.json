@@ -8,7 +8,9 @@
     "build": "vite build",
     "start": "bun run serve.ts",
     "publish": "bash ./publish.sh",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit --pretty false",
+    "check:nl-command": "bun run scripts/check-nl-command.ts"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.158.1",
