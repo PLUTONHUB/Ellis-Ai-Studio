@@ -1,16 +1,65 @@
-# React + Vite
+# Ellis AI Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Ellis AI Studio is a TanStack Start + Vite application that powers the Ellis marketing site and the Pluto AI operating system shell.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- TanStack Start
+- TanStack Router file-based routes
+- React 19
+- Vite
+- Tailwind CSS v4
+- Bun production publish server (`serve.ts`)
 
-## React Compiler
+## Project layout
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `src/routes/__root.tsx` — HTML shell, metadata, global document layout
+- `src/routes/index.tsx` — Ellis homepage + Pluto console
+- `src/routes/proposal.tsx` — friction audit proposal calculator
+- `src/routes/onboarding.tsx` — onboarding tracker and launch readiness flow
+- `src/components/` — reusable Ellis and Pluto UI
+- `src/lib/pluto/` — Pluto natural-language command parsing
+- `src/services/plutoEngine.js` — classic Pluto runtime commands (memory, tasks, date/time)
+- `src/styles/app.css` — Tailwind entrypoint and global styling
+- `src/router.tsx` — TanStack router wiring
+- `vite.config.ts` — TanStack Start + Vite configuration
 
-## Expanding the Oxlint configuration
+## Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+Type-check the project:
+
+```bash
+npm run typecheck
+```
+
+## Routing
+
+Routes are generated from files in `src/routes`. The TanStack Start Vite plugin generates `src/routeTree.gen.ts` during development and build. That file is intentionally gitignored.
+
+## Production publishing
+
+The repository still includes the original Bun-based publishing flow:
+
+```bash
+bun run publish
+```
+
+That command rebuilds the app and restarts the Bun server defined in `serve.ts`.
