@@ -11,5 +11,8 @@ test("creates source-grounded structured intelligence and flags conversion gaps"
   assert.equal(report.executiveSummary.industry, "Home services");
   assert.ok(report.conversionOpportunities.includes("Missing phone number"));
   assert.equal(report.frictionAnalysis.length, 7);
+  assert.equal(Math.round(report.frictionAnalysis.reduce((total, pillar) => total + pillar.score, 0) / report.frictionAnalysis.length), 64);
+  assert.ok(report.businessProfile.services["Website services"]?.includes("Roof Repair"));
+  assert.ok(report.digitalPresence.websiteQuality.length > 0);
   assert.ok(report.priorityRecommendations.some((recommendation) => recommendation.priority === "Critical"));
 });

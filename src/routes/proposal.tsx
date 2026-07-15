@@ -175,7 +175,7 @@ function ProposalPage() {
             diagnosis-first implementation roadmap.
           </p>
           <p className="mt-4 text-sm font-semibold text-blue-300">
-            Meet Pluto, your AI Systems Engineer.
+            Ellis AI Studio · Ready for Analysis.
           </p>
           <div className="mt-6 max-w-4xl rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm leading-relaxed text-amber-100">
             Demo projections are illustrative, not guarantees.
@@ -337,7 +337,7 @@ function ProposalPage() {
         <section className="mt-10 grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-zinc-900 bg-zinc-950 p-6 md:p-8">
             <h2 className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-zinc-300">
-              What Pluto Prescribes in 30 Days
+              Recommended Actions in 30 Days
             </h2>
             <ul className="space-y-3 text-sm text-zinc-300">
               {scorecard.map((item) => (

@@ -204,7 +204,7 @@ function OnboardingPage() {
             pillars while maintaining fast delivery and clean handoffs.
           </p>
           <p className="mt-4 text-sm font-semibold text-blue-300">
-            Meet Pluto, your AI Systems Engineer.
+            Ellis AI Studio · Ready for Analysis.
           </p>
         </section>
 
@@ -213,7 +213,7 @@ function OnboardingPage() {
             <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 md:p-8">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <h2 className="text-lg font-semibold uppercase tracking-widest text-zinc-300">
-                  Pluto Process Timeline
+                  Analysis Process Timeline
                 </h2>
                 <span className="rounded-full border border-zinc-700 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-300">
                   {phasePercent}% Phase Progress

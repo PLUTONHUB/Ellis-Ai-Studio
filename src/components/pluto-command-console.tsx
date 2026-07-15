@@ -29,7 +29,7 @@ export function PlutoCommandConsole() {
   const [submittedCommand, setSubmittedCommand] = useState<string>(command);
   const [runtimeInput, setRuntimeInput] = useState<string>(legacyRuntimeExamples[0]);
   const [runtimeMessages, setRuntimeMessages] = useState<RuntimeMessage[]>([
-    { speaker: "pluto", response: { kind: "message", message: "Ready for your first command." } },
+    { speaker: "pluto", response: { kind: "message", message: "Ready for Analysis." } },
   ]);
 
   const parsedCommand = useMemo<ParsedPlutoCommand>(
@@ -71,10 +71,10 @@ export function PlutoCommandConsole() {
         <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.24em] text-blue-300">
-              Pluto Command Understanding v1
+              Analysis Workspace
             </p>
             <h2 className="text-base font-bold text-white md:text-lg">
-              Tell Pluto what you want to do next.
+              Ready for Analysis.
             </h2>
           </div>
           <span className="rounded-full border border-zinc-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
@@ -134,7 +134,7 @@ export function PlutoCommandConsole() {
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-zinc-500">
               V1 maps defined commands to existing Ellis routes and keeps intent
-              recognition separate from Pluto&apos;s classic runtime tools.
+              recognition separate from the session-based utility tools.
             </p>
             {parsedCommand.href ? (
               <a
@@ -168,10 +168,10 @@ export function PlutoCommandConsole() {
         <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.24em] text-blue-300">
-              Classic Pluto Runtime
+              Business Intelligence Console
             </p>
             <h2 className="text-base font-bold text-white md:text-lg">
-              Memory, tasks, and utility commands still work.
+              Research and utility commands are ready.
             </h2>
           </div>
           <span className="rounded-full border border-zinc-700 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
@@ -192,7 +192,7 @@ export function PlutoCommandConsole() {
           className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]"
         >
           <label className="sr-only" htmlFor="pluto-runtime-input">
-            Pluto runtime command
+            Analysis command
           </label>
           <input
             id="pluto-runtime-input"
@@ -210,7 +210,7 @@ export function PlutoCommandConsole() {
         </form>
 
         <p className="mt-3 text-xs leading-relaxed text-zinc-500">
-          Existing Pluto utilities remain session-based. Research commands run server-side and persist source-backed intelligence.
+          Research commands run server-side and persist source-backed business intelligence.
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -235,7 +235,7 @@ function RuntimeMessageView({ message }: { message: RuntimeMessage }) {
     return <p className="whitespace-pre-wrap rounded-lg border border-zinc-900 bg-zinc-950 px-3 py-2 text-sm text-zinc-200">You: {message.text}</p>;
   }
   if (message.response.kind === "message") {
-    return <p className="whitespace-pre-wrap rounded-lg border border-zinc-900 bg-zinc-950 px-3 py-2 text-sm text-zinc-200">Pluto: {message.response.message}</p>;
+    return <p className="whitespace-pre-wrap rounded-lg border border-zinc-900 bg-zinc-950 px-3 py-2 text-sm text-zinc-200">Ellis AI Studio: {message.response.message}</p>;
   }
   return <ResearchResultsCard message={message.response.message} research={message.response.research} />;
 }
@@ -248,7 +248,7 @@ function ResearchResultsCard({ message, research }: { message: string; research:
 
   return <article className="overflow-hidden rounded-xl border border-blue-500/35 bg-zinc-950 text-zinc-200 shadow-xl shadow-blue-950/20">
     <header className="border-b border-blue-500/25 bg-gradient-to-br from-blue-950/60 via-zinc-950 to-zinc-950 p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[0.24em] text-blue-300">Pluto Research Intelligence</p><h3 className="mt-1 text-lg font-bold text-white">{research.businessName}</h3><a className="mt-1 block break-all text-xs text-blue-200 hover:text-white" href={research.websiteUrl} target="_blank" rel="noreferrer">{research.websiteUrl}</a></div><span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-200">{research.status}</span></div>
+      <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[10px] font-black uppercase tracking-[0.24em] text-blue-300">Business Intelligence</p><h3 className="mt-1 text-lg font-bold text-white">{research.businessName}</h3><a className="mt-1 block break-all text-xs text-blue-200 hover:text-white" href={research.websiteUrl} target="_blank" rel="noreferrer">{research.websiteUrl}</a></div><span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-200">{research.status === "completed" ? "Research Complete" : "Generating Intelligence Report"}</span></div>
       <div className="mt-4 grid gap-3 text-xs sm:grid-cols-3"><Metric label="Researched" value={formatResearchTimestamp(research.fetchedAt)} /><Metric label="Research run" value={research.researchRunId} mono /><Metric label="Extracted facts" value={String(research.factCount)} /></div>
     </header>
     <div className="space-y-5 p-4">
@@ -257,18 +257,25 @@ function ResearchResultsCard({ message, research }: { message: string; research:
       <DashboardSection title="Findings">{research.findings.length ? <div className="grid gap-2">{research.findings.map((finding) => { const severity = severityFor(finding.confidence); return <div key={finding.title} className="rounded-lg border border-zinc-800 bg-black/50 p-3"><div className="flex flex-wrap items-center gap-2"><span className={`rounded px-2 py-1 text-[10px] font-black uppercase tracking-wider ${severity.className}`}>{severity.label}</span><h4 className="text-sm font-semibold text-white">{finding.title}</h4></div><p className="mt-2 text-xs leading-relaxed text-zinc-300">{finding.summary}</p></div>; })}</div> : <EmptyState label="No findings were generated from the researched data." />}</DashboardSection>
       <DashboardSection title="Recommendations">{research.recommendations.length ? <div className="grid gap-2">{research.recommendations.map((recommendation) => <div key={recommendation.title} className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3"><div className="flex gap-3"><span className="h-fit rounded bg-blue-500/20 px-2 py-1 text-[10px] font-black text-blue-100">P{recommendation.priority}</span><div><h4 className="text-sm font-semibold text-white">{recommendation.title}</h4><p className="mt-1 text-xs text-blue-100">{recommendation.action}</p><p className="mt-2 text-xs leading-relaxed text-zinc-400"><span className="font-semibold text-zinc-300">Expected business impact: </span>{recommendation.rationale}</p></div></div></div>)}</div> : <EmptyState label="No recommendations were generated from the researched data." />}</DashboardSection>
       <DashboardSection title="Executive Summary"><IntelligenceItem label={`${research.intelligence.executiveSummary.industry} · ${Math.round(research.intelligence.executiveSummary.confidence * 100)}% confidence`} value={research.intelligence.executiveSummary.description} /></DashboardSection>
+      <DashboardSection title="Business Profile"><div className="grid gap-3 sm:grid-cols-2"><IntelligenceItem label="Services" value={reportList(Object.values(research.intelligence.businessProfile.services).flat())} /><IntelligenceItem label="Products" value={reportList(research.intelligence.businessProfile.products)} /><IntelligenceItem label="Service areas" value={reportList(research.intelligence.businessProfile.serviceAreas)} /><IntelligenceItem label="Locations" value={reportList(research.intelligence.businessProfile.locations)} /><IntelligenceItem label="Contact information" value={reportList([...research.intelligence.businessProfile.contacts.phones, ...research.intelligence.businessProfile.contacts.emails])} /><IntelligenceItem label="Operating hours" value={reportList(research.intelligence.businessProfile.operatingHours)} /></div></DashboardSection>
+      <DashboardSection title="Trust Signals"><div className="grid gap-3 sm:grid-cols-2"><IntelligenceItem label="Reviews and testimonials" value={reportList([...research.intelligence.trustSignals.reviews, ...research.intelligence.trustSignals.testimonials])} /><IntelligenceItem label="Credentials and awards" value={reportList([...research.intelligence.trustSignals.certifications, ...research.intelligence.trustSignals.awards])} /><IntelligenceItem label="Guarantees and tenure" value={reportList([...research.intelligence.trustSignals.guarantees, ...research.intelligence.trustSignals.yearsInBusiness])} /><IntelligenceItem label="Social links" value={reportList(research.intelligence.businessProfile.socialLinks)} /></div></DashboardSection>
+      <DashboardSection title="Digital Presence"><div className="grid gap-3 sm:grid-cols-2"><IntelligenceItem label="Website quality" value={reportList(research.intelligence.digitalPresence.websiteQuality)} /><IntelligenceItem label="Mobile friendliness" value={reportList(research.intelligence.digitalPresence.mobileFriendliness)} /><IntelligenceItem label="Navigation" value={reportList(research.intelligence.digitalPresence.navigation)} /><IntelligenceItem label="Contact accessibility" value={reportList(research.intelligence.digitalPresence.contactAccessibility)} /></div></DashboardSection>
+      <DashboardSection title="Conversion Opportunities">{research.intelligence.conversionOpportunities.length ? <ul className="grid gap-2">{research.intelligence.conversionOpportunities.map((opportunity) => <li key={opportunity} className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-xs text-amber-100">{opportunity}</li>)}</ul> : <EmptyState label="No immediate conversion gaps were detected." />}</DashboardSection>
       <DashboardSection title="Friction Analysis"><div className="grid gap-2 sm:grid-cols-2">{research.intelligence.frictionAnalysis.map((pillar) => <IntelligenceItem key={pillar.pillar} label={`${pillar.pillar} · ${pillar.score}/100`} value={pillar.recommendedFix} />)}</div></DashboardSection>
       <DashboardSection title="Revenue Opportunities">{research.intelligence.priorityRecommendations.length ? <div className="grid gap-2">{research.intelligence.priorityRecommendations.map((recommendation) => <IntelligenceItem key={recommendation.title} label={`${recommendation.priority} · ${recommendation.estimatedRevenueImpact} · ${recommendation.estimatedImplementationEffort} effort`} value={recommendation.action} />)}</div> : <EmptyState label="No immediate conversion gaps were detected." />}</DashboardSection>
+      <DashboardSection title="Priority Actions">{research.intelligence.priorityRecommendations.length ? <ol className="grid gap-2">{research.intelligence.priorityRecommendations.map((recommendation) => <li key={recommendation.title} className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 text-xs"><p className="font-bold text-blue-100">{recommendation.priority}: {recommendation.title}</p><p className="mt-1 text-zinc-300">{recommendation.action}</p><p className="mt-2 text-zinc-500">Evidence: {reportList(recommendation.supportingEvidence)}</p></li>)}</ol> : <EmptyState label="No priority actions were generated." />}</DashboardSection>
       <DashboardSection title="Sources"><ul className="space-y-2">{research.sources.map((source) => <li key={source}><a href={source} target="_blank" rel="noreferrer" className="block break-all rounded-lg border border-zinc-800 bg-black/50 px-3 py-2 text-xs text-blue-200 hover:border-blue-500/50 hover:text-white">{source}</a></li>)}</ul></DashboardSection>
-      <div className="grid gap-2 sm:grid-cols-3">{["Friction Score", "Revenue Opportunity", "Audit Report"].map((title) => <div key={title} className="rounded-lg border border-dashed border-zinc-700 bg-zinc-900/40 p-3"><p className="text-xs font-semibold text-zinc-300">{title}</p><p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600">Coming soon</p></div>)}</div>
+      <div className="grid gap-2 sm:grid-cols-2"><Metric label="Friction Score" value={`${frictionScore(research.intelligence.frictionAnalysis)}/100`} /><Metric label="Research Sources" value={String(research.sources.length)} /></div>
     </div>
-    <p className="border-t border-zinc-800 px-4 py-3 text-[11px] text-zinc-500">Pluto: {message}</p>
+    <p className="border-t border-zinc-800 px-4 py-3 text-[11px] text-zinc-500">Ellis AI Studio: {message}</p>
   </article>;
 }
 
 function DashboardSection({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) { return <section><div className="mb-2 flex items-center justify-between gap-3"><h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">{title}</h4>{action}</div>{children}</section>; }
 function Metric({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) { return <div><dt className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{label}</dt><dd className={`mt-1 truncate text-zinc-200 ${mono ? "font-mono text-[11px]" : ""}`}>{value}</dd></div>; }
 function IntelligenceItem({ label, value }: { label: string; value: string }) { return <div className="rounded-lg border border-zinc-800 bg-black/50 p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{label}</p><p className="mt-1 text-xs leading-relaxed text-zinc-200">{value}</p></div>; }
+function reportList(values: string[]) { return values.length ? values.join(" · ") : "Not identified from the researched data."; }
+function frictionScore(pillars: Array<{ score: number }>) { return pillars.length ? Math.round(pillars.reduce((total, pillar) => total + pillar.score, 0) / pillars.length) : 0; }
 function EmptyState({ label }: { label: string }) { return <p className="rounded-lg border border-zinc-800 bg-black/50 px-3 py-2 text-xs text-zinc-500">{label}</p>; }
 function factValue(fact: { value: unknown }) { return typeof fact.value === "string" ? fact.value : JSON.stringify(fact.value); }
 function formatLabel(value: string) { return value.replace(/_/g, " "); }

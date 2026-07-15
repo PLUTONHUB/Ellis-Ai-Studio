@@ -31,7 +31,7 @@ const commandRules: CommandRule[] = [
     intent: "view_sample_audit",
     priority: 100,
     summary:
-      "Pluto understood that you want to inspect an example Friction Audit before requesting your own.",
+      "Analysis Workspace recognized that you want to inspect an example Friction Audit before requesting your own.",
     actionLabel: "Open Sample Audit",
     href: "/#audit-preview",
     phrasePatterns: [/sample audit/, /example audit/, /audit preview/, /show.*audit/],
@@ -41,7 +41,7 @@ const commandRules: CommandRule[] = [
     intent: "request_friction_audit",
     priority: 90,
     summary:
-      "Pluto understood that you want to request a Friction Audit and identify where revenue is leaking.",
+      "Analysis Workspace recognized that you want to request a Friction Audit and identify where revenue is leaking.",
     actionLabel: "Get My Friction Audit",
     href: "/#contact",
     phrasePatterns: [/friction audit/, /get.*audit/, /request.*audit/, /diagnose.*business/, /find.*leak/],
@@ -51,7 +51,7 @@ const commandRules: CommandRule[] = [
     intent: "calculate_opportunity",
     priority: 80,
     summary:
-      "Pluto understood that you want to model revenue opportunity from missed leads and response friction.",
+      "Analysis Workspace recognized that you want to model revenue opportunity from missed leads and response friction.",
     actionLabel: "Open Opportunity Calculator",
     href: "/proposal",
     phrasePatterns: [/calculate.*opportunity/, /estimate.*revenue/, /model.*revenue/, /missed.*lead/, /lead.*value/],
@@ -61,7 +61,7 @@ const commandRules: CommandRule[] = [
     intent: "start_onboarding",
     priority: 70,
     summary:
-      "Pluto understood that you want to begin implementation intake and move into onboarding.",
+      "Analysis Workspace recognized that you want to begin implementation intake and move into onboarding.",
     actionLabel: "Start Onboarding",
     href: "/onboarding",
     phrasePatterns: [/start.*onboarding/, /begin.*onboarding/, /start.*project/, /implementation.*intake/, /launch.*readiness/],
@@ -71,7 +71,7 @@ const commandRules: CommandRule[] = [
     intent: "explain_friction_pillars",
     priority: 60,
     summary:
-      "Pluto understood that you want to learn how the seven Friction Pillars diagnose growth constraints.",
+      "Analysis Workspace recognized that you want to learn how the seven Friction Pillars diagnose growth constraints.",
     actionLabel: "View Seven Pillars",
     href: "/#pillars",
     phrasePatterns: [/friction pillars/, /seven pillars/, /explain.*framework/, /how.*framework/],
@@ -81,7 +81,7 @@ const commandRules: CommandRule[] = [
     intent: "view_portfolio",
     priority: 50,
     summary:
-      "Pluto understood that you want to see demo blueprints and examples of friction-removal systems.",
+      "Analysis Workspace recognized that you want to see demo blueprints and examples of friction-removal systems.",
     actionLabel: "View Demo Portfolio",
     href: "/#portfolio",
     phrasePatterns: [/show.*portfolio/, /view.*portfolio/, /see.*examples/, /demo.*blueprint/, /case stud/],
@@ -154,7 +154,7 @@ function unknownCommand(matchedTerms: string[]): ParsedPlutoCommand {
     intent: "unknown",
     confidence: matchedTerms.length > 0 ? 0.35 : 0,
     summary:
-      "Pluto could not confidently map that command yet. Try asking for an audit, sample audit, calculator, onboarding, friction pillars, or portfolio examples.",
+      "Analysis Workspace could not confidently map that command yet. Try asking for an audit, sample audit, calculator, onboarding, friction pillars, or portfolio examples.",
     actionLabel: "Try a Suggested Command",
     href: null,
     matchedTerms,

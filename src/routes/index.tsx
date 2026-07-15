@@ -139,7 +139,7 @@ function Home() {
     },
     {
       q: "Who runs the audit process?",
-      a: "Meet Pluto, your AI Systems Engineer. Pluto supports diagnosis and recommendations while Ellis handles implementation and oversight.",
+      a: "Ellis AI Studio supports diagnosis, recommendations, implementation, and oversight.",
     },
     {
       q: "Are score and revenue projections guaranteed?",
@@ -167,7 +167,7 @@ function Home() {
               Friction Score
             </a>
             <a href="#pluto-process" className="transition-colors hover:text-white">
-              Pluto Process
+              Analysis Process
             </a>
             <a href="#audit-preview" className="transition-colors hover:text-white">
               Audit Preview
@@ -233,7 +233,7 @@ function Home() {
           </div>
 
           <p className="mt-6 text-sm font-semibold text-blue-300">
-            Meet Pluto, your AI Systems Engineer.
+            Ellis AI Studio · Ready for Analysis.
           </p>
 
           <PlutoCommandConsole />
@@ -269,13 +269,13 @@ function Home() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-blue-500">
-              Pluto Process
+              Analysis Process
             </p>
             <h2 className="mb-4 text-3xl font-light text-white md:text-4xl">
               Diagnosis before recommendations.
             </h2>
             <p className="text-sm leading-relaxed text-zinc-300 md:text-base">
-              Pluto leads a structured workflow so systems decisions are based on
+              Ellis AI Studio leads a structured workflow so systems decisions are based on
               verified bottlenecks, not assumptions.
             </p>
           </div>
@@ -389,7 +389,7 @@ function Home() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-10 max-w-3xl">
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-blue-500">
-              Pluto Audit Preview
+              Business Intelligence Preview
             </p>
             <h2 className="mb-4 text-3xl font-light text-white md:text-4xl">
               Sample Friction Audit structure
