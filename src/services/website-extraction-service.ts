@@ -21,11 +21,7 @@ export class WebsiteExtractionService {
     const sourceUrl = canonicalizeUrl(inputUrl);
     await this.assertSafeTarget(sourceUrl);
     const response = await withRetry(
-      async () => {
-        const result = await fetch(sourceUrl, { signal: AbortSignal.timeout(12_000), redirect: "follow" });
-        if (result.status >= 500 || result.status === 429) throw new Error(`Transient website response: ${result.status}`);
-        return result;
-      },
+      async () => this.fetchWithSafeRedirects(sourceUrl),
       { shouldRetry: (error) => !(error instanceof TypeError && error.message.includes("invalid")) },
     );
     const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
@@ -65,6 +61,20 @@ export class WebsiteExtractionService {
     const html = await response.text();
     if (new TextEncoder().encode(html).byteLength > MAX_RESPONSE_BYTES) throw new Error("Website response exceeds the 1 MB research limit.");
     return html;
+  }
+
+  private async fetchWithSafeRedirects(initialUrl: string): Promise<Response> {
+    let currentUrl = initialUrl;
+    for (let redirects = 0; redirects <= 5; redirects += 1) {
+      const response = await fetch(currentUrl, { signal: AbortSignal.timeout(12_000), redirect: "manual" });
+      if (response.status >= 500 || response.status === 429) throw new Error(`Transient website response: ${response.status}`);
+      if (response.status < 300 || response.status >= 400) return response;
+      const location = response.headers.get("location");
+      if (!location) throw new Error("Website returned a redirect without a location.");
+      currentUrl = canonicalizeUrl(new URL(location, currentUrl).toString());
+      await this.assertSafeTarget(currentUrl);
+    }
+    throw new Error("Website exceeded the maximum of five redirects.");
   }
 }
 

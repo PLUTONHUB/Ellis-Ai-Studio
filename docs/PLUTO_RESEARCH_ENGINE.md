@@ -14,7 +14,7 @@ Pluto Research Engine turns a business website into durable, source-backed intel
 ## Data lifecycle
 
 1. A caller supplies a business name, website URL, and unique idempotency key.
-2. The business is upserted by a normalized name/website key.
+2. The business is upserted by its canonical website key, so spelling changes to the supplied business name do not create duplicates.
 3. A research run is created once per business/idempotency key.
 4. The website response becomes a content-addressed `website_snapshots` record.
 5. Every fact written to `extracted_facts` includes `source_url`, `page_title`, `extracted_at`, `confidence`, and `research_run_id`.

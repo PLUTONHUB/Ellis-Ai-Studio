@@ -37,6 +37,6 @@ export function fingerprint(...values: unknown[]): string {
     .digest("hex");
 }
 
-export function normalizeBusinessKey(name: string, canonicalWebsiteUrl: string): string {
-  return fingerprint(normalizeText(name).toLowerCase(), canonicalWebsiteUrl);
+export function normalizeBusinessKey(canonicalWebsiteUrl: string): string {
+  return fingerprint(canonicalWebsiteUrl);
 }

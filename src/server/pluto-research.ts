@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
 import type { RunResearchInput } from "~/types/research";
+import type { PlutoResearchSummary } from "~/types/pluto-runtime";
 
 export const runBusinessResearch = createServerFn({ method: "POST" })
   .validator((data: RunResearchInput) => {
@@ -17,5 +18,17 @@ export const runBusinessResearch = createServerFn({ method: "POST" })
       import("~/services/business-research-service"),
       import("~/lib/supabase/research-repository.server"),
     ]);
-    return new BusinessResearchService(SupabaseResearchRepository.fromEnvironment()).research(data);
+    const result = await new BusinessResearchService(SupabaseResearchRepository.fromEnvironment()).research(data);
+    const summary: PlutoResearchSummary = {
+      businessName: result.business.name,
+      websiteUrl: result.business.canonicalWebsiteUrl,
+      researchRunId: result.researchRunId,
+      pageTitle: result.snapshot.pageTitle,
+      sourceUrl: result.snapshot.sourceUrl,
+      fetchedAt: result.snapshot.fetchedAt,
+      factCount: result.facts.length,
+      findings: result.findings.map(({ title, summary: findingSummary, confidence }) => ({ title, summary: findingSummary, confidence })),
+      recommendations: result.recommendations.map(({ priority, title, action }) => ({ priority, title, action })),
+    };
+    return summary;
   });

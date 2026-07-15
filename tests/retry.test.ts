@@ -19,3 +19,7 @@ test("does not retry errors classified as permanent", async () => {
   await assert.rejects(() => withRetry(async () => { calls += 1; throw new Error("bad input"); }, { shouldRetry: () => false }), /bad input/);
   assert.equal(calls, 1);
 });
+
+test("rejects invalid retry configuration", async () => {
+  await assert.rejects(() => withRetry(async () => "unused", { attempts: 0 }), /positive integer/);
+});

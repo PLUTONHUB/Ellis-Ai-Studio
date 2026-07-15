@@ -9,93 +9,83 @@ import {
   getMemory,
 } from "../data/memory";
 
-export function processCommand(command) {
+import { runBusinessResearch } from "../server/pluto-research";
+
+export async function processCommand(command, dependencies = {}) {
   const text = command.toLowerCase();
+  const researchCommand = parseResearchCommand(command);
 
-  // Greeting
-  if (text.includes("hello")) {
-    return "Hello Jake 👋";
+  if (researchCommand) {
+    return runResearchCommand(researchCommand, dependencies.runResearch ?? runBusinessResearch);
   }
 
-  // Time
-  if (text.includes("time")) {
-    return new Date().toLocaleTimeString();
-  }
+  if (text.includes("hello")) return message("Hello Jake 👋");
+  if (text.includes("time")) return message(new Date().toLocaleTimeString());
+  if (text.includes("date")) return message(new Date().toDateString());
 
-  // Date
-  if (text.includes("date")) {
-    return new Date().toDateString();
-  }
-
-  // Remember something
   if (text.startsWith("remember ")) {
     const parts = text.replace("remember ", "").split(" ");
-
     const key = parts.shift();
     const value = parts.join(" ");
-
     saveMemory(key, value);
-
-    return `I'll remember that ${key} is ${value}.`;
+    return message(`I'll remember that ${key} is ${value}.`);
   }
 
-  // Recall something
   if (text.startsWith("what is my ")) {
     const key = text.replace("what is my ", "");
-
     const value = getMemory(key);
-
-    if (value) {
-      return `Your ${key} is ${value}.`;
-    }
-
-    return `I don't know your ${key} yet.`;
+    return message(value ? `Your ${key} is ${value}.` : `I don't know your ${key} yet.`);
   }
 
-  // Create Task
   if (text.startsWith("create task ")) {
     const taskName = command.replace("create task ", "");
-
-    addTask({
-      title: taskName,
-      completed: false,
-    });
-
-    return `Task created: ${taskName}`;
+    addTask({ title: taskName, completed: false });
+    return message(`Task created: ${taskName}`);
   }
 
-  // Show Tasks
   if (text === "show tasks") {
     const tasks = getTasks();
-
-    if (tasks.length === 0) {
-      return "You don't have any tasks yet.";
-    }
-
-    return tasks
-      .map(
-        (task, index) =>
-          `${index + 1}. ${task.completed ? "✅" : "⬜"} ${task.title}`
-      )
-      .join("\n");
+    if (tasks.length === 0) return message("You don't have any tasks yet.");
+    return message(tasks.map((task, index) => `${index + 1}. ${task.completed ? "✅" : "⬜"} ${task.title}`).join("\n"));
   }
 
-  // Complete Task
   if (text.startsWith("complete task ")) {
-    const number = parseInt(
-      text.replace("complete task ", ""),
-      10
-    );
-
-    if (isNaN(number)) {
-      return "Please provide a valid task number.";
-    }
-
+    const number = Number.parseInt(text.replace("complete task ", ""), 10);
+    if (Number.isNaN(number)) return message("Please provide a valid task number.");
     completeTask(number - 1);
-
-    return `Completed task ${number}.`;
+    return message(`Completed task ${number}`);
   }
 
-  // Default response
-  return "I'm still learning. That feature hasn't been built yet.";
+  return message("I'm still learning. That feature hasn't been built yet.");
+}
+
+function message(text) {
+  return { kind: "message", message: text };
+}
+
+function parseResearchCommand(command) {
+  const match = command.trim().match(/^research\s+(.+)$/i);
+  if (!match) return null;
+  const websiteUrl = match[1].trim();
+  try {
+    const candidate = /^[a-z][a-z\d+.-]*:\/\//i.test(websiteUrl) ? websiteUrl : `https://${websiteUrl}`;
+    const url = new URL(candidate);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    return { websiteUrl: url.toString(), businessName: url.hostname.replace(/^www\./, "") };
+  } catch {
+    return null;
+  }
+}
+
+async function runResearchCommand({ websiteUrl, businessName }, runResearch) {
+  try {
+    const research = await runResearch({ data: { name: businessName, websiteUrl, idempotencyKey: crypto.randomUUID() } });
+    return { kind: "research", message: `Research completed for ${research.businessName}.`, research };
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : "Unknown error";
+    if (detail.includes("disabled") || detail.includes("SUPABASE_")) {
+      return message("Research is not enabled in this environment yet.");
+    }
+    return message("Research could not be completed. Please confirm the website is reachable and try again.");
+  }
 }

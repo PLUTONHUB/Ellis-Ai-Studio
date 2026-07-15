@@ -20,7 +20,7 @@ export class SupabaseResearchRepository {
   async upsertBusiness(identity: { name: string; websiteUrl: string }): Promise<Business> {
     const canonicalWebsiteUrl = canonicalizeUrl(identity.websiteUrl);
     const name = normalizeText(identity.name);
-    const businessKey = normalizeBusinessKey(name, canonicalWebsiteUrl);
+    const businessKey = normalizeBusinessKey(canonicalWebsiteUrl);
     const { data, error } = await this.client.from("businesses").upsert({ business_key: businessKey, name, normalized_name: name.toLowerCase(), website_url: identity.websiteUrl, canonical_website_url: canonicalWebsiteUrl }, { onConflict: "business_key" }).select("id, name, website_url, canonical_website_url, business_key").single();
     if (error) throw error;
     return { id: data.id, name: data.name, websiteUrl: data.website_url, canonicalWebsiteUrl: data.canonical_website_url, businessKey: data.business_key };

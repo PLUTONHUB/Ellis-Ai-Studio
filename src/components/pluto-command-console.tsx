@@ -6,6 +6,7 @@ import {
   type ParsedPlutoCommand,
 } from "~/lib/pluto/nl-command";
 import { processCommand } from "~/services/plutoEngine";
+import type { PlutoRuntimeResponse } from "~/types/pluto-runtime";
 
 const legacyRuntimeExamples = [
   "hello",
@@ -16,14 +17,19 @@ const legacyRuntimeExamples = [
   "create task follow up with new lead",
   "show tasks",
   "complete task 1",
+  "Research example.com",
 ] as const;
+
+type RuntimeMessage =
+  | { speaker: "user"; text: string }
+  | { speaker: "pluto"; response: PlutoRuntimeResponse };
 
 export function PlutoCommandConsole() {
   const [command, setCommand] = useState<string>(plutoCommandExamples[0]);
   const [submittedCommand, setSubmittedCommand] = useState<string>(command);
   const [runtimeInput, setRuntimeInput] = useState<string>(legacyRuntimeExamples[0]);
-  const [runtimeMessages, setRuntimeMessages] = useState<string[]>([
-    "Pluto: Ready for your first command.",
+  const [runtimeMessages, setRuntimeMessages] = useState<RuntimeMessage[]>([
+    { speaker: "pluto", response: { kind: "message", message: "Ready for your first command." } },
   ]);
 
   const parsedCommand = useMemo<ParsedPlutoCommand>(
@@ -36,19 +42,22 @@ export function PlutoCommandConsole() {
     setSubmittedCommand(command);
   };
 
-  const runRuntimeCommand = (rawCommand: string) => {
+  const runRuntimeCommand = async (rawCommand: string) => {
     const trimmedCommand = rawCommand.trim();
 
     if (!trimmedCommand) return;
 
-    const response = processCommand(trimmedCommand);
+    setRuntimeMessages((previousMessages) => [
+      ...previousMessages,
+      { speaker: "user", text: trimmedCommand },
+    ]);
+    setRuntimeInput("");
+    const response = (await processCommand(trimmedCommand)) as PlutoRuntimeResponse;
 
     setRuntimeMessages((previousMessages) => [
       ...previousMessages,
-      `You: ${trimmedCommand}`,
-      `Pluto: ${response}`,
+      { speaker: "pluto", response },
     ]);
-    setRuntimeInput("");
   };
 
   const handleRuntimeSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -173,12 +182,7 @@ export function PlutoCommandConsole() {
         <div className="rounded-xl border border-zinc-800 bg-black p-4">
           <div className="max-h-72 min-h-56 space-y-3 overflow-y-auto pr-1">
             {runtimeMessages.map((message, index) => (
-              <p
-                key={`${message}-${index}`}
-                className="whitespace-pre-wrap rounded-lg border border-zinc-900 bg-zinc-950 px-3 py-2 text-sm text-zinc-200"
-              >
-                {message}
-              </p>
+              <RuntimeMessageView key={`${message.speaker}-${index}`} message={message} />
             ))}
           </div>
         </div>
@@ -206,8 +210,7 @@ export function PlutoCommandConsole() {
         </form>
 
         <p className="mt-3 text-xs leading-relaxed text-zinc-500">
-          Legacy Pluto commands are processed by the original runtime service and stored
-          in memory for the current browser session.
+          Existing Pluto utilities remain session-based. Research commands run server-side and persist source-backed intelligence.
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -224,6 +227,24 @@ export function PlutoCommandConsole() {
         </div>
       </div>
     </section>
+  );
+}
+
+function RuntimeMessageView({ message }: { message: RuntimeMessage }) {
+  if (message.speaker === "user") {
+    return <p className="whitespace-pre-wrap rounded-lg border border-zinc-900 bg-zinc-950 px-3 py-2 text-sm text-zinc-200">You: {message.text}</p>;
+  }
+  if (message.response.kind === "message") {
+    return <p className="whitespace-pre-wrap rounded-lg border border-zinc-900 bg-zinc-950 px-3 py-2 text-sm text-zinc-200">Pluto: {message.response.message}</p>;
+  }
+  const { research } = message.response;
+  return (
+    <div className="rounded-lg border border-blue-500/30 bg-zinc-950 px-3 py-3 text-sm text-zinc-200">
+      <p className="font-semibold text-white">Pluto: {message.response.message}</p>
+      <p className="mt-1 text-xs text-zinc-400">{research.pageTitle ?? research.businessName} · {research.factCount} facts · run {research.researchRunId}</p>
+      {research.findings.length > 0 ? <ul className="mt-2 space-y-1 text-xs text-zinc-300">{research.findings.slice(0, 3).map((finding) => <li key={finding.title}>• {finding.title}: {finding.summary}</li>)}</ul> : null}
+      {research.recommendations.length > 0 ? <ul className="mt-2 space-y-1 text-xs text-blue-200">{research.recommendations.slice(0, 3).map((recommendation) => <li key={recommendation.title}>P{recommendation.priority}: {recommendation.action}</li>)}</ul> : null}
+    </div>
   );
 }
 

@@ -17,6 +17,9 @@ export async function withRetry<T>(
   const shouldRetry = options.shouldRetry ?? (() => true);
   const sleep = options.sleep ?? defaultSleep;
 
+  if (!Number.isInteger(attempts) || attempts < 1) throw new Error("Retry attempts must be a positive integer.");
+  if (!Number.isFinite(baseDelayMs) || baseDelayMs < 0) throw new Error("Retry delay must be a non-negative number.");
+
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       return await operation();
