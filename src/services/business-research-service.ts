@@ -18,15 +18,23 @@ export class BusinessResearchService {
       return { business, researchRunId: run.id, status: "completed", ...existing };
     }
     try {
-      const extracted = await this.websiteExtraction.extract(business.canonicalWebsiteUrl);
-      const snapshot = await this.repository.insertSnapshot({ businessId: business.id, researchRunId: run.id, sourceUrl: extracted.sourceUrl, pageTitle: extracted.pageTitle, fetchedAt: extracted.fetchedAt, contentSha256: extracted.contentSha256, contentType: extracted.contentType, httpStatus: extracted.httpStatus, bodyText: extracted.bodyText, metadata: extracted.metadata });
-      const facts = this.factNormalization.deduplicate(extracted.facts.map((fact) => this.factNormalization.normalize({ ...fact, subject: business.name, sourceUrl: extracted.sourceUrl, pageTitle: extracted.pageTitle, extractedAt: extracted.fetchedAt, researchRunId: run.id, websiteSnapshotId: snapshot.id })));
+      const extractedPages = await this.websiteExtraction.extractSite(business.canonicalWebsiteUrl);
+      const snapshots = [];
+      const normalizedFacts = [];
+      for (const extracted of extractedPages) {
+        const snapshot = await this.repository.insertSnapshot({ businessId: business.id, researchRunId: run.id, sourceUrl: extracted.sourceUrl, pageTitle: extracted.pageTitle, fetchedAt: extracted.fetchedAt, contentSha256: extracted.contentSha256, contentType: extracted.contentType, httpStatus: extracted.httpStatus, bodyText: extracted.bodyText, metadata: extracted.metadata });
+        snapshots.push(snapshot);
+        normalizedFacts.push(...extracted.facts.map((fact) => this.factNormalization.normalize({ ...fact, subject: business.name, sourceUrl: extracted.sourceUrl, pageTitle: extracted.pageTitle, extractedAt: extracted.fetchedAt, researchRunId: run.id, websiteSnapshotId: snapshot.id })));
+      }
+      const snapshot = snapshots[0];
+      if (!snapshot) throw new Error("No pages were available for research.");
+      const facts = this.factNormalization.deduplicate(normalizedFacts);
       await this.repository.insertFacts(business.id, facts);
       const { findings, recommendations } = deriveIntelligence(facts);
       await this.repository.insertFindings(business.id, run.id, findings);
       await this.repository.insertRecommendations(business.id, run.id, recommendations);
       await this.repository.completeRun(run.id);
-      return { business, researchRunId: run.id, status: "completed", snapshot, facts, findings, recommendations };
+      return { business, researchRunId: run.id, status: "completed", snapshot, snapshots, facts, findings, recommendations };
     } catch (error) {
       await this.repository.failRun(run.id, error instanceof Error ? error.message : "Unknown research failure");
       throw error;

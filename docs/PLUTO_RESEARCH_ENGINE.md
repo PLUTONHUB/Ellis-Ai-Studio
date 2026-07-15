@@ -6,7 +6,7 @@ Pluto Research Engine turns a business website into durable, source-backed intel
 
 - `src/server/pluto-research.ts` is the server-only RPC boundary. It is disabled unless `PLUTO_RESEARCH_ENABLED=true` is set in the server environment.
 - `BusinessResearchService` coordinates a run, creates an immutable website snapshot, normalizes facts, and derives evidence-backed findings and recommendations.
-- `WebsiteExtractionService` performs bounded HTML retrieval with retries, redirect handling, content-type/size checks, and basic private-target blocking.
+- `WebsiteExtractionService` discovers and researches up to 25 same-site HTML pages (three link levels from the supplied URL), with retries, redirect handling, content-type/size checks, and private-target blocking on every request. Non-HTML assets, external links, and malformed links are skipped.
 - `FactNormalizationService` canonicalizes URLs and values, calculates stable SHA-256 fingerprints, validates confidence, and removes duplicates before persistence.
 - `MemoryService` appends conversation and organization memory through the same repository boundary.
 - `SupabaseResearchRepository` is server-only and is the sole persistence adapter. The browser never receives the service-role key.
@@ -16,8 +16,8 @@ Pluto Research Engine turns a business website into durable, source-backed intel
 1. A caller supplies a business name, website URL, and unique idempotency key.
 2. The business is upserted by its canonical website key, so spelling changes to the supplied business name do not create duplicates.
 3. A research run is created once per business/idempotency key.
-4. The website response becomes a content-addressed `website_snapshots` record.
-5. Every fact written to `extracted_facts` includes `source_url`, `page_title`, `extracted_at`, `confidence`, and `research_run_id`.
+4. The supplied page seeds a bounded same-site crawl; every successful page becomes a content-addressed `website_snapshots` record.
+5. Every fact written to `extracted_facts` includes its page `source_url`, `page_title`, `extracted_at`, `confidence`, and `research_run_id`.
 6. Findings and recommendations store their evidence and run provenance. Memory is inserted, never overwritten.
 
 The historical tables reject updates and deletes at the database layer. `businesses` may be upserted, and `research_runs` only transitions from `running` to a terminal state so failed runs remain auditable.

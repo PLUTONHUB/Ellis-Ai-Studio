@@ -36,15 +36,18 @@ export class SupabaseResearchRepository {
     throw error;
   }
 
-  async getRunResult(runId: string): Promise<{ snapshot: WebsiteSnapshot; facts: ExtractedFact[]; findings: Finding[]; recommendations: Recommendation[] }> {
+  async getRunResult(runId: string): Promise<{ snapshot: WebsiteSnapshot; snapshots: WebsiteSnapshot[]; facts: ExtractedFact[]; findings: Finding[]; recommendations: Recommendation[] }> {
     const [snapshotResult, factsResult, findingsResult, recommendationsResult] = await Promise.all([
-      this.client.from("website_snapshots").select("*").eq("research_run_id", runId).order("created_at", { ascending: false }).limit(1).single(),
+      this.client.from("website_snapshots").select("*").eq("research_run_id", runId).order("created_at", { ascending: true }),
       this.client.from("extracted_facts").select("*").eq("research_run_id", runId),
       this.client.from("ai_findings").select("*").eq("research_run_id", runId),
       this.client.from("recommendations").select("*").eq("research_run_id", runId),
     ]);
     if (snapshotResult.error || factsResult.error || findingsResult.error || recommendationsResult.error) throw snapshotResult.error ?? factsResult.error ?? findingsResult.error ?? recommendationsResult.error;
-    return { snapshot: mapSnapshot(snapshotResult.data), facts: factsResult.data.map(mapFact), findings: findingsResult.data.map(mapFinding), recommendations: recommendationsResult.data.map(mapRecommendation) };
+    const snapshots = snapshotResult.data.map(mapSnapshot);
+    const snapshot = snapshots[0];
+    if (!snapshot) throw new Error(`Research run ${runId} has no website snapshots.`);
+    return { snapshot, snapshots, facts: factsResult.data.map(mapFact), findings: findingsResult.data.map(mapFinding), recommendations: recommendationsResult.data.map(mapRecommendation) };
   }
 
   async insertSnapshot(snapshot: Omit<WebsiteSnapshot, "id">): Promise<WebsiteSnapshot> {

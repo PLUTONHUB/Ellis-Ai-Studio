@@ -11,12 +11,48 @@ export type ExtractedWebsiteData = {
   httpStatus: number;
   bodyText: string;
   metadata: JsonObject;
+  discoveredUrls: string[];
   facts: Array<{ factType: "business_name" | "email" | "phone" | "address" | "social_profile" | "service" | "metadata"; predicate: string; value: string; confidence: number }>;
 };
 
 const MAX_RESPONSE_BYTES = 1_000_000;
+const MAX_PAGES_PER_SITE = 25;
+const MAX_CRAWL_DEPTH = 3;
+const MAX_QUEUED_URLS = 250;
 
 export class WebsiteExtractionService {
+  /**
+   * Crawls a bounded, same-site set of HTML pages.  Individual page failures do
+   * not discard the rest of a site's research run; the entry page remains the
+   * required successful starting point.
+   */
+  async extractSite(inputUrl: string): Promise<ExtractedWebsiteData[]> {
+    const entryUrl = canonicalizeUrl(inputUrl);
+    const siteHost = normalizedSiteHost(new URL(entryUrl).hostname);
+    const queue: Array<{ url: string; depth: number }> = [{ url: entryUrl, depth: 0 }];
+    const visited = new Set<string>();
+    const pages: ExtractedWebsiteData[] = [];
+
+    while (queue.length && pages.length < MAX_PAGES_PER_SITE) {
+      const next = queue.shift();
+      if (!next || visited.has(next.url)) continue;
+      visited.add(next.url);
+      try {
+        const page = await this.extract(next.url);
+        pages.push(page);
+        if (next.depth >= MAX_CRAWL_DEPTH) continue;
+        for (const discoveredUrl of page.discoveredUrls) {
+          if (queue.length >= MAX_QUEUED_URLS) break;
+          if (visited.has(discoveredUrl) || normalizedSiteHost(new URL(discoveredUrl).hostname) !== siteHost) continue;
+          queue.push({ url: discoveredUrl, depth: next.depth + 1 });
+        }
+      } catch (error) {
+        if (next.depth === 0) throw error;
+      }
+    }
+    return pages;
+  }
+
   async extract(inputUrl: string): Promise<ExtractedWebsiteData> {
     const sourceUrl = canonicalizeUrl(inputUrl);
     await this.assertSafeTarget(sourceUrl);
@@ -42,6 +78,7 @@ export class WebsiteExtractionService {
       httpStatus: response.status,
       bodyText,
       metadata: description ? { description: normalizeText(decodeEntities(description)) } : {},
+      discoveredUrls: extractSiteLinks(html, response.url || sourceUrl),
       facts,
     };
   }
@@ -76,6 +113,26 @@ export class WebsiteExtractionService {
     }
     throw new Error("Website exceeded the maximum of five redirects.");
   }
+}
+
+function extractSiteLinks(html: string, baseUrl: string): string[] {
+  const urls = new Set<string>();
+  for (const href of uniqueMatches(html, /<a\b[^>]*\bhref=["']([^"']+)["']/gi, 1)) {
+    if (/^(?:mailto:|tel:|javascript:|data:)/i.test(href)) continue;
+    try {
+      const url = canonicalizeUrl(new URL(href, baseUrl).toString());
+      if (!isDocumentUrl(url)) urls.add(url);
+    } catch { /* Ignore malformed or unsupported links. */ }
+  }
+  return [...urls];
+}
+
+function isDocumentUrl(url: string): boolean {
+  return /\.(?:7z|avi|css|csv|docx?|gif|ico|jpe?g|js|json|mp3|mp4|pdf|png|svg|webp|woff2?|xlsx?|zip)$/i.test(new URL(url).pathname);
+}
+
+function normalizedSiteHost(hostname: string): string {
+  return hostname.toLowerCase().replace(/^www\./, "");
 }
 
 function extractFacts(html: string, bodyText: string, pageTitle: string | null) {

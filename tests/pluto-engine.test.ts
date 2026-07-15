@@ -13,12 +13,16 @@ test("routes Research commands to the research runner and returns a structured s
         businessName: "example.com",
         websiteUrl: "https://example.com/",
         researchRunId: "run-123",
+        status: "completed",
         pageTitle: "Example Domain",
         sourceUrl: "https://example.com/",
+        pageDescription: "An example business.",
         fetchedAt: "2026-07-15T00:00:00.000Z",
         factCount: 4,
+        facts: [{ factType: "service", predicate: "page_heading", value: "Business consulting", sourceUrl: "https://example.com/", confidence: 0.72 }],
+        sources: ["https://example.com/"],
         findings: [{ title: "No phone number found", summary: "No phone fact was extracted.", confidence: 0.86 }],
-        recommendations: [{ priority: 2, title: "Add a prominent call path", action: "Publish a clickable phone number." }],
+        recommendations: [{ priority: 2, title: "Add a prominent call path", rationale: "Phone-first prospects need a contact route.", action: "Publish a clickable phone number." }],
       };
     },
   })) as PlutoRuntimeResponse;
@@ -32,6 +36,8 @@ test("routes Research commands to the research runner and returns a structured s
   if (response.kind === "research") {
     assert.equal(response.research.factCount, 4);
     assert.equal(response.research.recommendations[0]?.priority, 2);
+    assert.equal(response.research.facts[0]?.value, "Business consulting");
+    assert.equal(response.research.sources[0], "https://example.com/");
   }
 });
 

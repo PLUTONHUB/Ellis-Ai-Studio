@@ -23,12 +23,16 @@ export const runBusinessResearch = createServerFn({ method: "POST" })
       businessName: result.business.name,
       websiteUrl: result.business.canonicalWebsiteUrl,
       researchRunId: result.researchRunId,
+      status: result.status,
       pageTitle: result.snapshot.pageTitle,
       sourceUrl: result.snapshot.sourceUrl,
+      pageDescription: typeof result.snapshot.metadata.description === "string" ? result.snapshot.metadata.description : null,
       fetchedAt: result.snapshot.fetchedAt,
       factCount: result.facts.length,
+      facts: result.facts.map(({ factType, predicate, value, sourceUrl, confidence }) => ({ factType, predicate, value, sourceUrl, confidence })),
+      sources: [...new Set(result.snapshots.map((snapshot) => snapshot.sourceUrl))],
       findings: result.findings.map(({ title, summary: findingSummary, confidence }) => ({ title, summary: findingSummary, confidence })),
-      recommendations: result.recommendations.map(({ priority, title, action }) => ({ priority, title, action })),
+      recommendations: result.recommendations.map(({ priority, title, rationale, action }) => ({ priority, title, rationale, action })),
     };
     return summary;
   });

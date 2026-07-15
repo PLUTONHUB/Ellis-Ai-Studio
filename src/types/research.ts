@@ -66,6 +66,7 @@ export type ResearchResult = {
   researchRunId: string;
   status: Exclude<ResearchRunStatus, "running">;
   snapshot: WebsiteSnapshot;
+  snapshots: WebsiteSnapshot[];
   facts: ExtractedFact[];
   findings: Finding[];
   recommendations: Recommendation[];
