@@ -31,6 +31,7 @@ node_modules
 .output
 .nitro
 .tanstack
+.wrangler
 
 /dist/
 /dist-ssr/
