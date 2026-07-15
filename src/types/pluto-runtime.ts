@@ -1,4 +1,4 @@
-import type { JsonValue } from "~/types/research";
+import type { IntelligenceReport, JsonValue } from "~/types/research";
 
 export type PlutoResearchFact = {
   factType: string;
@@ -22,6 +22,7 @@ export type PlutoResearchSummary = {
   sources: string[];
   findings: Array<{ title: string; summary: string; confidence: number }>;
   recommendations: Array<{ priority: number; title: string; rationale: string; action: string }>;
+  intelligence: IntelligenceReport;
 };
 
 export type PlutoRuntimeResponse =

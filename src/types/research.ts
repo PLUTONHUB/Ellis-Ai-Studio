@@ -70,6 +70,20 @@ export type ResearchResult = {
   facts: ExtractedFact[];
   findings: Finding[];
   recommendations: Recommendation[];
+  intelligence: IntelligenceReport;
+};
+
+export type IntelligencePriority = "Critical" | "High" | "Medium" | "Low";
+export type IntelligenceRecommendation = { priority: IntelligencePriority; title: string; estimatedRevenueImpact: string; estimatedImplementationEffort: string; supportingEvidence: string[]; action: string };
+export type FrictionAnalysis = { pillar: string; score: number; evidence: string[]; whyItMatters: string; estimatedBusinessImpact: string; recommendedFix: string };
+export type IntelligenceReport = {
+  executiveSummary: { businessName: string; industry: string; description: string; confidence: number };
+  businessProfile: { services: Record<string, string[]>; products: string[]; serviceAreas: string[]; locations: string[]; contacts: { phones: string[]; emails: string[] }; socialLinks: string[]; operatingHours: string[] };
+  trustSignals: { reviews: string[]; certifications: string[]; awards: string[]; testimonials: string[]; guarantees: string[]; yearsInBusiness: string[] };
+  digitalPresence: { websiteQuality: string[]; mobileFriendliness: string[]; navigation: string[]; missingPages: string[]; contactAccessibility: string[] };
+  conversionOpportunities: string[];
+  frictionAnalysis: FrictionAnalysis[];
+  priorityRecommendations: IntelligenceRecommendation[];
 };
 
 export type RunResearchInput = BusinessIdentity & {

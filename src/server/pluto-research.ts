@@ -33,6 +33,7 @@ export const runBusinessResearch = createServerFn({ method: "POST" })
       sources: [...new Set(result.snapshots.map((snapshot) => snapshot.sourceUrl))],
       findings: result.findings.map(({ title, summary: findingSummary, confidence }) => ({ title, summary: findingSummary, confidence })),
       recommendations: result.recommendations.map(({ priority, title, rationale, action }) => ({ priority, title, rationale, action })),
+      intelligence: result.intelligence,
     };
     return summary;
   });

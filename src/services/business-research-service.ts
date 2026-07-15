@@ -3,9 +3,10 @@ import type { SupabaseResearchRepository } from "~/lib/supabase/research-reposit
 import type { ExtractedFact, Finding, Recommendation, ResearchResult, RunResearchInput } from "~/types/research";
 import { FactNormalizationService } from "~/services/fact-normalization-service";
 import { WebsiteExtractionService } from "~/services/website-extraction-service";
+import { IntelligenceService } from "~/services/intelligence-service";
 
 export class BusinessResearchService {
-  constructor(private readonly repository: SupabaseResearchRepository, private readonly websiteExtraction = new WebsiteExtractionService(), private readonly factNormalization = new FactNormalizationService()) {}
+  constructor(private readonly repository: SupabaseResearchRepository, private readonly websiteExtraction = new WebsiteExtractionService(), private readonly factNormalization = new FactNormalizationService(), private readonly intelligenceService = new IntelligenceService()) {}
 
   async research(input: RunResearchInput): Promise<ResearchResult> {
     if (!input.idempotencyKey.trim()) throw new Error("A non-empty idempotency key is required.");
@@ -31,10 +32,12 @@ export class BusinessResearchService {
       const facts = this.factNormalization.deduplicate(normalizedFacts);
       await this.repository.insertFacts(business.id, facts);
       const { findings, recommendations } = deriveIntelligence(facts);
+      const intelligence = this.intelligenceService.analyze(business, facts, snapshots);
       await this.repository.insertFindings(business.id, run.id, findings);
       await this.repository.insertRecommendations(business.id, run.id, recommendations);
+      await this.repository.insertIntelligence(business.id, run.id, intelligence);
       await this.repository.completeRun(run.id);
-      return { business, researchRunId: run.id, status: "completed", snapshot, snapshots, facts, findings, recommendations };
+      return { business, researchRunId: run.id, status: "completed", snapshot, snapshots, facts, findings, recommendations, intelligence };
     } catch (error) {
       await this.repository.failRun(run.id, error instanceof Error ? error.message : "Unknown research failure");
       throw error;

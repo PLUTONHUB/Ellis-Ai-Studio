@@ -3,7 +3,7 @@ import "@tanstack/react-start/server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { canonicalizeUrl, fingerprint, normalizeBusinessKey, normalizeText } from "~/lib/pluto/research/normalization";
-import type { Business, ExtractedFact, Finding, JsonObject, JsonValue, MemoryInput, Recommendation, WebsiteSnapshot } from "~/types/research";
+import type { Business, ExtractedFact, Finding, IntelligenceReport, JsonObject, JsonValue, MemoryInput, Recommendation, WebsiteSnapshot } from "~/types/research";
 
 type Row = Record<string, unknown>;
 
@@ -36,18 +36,24 @@ export class SupabaseResearchRepository {
     throw error;
   }
 
-  async getRunResult(runId: string): Promise<{ snapshot: WebsiteSnapshot; snapshots: WebsiteSnapshot[]; facts: ExtractedFact[]; findings: Finding[]; recommendations: Recommendation[] }> {
-    const [snapshotResult, factsResult, findingsResult, recommendationsResult] = await Promise.all([
+  async getRunResult(runId: string): Promise<{ snapshot: WebsiteSnapshot; snapshots: WebsiteSnapshot[]; facts: ExtractedFact[]; findings: Finding[]; recommendations: Recommendation[]; intelligence: IntelligenceReport }> {
+    const [snapshotResult, factsResult, findingsResult, recommendationsResult, intelligenceResult] = await Promise.all([
       this.client.from("website_snapshots").select("*").eq("research_run_id", runId).order("created_at", { ascending: true }),
       this.client.from("extracted_facts").select("*").eq("research_run_id", runId),
       this.client.from("ai_findings").select("*").eq("research_run_id", runId),
       this.client.from("recommendations").select("*").eq("research_run_id", runId),
+      this.client.from("research_intelligence").select("report").eq("research_run_id", runId).single(),
     ]);
-    if (snapshotResult.error || factsResult.error || findingsResult.error || recommendationsResult.error) throw snapshotResult.error ?? factsResult.error ?? findingsResult.error ?? recommendationsResult.error;
+    if (snapshotResult.error || factsResult.error || findingsResult.error || recommendationsResult.error || intelligenceResult.error) throw snapshotResult.error ?? factsResult.error ?? findingsResult.error ?? recommendationsResult.error ?? intelligenceResult.error;
     const snapshots = snapshotResult.data.map(mapSnapshot);
     const snapshot = snapshots[0];
     if (!snapshot) throw new Error(`Research run ${runId} has no website snapshots.`);
-    return { snapshot, snapshots, facts: factsResult.data.map(mapFact), findings: findingsResult.data.map(mapFinding), recommendations: recommendationsResult.data.map(mapRecommendation) };
+    return { snapshot, snapshots, facts: factsResult.data.map(mapFact), findings: findingsResult.data.map(mapFinding), recommendations: recommendationsResult.data.map(mapRecommendation), intelligence: intelligenceResult.data.report as IntelligenceReport };
+  }
+
+  async insertIntelligence(businessId: string, researchRunId: string, intelligence: IntelligenceReport): Promise<void> {
+    const { error } = await this.client.from("research_intelligence").upsert({ business_id: businessId, research_run_id: researchRunId, report: intelligence, report_fingerprint: fingerprint(intelligence) }, { onConflict: "research_run_id,report_fingerprint", ignoreDuplicates: true });
+    if (error) throw error;
   }
 
   async insertSnapshot(snapshot: Omit<WebsiteSnapshot, "id">): Promise<WebsiteSnapshot> {
