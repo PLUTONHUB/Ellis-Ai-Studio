@@ -5,7 +5,7 @@ import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   server: {
     port: 3000,
     host: true,
@@ -15,7 +15,9 @@ export default defineConfig({
     allowedHosts: true,
   },
   plugins: [
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    // Miniflare is only needed when producing the Cloudflare deployment bundle.
+    // Local development uses Vite's regular Node runtime, avoiding workerd startup.
+    ...(command === "build" ? [cloudflare({ viteEnvironment: { name: "ssr" } })] : []),
     tailwindcss(),
     tsConfigPaths({
       projects: ["./tsconfig.json"],
@@ -23,4 +25,4 @@ export default defineConfig({
     tanstackStart(),
     viteReact(),
   ],
-});
+}));
