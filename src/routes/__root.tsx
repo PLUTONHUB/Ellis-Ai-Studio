@@ -13,12 +13,19 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ellis AI Studio - Friction Framework Systems Partner" },
+      { name: "theme-color", content: "#ffffff" },
+      { name: "robots", content: "index, follow" },
+      { title: "Ellis AI Studio | Intelligent Growth Systems" },
       {
         name: "description",
         content:
-          "Ellis AI Studio identifies, quantifies, and removes revenue friction across acquisition, response, conversion, and retention for service businesses.",
+          "Ellis AI Studio helps service businesses identify revenue leaks and implement intelligent growth systems.",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Ellis AI Studio" },
+      { property: "og:title", content: "Ellis AI Studio | Intelligent Growth Systems" },
+      { property: "og:description", content: "Find and remove the friction holding your service business back." },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -101,7 +108,7 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="antialiased selection:bg-blue-600 selection:text-white min-h-screen">
+      <body className="antialiased min-h-screen">
         {children}
         <Scripts />
       </body>
