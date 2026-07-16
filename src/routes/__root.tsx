@@ -14,6 +14,7 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#ffffff" },
+      { name: "application-name", content: "Ellis AI Studio" },
       { name: "robots", content: "index, follow" },
       { title: "Ellis AI Studio | Intelligent Growth Systems" },
       {
@@ -22,6 +23,7 @@ export const Route = createRootRoute({
           "Ellis AI Studio helps service businesses identify revenue leaks and implement intelligent growth systems.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
       { property: "og:site_name", content: "Ellis AI Studio" },
       { property: "og:title", content: "Ellis AI Studio | Intelligent Growth Systems" },
       { property: "og:description", content: "Find and remove the friction holding your service business back." },
