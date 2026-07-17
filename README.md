@@ -63,3 +63,7 @@ bun run publish
 ```
 
 That command rebuilds the app and restarts the Bun server defined in `serve.ts`.
+
+## Google Workspace integration
+
+Roofing Growth Blueprint bookings create a Drive client folder, Google Calendar event with a Google Meet link, and Gmail confirmation through a server-only Cloudflare Worker function. Follow [Google Cloud and Google Workspace setup](docs/GOOGLE_WORKSPACE.md) to configure domain-wide delegation and Worker Secrets. Do not add Google credentials to `.env.local`, `wrangler.jsonc`, or client-side `VITE_` variables.
