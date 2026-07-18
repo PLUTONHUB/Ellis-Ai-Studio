@@ -1,16 +1,18 @@
 import { useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { ClientBusinessInsightsPanel } from "~/components/client-business-insights";
 
-const navigation = ["Dashboard", "Deliverables", "Business Connections", "Documents", "Meetings", "Messages", "Invoices", "Settings"] as const;
+const navigation = ["Dashboard", "Business Intelligence", "Friction Audit", "Growth Opportunities", "Executive Reports", "Deliverables", "Business Connections", "Documents", "Meetings", "Messages", "Invoices", "Settings"] as const;
 type WorkspaceSection = (typeof navigation)[number];
 
 const deliverables = [
   ["Website", "In review", "Jul 16", "v2.4"], ["Automation", "In progress", "Jul 14", "v1.2"],
   ["SEO", "In progress", "Jul 12", "v1.0"], ["Lead System", "Ready for review", "Jul 11", "v1.8"],
-  ["CRM", "Planned", "Jul 09", "—"], ["AI Assistant", "Planned", "Jul 08", "—"],
+  ["CRM", "Planned", "Jul 09", "—"], ["Lead Recovery", "Planned", "Jul 08", "—"],
   ["Documentation", "In progress", "Jul 15", "v1.1"],
 ] as const;
 
 const accessRequests = [
+  ["Website", "To maintain the approved conversion, performance, and customer-experience improvements.", "Approved website properties and performance settings", "No unrelated accounts or billing changes", "Ongoing"],
   ["Google Analytics", "To establish the current conversion baseline and measure improvement.", "Reporting and configured properties", "No billing, users, or account settings", "2 business days"],
   ["Google Search Console", "To identify search visibility and technical issues affecting demand.", "Search performance and indexing data", "No website publishing controls", "2 business days"],
   ["Google Workspace", "To coordinate implementation meetings and approved communication workflows.", "Only the shared project calendar and approved mailbox", "No personal files or unrelated email", "1 business day"],
@@ -18,6 +20,10 @@ const accessRequests = [
   ["Google Business Profile", "To improve local visibility and reporting.", "Business profile performance", "No ownership transfer or billing", "2 business days"],
   ["HubSpot", "To connect lead routing and lifecycle reporting.", "Approved pipelines and contact properties", "No account ownership or billing", "3 business days"],
   ["Stripe", "To measure approved conversion and payment events.", "Read-only payment reporting", "No payouts, refunds, or account changes", "2 business days"],
+  ["Calendars", "To coordinate project meetings and milestone reminders.", "Approved project calendar", "No personal calendar data", "1 business day"],
+  ["CRM", "To strengthen lead lifecycle reporting and approved follow-up workflows.", "Approved pipelines and contact properties", "No ownership, billing, or unrelated records", "3 business days"],
+  ["Email", "To coordinate approved client communications and response workflows.", "Approved shared mailbox only", "No personal or unrelated messages", "2 business days"],
+  ["Phone System", "To understand lead response performance and approved call workflows.", "Reporting and approved routing settings", "No private recordings or billing controls", "3 business days"],
 ] as const;
 
 const timeline = [
@@ -26,10 +32,11 @@ const timeline = [
 ] as const;
 
 const documents = [
-  ["Service Agreement", "Contract", "Jul 03"], ["July Invoice", "Invoice", "Jul 01"], ["Friction Audit — Draft", "Audit report", "Jul 14"], ["Strategy Session Notes", "Meeting notes", "Jul 16"], ["Lead System Training", "Video", "Jul 16"],
+  ["Service Agreement", "Contract", "Jul 03"], ["July Invoice", "Invoice", "Jul 01"], ["Executive Audit Summary", "Audit report", "Jul 14"], ["Strategy Session Notes", "Meeting notes", "Jul 16"], ["Lead System Training", "Video", "Jul 16"],
 ] as const;
 
-export function ClientWorkspace() {
+export function ClientWorkspace({ clientName }: { clientName: string }) {
+  void clientName;
   const [active, setActive] = useState<WorkspaceSection>("Dashboard");
   const [requests, setRequests] = useState<Record<string, "Pending" | "Approved" | "Declined">>({});
   const [documentFilter, setDocumentFilter] = useState("All");
@@ -40,13 +47,17 @@ export function ClientWorkspace() {
     <aside className={`workspace-sidebar ${menuOpen ? "is-open" : ""}`}>
       <a href="/" className="workspace-brand"><span>ELLIS</span><small>AI STUDIO</small></a>
       <div className="workspace-client"><span className="workspace-avatar">JE</span><div><b>Ellis AI Studio</b><small>Client workspace</small></div></div>
-      <nav aria-label="Client workspace navigation">{navigation.map((item) => <button key={item} className={active === item ? "is-active" : ""} onClick={() => { setActive(item); setMenuOpen(false); }}><span>{navSymbol(item)}</span>{item}{item === "Messages" ? <em>2</em> : null}</button>)}</nav>
+      <nav aria-label="Client workspace navigation">{navigation.map((item) => <button key={item} className={active === item ? "is-active" : ""} onClick={() => { setActive(item); setMenuOpen(false); }}><span>{navSymbol(item)}</span>{item === "Business Connections" ? "Integrations" : item}{item === "Messages" ? <em>2</em> : null}</button>)}</nav>
       <div className="workspace-sidebar-foot"><p>Need a hand?</p><a href="mailto:hello@ellisaistudio.com">Contact Ellis AI Studio <span>→</span></a></div>
     </aside>
 
     <main className="workspace-main">
       <header className="workspace-topbar"><button className="workspace-menu" aria-label="Toggle navigation" onClick={() => setMenuOpen((open) => !open)}>☰</button><div><p className="workspace-kicker">Client workspace</p><h1>{active}</h1></div><div className="workspace-top-actions"><button className="workspace-search" aria-label="Search">⌕ <span>Search workspace</span></button><button className="workspace-notice" aria-label="Notifications">◌<i /></button><button className="workspace-profile"><span>JE</span><b>Jake Ellis</b></button></div></header>
-      {active === "Dashboard" ? <Dashboard /> : null}
+      {active === "Dashboard" ? <ClientBusinessInsightsPanel view="dashboard" /> : null}
+      {active === "Business Intelligence" ? <ClientBusinessInsightsPanel view="intelligence" /> : null}
+      {active === "Friction Audit" ? <ClientBusinessInsightsPanel view="audit" /> : null}
+      {active === "Growth Opportunities" ? <ClientBusinessInsightsPanel view="opportunities" /> : null}
+      {active === "Executive Reports" ? <ClientBusinessInsightsPanel view="reports" /> : null}
       {active === "Deliverables" ? <Deliverables /> : null}
       {active === "Business Connections" ? <Connections requests={requests} setRequests={setRequests} /> : null}
       {active === "Documents" ? <Documents filter={documentFilter} setFilter={setDocumentFilter} rows={filteredDocuments} /> : null}
@@ -70,6 +81,7 @@ function Projects() { const projects = [{ name: "Growth Systems", status: "On tr
 function Deliverables() { const [preview, setPreview] = useState<string | null>(null); return <div className="workspace-content"><section className="workspace-welcome compact"><div><p className="workspace-kicker">Project library</p><h2>Deliverables</h2><p>Every active system, asset, and supporting document in one place.</p></div><button className="workspace-filter">All deliverables <span>⌄</span></button></section>{preview ? <section className="workspace-panel workspace-preview"><div><p className="workspace-kicker">Preview</p><h3>{preview}</h3><p>This secure preview area is ready to receive a file from future storage integration.</p></div><button onClick={() => setPreview(null)}>Close</button></section> : null}<section className="workspace-deliverable-grid">{deliverables.map(([name, status, date, version]) => <article key={name}><div className="deliverable-card-top"><span>{name.slice(0, 1)}</span><button aria-label={`More options for ${name}`}>•••</button></div><p className="workspace-kicker">{status}</p><h3>{name}</h3><small>Updated {date} · {version} · Ellis AI Studio</small><div><button onClick={() => setPreview(name)}>Preview</button><button>Download</button><button>History</button></div></article>)}</section></div>; }
 
 void Projects;
+void Dashboard;
 
 function Connections({ requests, setRequests }: { requests: Record<string, "Pending" | "Approved" | "Declined">; setRequests: Dispatch<SetStateAction<Record<string, "Pending" | "Approved" | "Declined">>> }) { return <div className="workspace-content"><section className="workspace-welcome compact"><div><p className="workspace-kicker">Integrations</p><h2>Connections</h2><p>Only connect the tools needed for the work currently in motion. Every request explains its purpose and scope.</p></div><span className="workspace-muted-note">Your data stays yours.</span></section><div className="workspace-access-list">{accessRequests.map(([name, why, canSee, cannotSee, expected]) => { const status = requests[name] ?? "Pending"; return <article key={name}><div className="access-title"><span>{name.slice(0, 1)}</span><div><h3>{name}</h3><p>{why}</p></div><em className={status.toLowerCase()}>{status}</em></div><div className="access-details"><p><b>Permission scope</b>{canSee}</p><p><b>What we cannot see</b>{cannotSee}</p><p><b>Last updated</b>Requested today · {expected}</p></div>{status === "Pending" ? <div className="access-actions"><button className="button button-dark" onClick={() => setRequests((value) => ({ ...value, [name]: "Approved" }))}>Approve connection <span className="arrow">→</span></button><button onClick={() => setRequests((value) => ({ ...value, [name]: "Declined" }))}>Decline</button></div> : <div className="access-response">{status === "Approved" ? "Connected — Ellis AI Studio can now proceed with the approved scope. Reconnect is available when an integration expires." : "This connection was declined. You can reconnect it later from this workspace."}</div>}</article>; })}</div></div>; }
 
@@ -86,4 +98,4 @@ function Settings() { return <SimplePage eyebrow="Workspace preferences" title="
 function SimplePage({ eyebrow, title, description, children }: { eyebrow: string; title: string; description: string; children: ReactNode }) { return <div className="workspace-content"><section className="workspace-welcome compact"><div><p className="workspace-kicker">{eyebrow}</p><h2>{title}</h2><p>{description}</p></div></section>{children}</div>; }
 function Metric({ label, value, detail, tone }: { label: string; value: string; detail: string; tone?: string }) { return <article><p>{label}</p><b className={tone}>{value}</b><small>{detail}</small></article>; }
 function PanelHeading({ title, action }: { title: string; action?: string }) { return <div className="workspace-panel-heading"><h3>{title}</h3>{action ? <button>{action} <span>→</span></button> : null}</div>; }
-function navSymbol(item: WorkspaceSection) { return ({ Dashboard: "◫", Deliverables: "◇", "Business Connections": "⊕", Documents: "▤", Meetings: "◷", Messages: "◌", Invoices: "$", Settings: "⚙" })[item]; }
+function navSymbol(item: WorkspaceSection) { const symbols: Record<WorkspaceSection, string> = { Dashboard: "◫", "Business Intelligence": "◉", "Friction Audit": "◴", "Growth Opportunities": "↗", "Executive Reports": "▣", Deliverables: "◇", "Business Connections": "⊕", Documents: "▤", Meetings: "◷", Messages: "◌", Invoices: "$", Settings: "⚙" }; return symbols[item]; }

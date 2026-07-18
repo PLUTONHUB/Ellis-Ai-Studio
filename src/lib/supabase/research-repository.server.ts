@@ -62,6 +62,22 @@ export class SupabaseResearchRepository {
     if (error) throw error;
   }
 
+  async getLatestFrictionAudit(websiteUrl: string): Promise<{ draft: FrictionAuditDraft; updatedAt: string } | null> {
+    const canonicalWebsiteUrl = canonicalizeUrl(websiteUrl);
+    const { data: business, error: businessError } = await this.client.from("businesses").select("id").eq("canonical_website_url", canonicalWebsiteUrl).maybeSingle();
+    if (businessError) throw businessError;
+    if (!business) return null;
+    const { data, error } = await this.client.from("friction_audits").select("draft, updated_at, created_at").eq("business_id", business.id).eq("status", "draft").order("updated_at", { ascending: false }).limit(1).maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    return { draft: data.draft as FrictionAuditDraft, updatedAt: (data.updated_at ?? data.created_at) as string };
+  }
+
+  async saveClientIntake(input: { companyName: string; ownerName: string; email: string; phone?: string; address?: string; websiteUrl?: string; googleBusinessProfileUrl?: string; serviceAreas: string[]; servicesOffered: string[]; goals: string[]; currentSoftware: string[]; status: "submitted" | "preparing" | "ready" | "failed"; researchRunId?: string }): Promise<void> {
+    const { error } = await this.client.from("client_intakes").upsert({ company_name: input.companyName, owner_name: input.ownerName, email: input.email, phone: input.phone ?? null, address: input.address ?? null, website_url: input.websiteUrl ?? null, google_business_profile_url: input.googleBusinessProfileUrl ?? null, service_areas: input.serviceAreas, services_offered: input.servicesOffered, goals: input.goals, current_software: input.currentSoftware, onboarding_status: input.status, research_run_id: input.researchRunId ?? null }, { onConflict: "email,company_name" });
+    if (error) throw error;
+  }
+
   async insertSnapshot(snapshot: Omit<WebsiteSnapshot, "id">): Promise<WebsiteSnapshot> {
     const { data: existing, error: lookupError } = await this.client.from("website_snapshots").select("*").eq("research_run_id", snapshot.researchRunId).eq("source_url", snapshot.sourceUrl).eq("content_sha256", snapshot.contentSha256).maybeSingle();
     if (lookupError) throw lookupError;
