@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 
+import { clientPlatform } from "~/lib/client-platform";
 import type { FrictionAuditDraft } from "~/types/friction-audit";
 
 export type ClientBusinessInsights = {
@@ -48,7 +49,7 @@ function validateInput(data: ClientInsightInput): ClientInsightInput {
 // This is the only payload that crosses the client boundary. It deliberately excludes
 // source pages, extracted facts, evidence, research IDs, diagnostics, and internal notes.
 function toClientInsights(draft: FrictionAuditDraft, updatedAt: string): ClientBusinessInsights {
-  const pillars = draft.pillars.map((pillar, index) => ({ name: pillar.pillar === "Response" ? "Response Speed" : pillar.pillar === "Growth Execution" ? "Growth Systems" : pillar.pillar, score: pillar.score, priority: pillar.priority, impact: pillar.businessImpact, difficulty: effortForPriority(pillar.priority), recommendation: draft.executiveSummary.quickWins[index] ?? `Review the ${pillar.pillar.toLowerCase()} opportunity with your Ellis AI Studio team.`, progress: pillar.score < 55 ? "Priority review" : "Monitoring" }));
+  const pillars = draft.pillars.map((pillar, index) => ({ name: pillar.pillar === "Response" ? clientPlatform.pillars[2] : pillar.pillar === "Growth Execution" ? clientPlatform.pillars[6] : pillar.pillar, score: pillar.score, priority: pillar.priority, impact: pillar.businessImpact, difficulty: effortForPriority(pillar.priority), recommendation: draft.executiveSummary.quickWins[index] ?? `Review the ${pillar.pillar.toLowerCase()} opportunity with your Ellis AI Studio team.`, progress: pillar.score < 55 ? "Priority review" : "Monitoring" }));
   const average = Math.round(pillars.reduce((total, pillar) => total + pillar.score, 0) / Math.max(pillars.length, 1));
   const titles = draft.executiveSummary.topOpportunities.length ? draft.executiveSummary.topOpportunities : draft.executiveSummary.quickWins;
   const opportunityCount = Math.max(titles.length, draft.executiveSummary.quickWins.length);

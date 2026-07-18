@@ -1,8 +1,9 @@
 import { useMemo, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { ClientBusinessInsightsPanel } from "~/components/client-business-insights";
+import { clientPlatform, type ClientWorkspaceSection, workspaceSectionDescription } from "~/lib/client-platform";
 
-const navigation = ["Dashboard", "Business Intelligence", "Friction Audit", "Growth Opportunities", "Executive Reports", "Deliverables", "Business Connections", "Documents", "Meetings", "Messages", "Invoices", "Settings"] as const;
-type WorkspaceSection = (typeof navigation)[number];
+const navigation = clientPlatform.navigation;
+type WorkspaceSection = ClientWorkspaceSection;
 
 const deliverables = [
   ["Website", "In review", "Jul 16", "v2.4"], ["Automation", "In progress", "Jul 14", "v1.2"],
@@ -36,7 +37,6 @@ const documents = [
 ] as const;
 
 export function ClientWorkspace({ clientName }: { clientName: string }) {
-  void clientName;
   const [active, setActive] = useState<WorkspaceSection>("Dashboard");
   const [requests, setRequests] = useState<Record<string, "Pending" | "Approved" | "Declined">>({});
   const [documentFilter, setDocumentFilter] = useState("All");
@@ -46,20 +46,20 @@ export function ClientWorkspace({ clientName }: { clientName: string }) {
   return <div className="workspace-shell">
     <aside className={`workspace-sidebar ${menuOpen ? "is-open" : ""}`}>
       <a href="/" className="workspace-brand"><span>ELLIS</span><small>AI STUDIO</small></a>
-      <div className="workspace-client"><span className="workspace-avatar">JE</span><div><b>Ellis AI Studio</b><small>Client workspace</small></div></div>
-      <nav aria-label="Client workspace navigation">{navigation.map((item) => <button key={item} className={active === item ? "is-active" : ""} onClick={() => { setActive(item); setMenuOpen(false); }}><span>{navSymbol(item)}</span>{item === "Business Connections" ? "Integrations" : item}{item === "Messages" ? <em>2</em> : null}</button>)}</nav>
+      <div className="workspace-client"><span className="workspace-avatar">{initials(clientName)}</span><div><b>{clientPlatform.brand}</b><small>{clientPlatform.workspaceLabel}</small></div></div>
+      <nav aria-label="Client workspace navigation">{navigation.map((item) => <button key={item} className={active === item ? "is-active" : ""} onClick={() => { setActive(item); setMenuOpen(false); }}><span>{navSymbol(item)}</span>{item}{item === "Messages" ? <em>2</em> : null}</button>)}</nav>
       <div className="workspace-sidebar-foot"><p>Need a hand?</p><a href="mailto:hello@ellisaistudio.com">Contact Ellis AI Studio <span>→</span></a></div>
     </aside>
 
     <main className="workspace-main">
-      <header className="workspace-topbar"><button className="workspace-menu" aria-label="Toggle navigation" onClick={() => setMenuOpen((open) => !open)}>☰</button><div><p className="workspace-kicker">Client workspace</p><h1>{active}</h1></div><div className="workspace-top-actions"><button className="workspace-search" aria-label="Search">⌕ <span>Search workspace</span></button><button className="workspace-notice" aria-label="Notifications">◌<i /></button><button className="workspace-profile"><span>JE</span><b>Jake Ellis</b></button></div></header>
+      <header className="workspace-topbar"><button className="workspace-menu" aria-label="Toggle navigation" onClick={() => setMenuOpen((open) => !open)}>☰</button><div><p className="workspace-kicker">{clientPlatform.workspaceLabel}</p><h1>{active}</h1></div><div className="workspace-top-actions"><button className="workspace-search" aria-label="Search">⌕ <span>Search workspace</span></button><button className="workspace-notice" aria-label="Notifications">◌<i /></button><button className="workspace-profile"><span>{initials(clientName)}</span><b>{clientName}</b></button></div></header>
       {active === "Dashboard" ? <ClientBusinessInsightsPanel view="dashboard" /> : null}
       {active === "Business Intelligence" ? <ClientBusinessInsightsPanel view="intelligence" /> : null}
       {active === "Friction Audit" ? <ClientBusinessInsightsPanel view="audit" /> : null}
       {active === "Growth Opportunities" ? <ClientBusinessInsightsPanel view="opportunities" /> : null}
       {active === "Executive Reports" ? <ClientBusinessInsightsPanel view="reports" /> : null}
       {active === "Deliverables" ? <Deliverables /> : null}
-      {active === "Business Connections" ? <Connections requests={requests} setRequests={setRequests} /> : null}
+      {active === "Integrations" ? <Connections requests={requests} setRequests={setRequests} /> : null}
       {active === "Documents" ? <Documents filter={documentFilter} setFilter={setDocumentFilter} rows={filteredDocuments} /> : null}
       {active === "Meetings" ? <Meetings /> : null}
       {active === "Messages" ? <Messages /> : null}
@@ -83,7 +83,7 @@ function Deliverables() { const [preview, setPreview] = useState<string | null>(
 void Projects;
 void Dashboard;
 
-function Connections({ requests, setRequests }: { requests: Record<string, "Pending" | "Approved" | "Declined">; setRequests: Dispatch<SetStateAction<Record<string, "Pending" | "Approved" | "Declined">>> }) { return <div className="workspace-content"><section className="workspace-welcome compact"><div><p className="workspace-kicker">Integrations</p><h2>Connections</h2><p>Only connect the tools needed for the work currently in motion. Every request explains its purpose and scope.</p></div><span className="workspace-muted-note">Your data stays yours.</span></section><div className="workspace-access-list">{accessRequests.map(([name, why, canSee, cannotSee, expected]) => { const status = requests[name] ?? "Pending"; return <article key={name}><div className="access-title"><span>{name.slice(0, 1)}</span><div><h3>{name}</h3><p>{why}</p></div><em className={status.toLowerCase()}>{status}</em></div><div className="access-details"><p><b>Permission scope</b>{canSee}</p><p><b>What we cannot see</b>{cannotSee}</p><p><b>Last updated</b>Requested today · {expected}</p></div>{status === "Pending" ? <div className="access-actions"><button className="button button-dark" onClick={() => setRequests((value) => ({ ...value, [name]: "Approved" }))}>Approve connection <span className="arrow">→</span></button><button onClick={() => setRequests((value) => ({ ...value, [name]: "Declined" }))}>Decline</button></div> : <div className="access-response">{status === "Approved" ? "Connected — Ellis AI Studio can now proceed with the approved scope. Reconnect is available when an integration expires." : "This connection was declined. You can reconnect it later from this workspace."}</div>}</article>; })}</div></div>; }
+function Connections({ requests, setRequests }: { requests: Record<string, "Pending" | "Approved" | "Declined">; setRequests: Dispatch<SetStateAction<Record<string, "Pending" | "Approved" | "Declined">>> }) { return <div className="workspace-content"><section className="workspace-welcome compact"><div><p className="workspace-kicker">Business systems</p><h2>Integrations</h2><p>{workspaceSectionDescription("Integrations")}</p></div><span className="workspace-muted-note">Your data stays yours.</span></section><div className="workspace-access-list">{accessRequests.map(([name, why, canSee, cannotSee, expected]) => { const status = requests[name] ?? "Pending"; return <article key={name}><div className="access-title"><span>{name.slice(0, 1)}</span><div><h3>{name}</h3><p>{why}</p></div><em className={status.toLowerCase()}>{status}</em></div><div className="access-details"><p><b>Permission scope</b>{canSee}</p><p><b>What we cannot see</b>{cannotSee}</p><p><b>Last updated</b>Requested today · {expected}</p></div>{status === "Pending" ? <div className="access-actions"><button className="button button-dark" onClick={() => setRequests((value) => ({ ...value, [name]: "Approved" }))}>Approve connection <span className="arrow">→</span></button><button onClick={() => setRequests((value) => ({ ...value, [name]: "Declined" }))}>Decline</button></div> : <div className="access-response">{status === "Approved" ? "Connected — Ellis AI Studio can now proceed with the approved scope. Reconnect is available when an integration expires." : "This connection was declined. You can reconnect it later from this workspace."}</div>}</article>; })}</div></div>; }
 
 function Documents({ filter, setFilter, rows }: { filter: string; setFilter: (filter: string) => void; rows: readonly (readonly [string, string, string])[] }) { const filters = ["All", "Contract", "Invoice", "Audit report", "Meeting notes", "Video"]; return <div className="workspace-content"><section className="workspace-welcome compact"><div><p className="workspace-kicker">Reference library</p><h2>Documents</h2><p>Contracts, audit materials, training, and decisions — always easy to find.</p></div><button className="workspace-search workspace-document-search">⌕ Search documents</button></section><div className="workspace-filter-row">{filters.map((item) => <button key={item} onClick={() => setFilter(item)} className={filter === item ? "is-active" : ""}>{item}</button>)}</div><section className="workspace-panel workspace-document-list">{rows.map(([name, kind, date]) => <div key={name}><span>{kind.slice(0, 1)}</span><div><b>{name}</b><small>{kind} · Updated {date}</small></div><button>Download</button><button aria-label={`More options for ${name}`}>•••</button></div>)}</section></div>; }
 
@@ -98,4 +98,5 @@ function Settings() { return <SimplePage eyebrow="Workspace preferences" title="
 function SimplePage({ eyebrow, title, description, children }: { eyebrow: string; title: string; description: string; children: ReactNode }) { return <div className="workspace-content"><section className="workspace-welcome compact"><div><p className="workspace-kicker">{eyebrow}</p><h2>{title}</h2><p>{description}</p></div></section>{children}</div>; }
 function Metric({ label, value, detail, tone }: { label: string; value: string; detail: string; tone?: string }) { return <article><p>{label}</p><b className={tone}>{value}</b><small>{detail}</small></article>; }
 function PanelHeading({ title, action }: { title: string; action?: string }) { return <div className="workspace-panel-heading"><h3>{title}</h3>{action ? <button>{action} <span>→</span></button> : null}</div>; }
-function navSymbol(item: WorkspaceSection) { const symbols: Record<WorkspaceSection, string> = { Dashboard: "◫", "Business Intelligence": "◉", "Friction Audit": "◴", "Growth Opportunities": "↗", "Executive Reports": "▣", Deliverables: "◇", "Business Connections": "⊕", Documents: "▤", Meetings: "◷", Messages: "◌", Invoices: "$", Settings: "⚙" }; return symbols[item]; }
+function initials(name: string) { return name.split(/\s+/).filter(Boolean).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "EA"; }
+function navSymbol(item: WorkspaceSection) { const symbols: Record<WorkspaceSection, string> = { Dashboard: "◫", "Business Intelligence": "◉", "Friction Audit": "◴", "Growth Opportunities": "↗", "Executive Reports": "▣", Deliverables: "◇", Integrations: "⊕", Documents: "▤", Meetings: "◷", Messages: "◌", Invoices: "$", Settings: "⚙" }; return symbols[item]; }

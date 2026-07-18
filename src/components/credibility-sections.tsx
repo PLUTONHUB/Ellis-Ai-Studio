@@ -4,7 +4,7 @@ const reasons = [
   ["Diagnosis Before Implementation", "Every engagement begins with identifying the highest-impact business friction before recommending solutions."],
   ["Built for Service Businesses", "Designed for service businesses that want stronger lead generation, operations, customer experience, and growth systems."],
   ["Modern Conversion Systems", "Every website and automation is built to generate more leads, improve customer experience, and increase conversions."],
-  ["AI-Powered Operations", "Implement intelligent systems that reduce manual work, improve response times, and streamline business operations."],
+  ["Intelligent Operations", "Implement practical systems that reduce manual work, improve response times, and streamline business operations."],
   ["Transparent Recommendations", "No unnecessary upsells. Every recommendation is tied directly to measurable business value."],
 ] as const;
 
