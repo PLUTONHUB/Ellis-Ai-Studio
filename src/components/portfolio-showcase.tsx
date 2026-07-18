@@ -13,7 +13,7 @@ const portfolioCards: PortfolioCardData[] = [
     title: "Roofing Conversion Command",
     description:
       "Structured for emergency quote demand with rapid trust proof and one-click call CTAs.",
-    label: "Primary Niche · Demo Blueprint",
+    label: "Primary Niche · Demo System",
     icon: "home",
     tags: ["Acquisition", "Response", "Roofing"],
     imageSrc: "/portfolio/demo-roofing-conversion-thumbnail.png",
@@ -23,7 +23,7 @@ const portfolioCards: PortfolioCardData[] = [
     title: "HVAC Booking Velocity",
     description:
       "Built to reduce response lag with seasonality-driven messaging and direct booking pathways.",
-    label: "Primary Niche · Demo Blueprint",
+    label: "Primary Niche · Demo System",
     icon: "service",
     tags: ["Response", "Conversion", "HVAC"],
     imageSrc: "/portfolio/demo-hvac-booking-thumbnail.png",
@@ -33,7 +33,7 @@ const portfolioCards: PortfolioCardData[] = [
     title: "Boutique Gym Membership Flow",
     description:
       "High-intent pass claims and membership prompts engineered for rapid close follow-through.",
-    label: "Secondary Niche · Demo Blueprint",
+    label: "Secondary Niche · Demo System",
     icon: "gym",
     tags: ["Acquisition", "Conversion", "Fitness"],
     imageSrc: "/portfolio/demo-boutique-gym-membership-thumbnail.png",
@@ -43,7 +43,7 @@ const portfolioCards: PortfolioCardData[] = [
     title: "Dental Appointment Lift",
     description:
       "Trust-first patient journey with clear procedure pathways and friction-light scheduling.",
-    label: "Secondary Niche · Demo Blueprint",
+    label: "Secondary Niche · Demo System",
     icon: "dental",
     tags: ["Conversion", "Retention", "Dentists"],
     imageSrc: "/portfolio/demo-dental-clinic-booking-thumbnail.png",
@@ -53,7 +53,7 @@ const portfolioCards: PortfolioCardData[] = [
     title: "MedSpa Consultation Funnel",
     description:
       "Premium aesthetic consultation flow designed to increase booked consult rates and follow-up compliance.",
-    label: "Secondary Niche · Demo Blueprint",
+    label: "Secondary Niche · Demo System",
     icon: "spa",
     tags: ["Conversion", "Retention", "Med Spas"],
     imageSrc: "/portfolio/demo-medspa-consultation-thumbnail.png",
@@ -71,7 +71,7 @@ export function PortfolioShowcase() {
               Demo Portfolio
             </span>
             <h2 className="text-3xl font-light text-white md:text-4xl">
-              Friction-Removal Blueprints by Niche
+              Friction-Removal Systems by Niche
             </h2>
           </div>
           <p className="max-w-md text-sm text-zinc-400">

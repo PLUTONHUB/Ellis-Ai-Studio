@@ -87,16 +87,10 @@ function NotFoundPage() {
             Homepage
           </a>
           <a
-            href="/proposal"
+            href="/contact"
             className="rounded-xl border border-zinc-800 px-4 py-3 text-[11px] font-bold uppercase tracking-widest text-zinc-200 transition hover:bg-zinc-900"
           >
-            Proposal
-          </a>
-          <a
-            href="/onboarding"
-            className="rounded-xl border border-zinc-800 px-4 py-3 text-[11px] font-bold uppercase tracking-widest text-zinc-200 transition hover:bg-zinc-900"
-          >
-            Onboarding
+            Contact
           </a>
         </div>
       </div>

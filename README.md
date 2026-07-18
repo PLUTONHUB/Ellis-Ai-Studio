@@ -66,4 +66,26 @@ That command rebuilds the app and restarts the Bun server defined in `serve.ts`.
 
 ## Google Workspace integration
 
-Roofing Growth Blueprint bookings create a Drive client folder, Google Calendar event with a Google Meet link, and Gmail confirmation through a server-only Cloudflare Worker function. Follow [Google Cloud and Google Workspace setup](docs/GOOGLE_WORKSPACE.md) to configure domain-wide delegation and Worker Secrets. Do not add Google credentials to `.env.local`, `wrangler.jsonc`, or client-side `VITE_` variables.
+Ellis AI Studio Free Friction Audit bookings create a Google Calendar event with a Google Meet link and Gmail confirmation through a server-only Cloudflare Worker function. Follow [Google Cloud and Google Workspace setup](docs/GOOGLE_WORKSPACE.md) to configure domain-wide delegation and Worker Secrets. Do not add Google credentials to `.env.local`, `wrangler.jsonc`, or client-side `VITE_` variables.
+
+## Friction Audit Pipeline
+
+Completed Free Friction Audit bookings also generate a server-only, editable research draft for internal review. See [Friction Audit Pipeline](docs/FRICTION_AUDIT_PIPELINE.md) for the intake, persistence, and review workflow.
+
+## Stripe Checkout
+
+Client deposits use server-side Stripe Checkout. The browser never receives `STRIPE_SECRET_KEY` or the webhook signing secret.
+
+1. Apply `supabase/migrations/20260718000000_create_client_proposals.sql` in the Supabase SQL Editor for project `tuqzomstsvzymndvxbto`.
+2. Add these Cloudflare Worker secrets:
+
+   ```text
+   STRIPE_SECRET_KEY=sk_live_...
+   STRIPE_WEBHOOK_SECRET=whsec_...
+   PUBLIC_APP_URL=https://ellisaistudio.com
+   ```
+
+3. In Stripe Dashboard, create a webhook endpoint at `https://ellisaistudio.com/api/stripe/webhook`, subscribe it to `checkout.session.completed`, and save its signing secret as `STRIPE_WEBHOOK_SECRET`.
+4. Set `VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...` only in the secure build environment. Stripe Checkout redirects to Stripe-hosted payment, so this value is intentionally not bundled or used by the current frontend.
+
+The API routes are `POST /_serverFn/...` for Checkout creation and confirmation (TanStack Start server functions) and `POST /api/stripe/webhook` for Stripe. The webhook is idempotent: it marks the proposal paid, records the Checkout Session and Payment Intent, activates the workspace, and sends the welcome email only once.

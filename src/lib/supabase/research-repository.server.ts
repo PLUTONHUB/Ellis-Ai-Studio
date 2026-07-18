@@ -4,6 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { canonicalizeUrl, fingerprint, normalizeBusinessKey, normalizeText } from "~/lib/pluto/research/normalization";
 import type { Business, ExtractedFact, Finding, IntelligenceReport, JsonObject, JsonValue, MemoryInput, Recommendation, WebsiteSnapshot } from "~/types/research";
+import type { FrictionAuditDraft, FrictionAuditIntake } from "~/types/friction-audit";
 
 type Row = Record<string, unknown>;
 
@@ -53,6 +54,11 @@ export class SupabaseResearchRepository {
 
   async insertIntelligence(businessId: string, researchRunId: string, intelligence: IntelligenceReport): Promise<void> {
     const { error } = await this.client.from("research_intelligence").upsert({ business_id: businessId, research_run_id: researchRunId, report: intelligence, report_fingerprint: fingerprint(intelligence) }, { onConflict: "research_run_id,report_fingerprint", ignoreDuplicates: true });
+    if (error) throw error;
+  }
+
+  async upsertFrictionAudit(input: { businessId: string; researchRunId: string; intake: FrictionAuditIntake; draft: FrictionAuditDraft }): Promise<void> {
+    const { error } = await this.client.from("friction_audits").upsert({ business_id: input.businessId, research_run_id: input.researchRunId, intake: input.intake, draft: input.draft, markdown: input.draft.markdown, status: "draft" }, { onConflict: "research_run_id" });
     if (error) throw error;
   }
 

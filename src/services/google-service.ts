@@ -36,34 +36,67 @@ export class GoogleService {
   static fromEnvironment(): GoogleService {
     const credentials = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
     const delegatedUser = process.env.GOOGLE_WORKSPACE_IMPERSONATED_USER;
-    const calendarId = process.env.GOOGLE_CALENDAR_ID;
+    const calendarId = process.env.GOOGLE_CALENDAR_ID ?? process.env.GOOGLE_WORKSPACE_CALENDER_ID;
     const driveParentFolderId = process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID;
-    if (!credentials || !delegatedUser || !calendarId || !driveParentFolderId) {
-      throw new Error("Google Workspace is not configured. Set GOOGLE_SERVICE_ACCOUNT_JSON, GOOGLE_WORKSPACE_IMPERSONATED_USER, GOOGLE_CALENDAR_ID, and GOOGLE_DRIVE_PARENT_FOLDER_ID as Worker secrets.");
+    const missing = [
+      !credentials && "GOOGLE_SERVICE_ACCOUNT_JSON",
+      !delegatedUser && "GOOGLE_WORKSPACE_IMPERSONATED_USER",
+      !calendarId && "GOOGLE_CALENDAR_ID",
+      !driveParentFolderId && "GOOGLE_DRIVE_PARENT_FOLDER_ID",
+    ].filter((value): value is string => Boolean(value));
+    if (missing.length) {
+      throw new Error(`Google Workspace is not configured. Add these Worker secrets: ${missing.join(", ")}.`);
     }
 
     let serviceAccount: ServiceAccount;
     try {
-      serviceAccount = JSON.parse(credentials) as ServiceAccount;
+      serviceAccount = JSON.parse(credentials!) as ServiceAccount;
     } catch {
       throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON must contain valid service-account JSON.");
     }
     if (!serviceAccount.client_email || !serviceAccount.private_key) {
       throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON is missing client_email or private_key.");
     }
-    return new GoogleService({ serviceAccount, delegatedUser, calendarId, driveParentFolderId });
+    return new GoogleService({ serviceAccount, delegatedUser: delegatedUser!, calendarId: calendarId!, driveParentFolderId: driveParentFolderId! });
   }
 
-  async sendConfirmationEmail(input: { to: string; clientName: string; companyName: string; eventStart: string; meetLink: string; onboardingUrl: string }): Promise<void> {
-    const subject = "Your Ellis Roofing Growth Blueprint is booked";
+  async sendConfirmationEmail(input: { to: string; clientName: string; companyName: string; eventStart: string; meetLink: string }): Promise<void> {
+    const start = new Date(input.eventStart);
+    const date = new Intl.DateTimeFormat("en-US", { dateStyle: "full", timeZone: "America/Los_Angeles" }).format(start);
+    const time = new Intl.DateTimeFormat("en-US", { timeStyle: "short", timeZone: "America/Los_Angeles" }).format(start);
+    const subject = "Your Ellis AI Studio Friction Audit is Booked";
     const text = [
       `Hi ${input.clientName},`,
       "",
-      `Your Roofing Growth Blueprint for ${input.companyName} is confirmed for ${new Date(input.eventStart).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short", timeZone: "America/Los_Angeles" })}.`,
-      `Google Meet: ${input.meetLink}`,
-      `Begin onboarding: ${input.onboardingUrl}`,
+      "Your Ellis AI Studio Friction Audit has been confirmed.",
       "",
-      "We look forward to identifying the growth constraints worth solving first.",
+      `Date: ${date}`,
+      `Time: ${time} PT`,
+      `Google Meet: ${input.meetLink}`,
+      "",
+      "We'll review your business before the session and identify the highest-impact opportunities to improve customer acquisition, operational efficiency, and revenue growth.",
+      "",
+      "See you soon,",
+      "Ellis AI Studio",
+    ].join("\r\n");
+    await this.request(GMAIL_SCOPE, "https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
+      method: "POST",
+      body: JSON.stringify({ raw: base64Url(new TextEncoder().encode(`To: ${input.to}\r\nSubject: ${subject}\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n${text}`)) }),
+    });
+  }
+
+  async sendClientWelcomeEmail(input: { to: string; clientName: string; projectName: string }): Promise<void> {
+    const subject = "Welcome to Ellis AI Studio";
+    const text = [
+      `Hi ${input.clientName},`,
+      "",
+      "Thank you for choosing Ellis AI Studio. Your deposit has been received and your project has officially started.",
+      "",
+      `Project: ${input.projectName}`,
+      "",
+      "We’ll be in touch with the next milestone. Your client workspace is now available for project updates, deliverables, and meetings.",
+      "",
+      "Welcome aboard,",
       "Ellis AI Studio",
     ].join("\r\n");
     await this.request(GMAIL_SCOPE, "https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
@@ -91,7 +124,7 @@ export class GoogleService {
   async createClientFolder(companyName: string): Promise<{ folderId: string; webViewLink?: string }> {
     const folder = await this.request<{ id: string; webViewLink?: string }>(DRIVE_SCOPE, "https://www.googleapis.com/drive/v3/files?fields=id,webViewLink", {
       method: "POST",
-      body: JSON.stringify({ name: `${safeName(companyName)} - Ellis Client`, mimeType: "application/vnd.google-apps.folder", parents: [this.config.driveParentFolderId] }),
+      body: JSON.stringify({ name: `${safeName(companyName)} - Ellis AI Studio Client`, mimeType: "application/vnd.google-apps.folder", parents: [this.config.driveParentFolderId] }),
     });
     if (!folder.id) throw new Error("Google Drive did not return a client folder id.");
     return { folderId: folder.id, webViewLink: folder.webViewLink };

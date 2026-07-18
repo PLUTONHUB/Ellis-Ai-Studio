@@ -2,13 +2,14 @@ import { useMemo, useState } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { BrandLogo } from "~/components/brand-logo";
+import { ClientAccessGate } from "~/components/client-access-gate";
 import {
   sevenFrictionPillars,
   type FrictionStatus,
 } from "~/components/friction-framework";
 
 export const Route = createFileRoute("/onboarding")({
-  component: OnboardingPage,
+  component: ClientAccessGate,
 });
 
 type Phase = {
@@ -91,6 +92,7 @@ const templateDownloads = [
   },
 ] as const;
 
+void OnboardingPage;
 function OnboardingPage() {
   const [activePhase, setActivePhase] = useState(1);
   const [checklist, setChecklist] = useState<Record<ChecklistKey, boolean>>({

@@ -1,6 +1,6 @@
 # Google Cloud and Google Workspace setup
 
-The Roofing Growth Blueprint booking flow runs only in the TanStack Start server function. It uses a Google Cloud service account with Google Workspace domain-wide delegation to create a client folder, create a Calendar event with Google Meet, and send the confirmation email. No Google credential is included in the browser bundle.
+The Ellis AI Studio Friction Audit booking flow runs only in the TanStack Start server function. It uses a Google Cloud service account with Google Workspace domain-wide delegation to create a client folder, create a Calendar event with Google Meet, and send the confirmation email. No Google credential is included in the browser bundle.
 
 ## 1. Configure Google Cloud
 
@@ -32,7 +32,7 @@ npx wrangler secret put PUBLIC_APP_URL
 | --- | --- |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Complete JSON key for the delegated Google Cloud service account. |
 | `GOOGLE_WORKSPACE_IMPERSONATED_USER` | Workspace mailbox to impersonate, such as `operations@yourdomain.com`. |
-| `GOOGLE_CALENDAR_ID` | Calendar ID where Blueprint sessions are created; use `primary` for the impersonated user's primary calendar. |
+| `GOOGLE_CALENDAR_ID` | Calendar ID where Friction Audit sessions are created; use `primary` for the impersonated user's primary calendar. |
 | `GOOGLE_DRIVE_PARENT_FOLDER_ID` | ID of the Drive folder that will contain each client folder. |
 | `PUBLIC_APP_URL` | Canonical public app URL, for example `https://ellis.example.com`. |
 
@@ -40,7 +40,7 @@ Use the same secret names in the Cloudflare dashboard for preview and production
 
 ## Booking behavior
 
-`bookRoofingGrowthBlueprint` validates the submitted booking and then:
+`bookFrictionAudit` validates the submitted booking and then:
 
 1. creates a client folder in Drive;
 2. creates the Calendar event and requests a Google Meet conference;

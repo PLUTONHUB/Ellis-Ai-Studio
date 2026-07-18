@@ -81,11 +81,11 @@ const commandRules: CommandRule[] = [
     intent: "view_portfolio",
     priority: 50,
     summary:
-      "Analysis Workspace recognized that you want to see demo blueprints and examples of friction-removal systems.",
+      "Analysis Workspace recognized that you want to see demo systems and examples of friction-removal work.",
     actionLabel: "View Demo Portfolio",
     href: "/#portfolio",
-    phrasePatterns: [/show.*portfolio/, /view.*portfolio/, /see.*examples/, /demo.*blueprint/, /case stud/],
-    terms: ["portfolio", "examples", "demos", "demo", "blueprints", "work", "cases"],
+    phrasePatterns: [/show.*portfolio/, /view.*portfolio/, /see.*examples/, /demo.*system/, /case stud/],
+    terms: ["portfolio", "examples", "demos", "demo", "systems", "work", "cases"],
   },
 ];
 

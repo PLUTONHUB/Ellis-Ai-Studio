@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
 
 import { BrandLogo } from "~/components/brand-logo";
 import {
@@ -10,8 +10,10 @@ import {
 } from "~/components/friction-framework";
 
 export const Route = createFileRoute("/proposal")({
-  component: ProposalPage,
+  component: ProposalRoute,
 });
+
+function ProposalRoute() { return <Outlet />; }
 
 type OpportunityInputs = {
   monthlyLeads: number;
@@ -36,6 +38,7 @@ const initialInputs: OpportunityInputs = {
   speedToLeadMinutes: 18,
 };
 
+void ProposalPage;
 function ProposalPage() {
   const [inputs, setInputs] = useState<OpportunityInputs>(initialInputs);
   const [signatureName, setSignatureName] = useState("");
