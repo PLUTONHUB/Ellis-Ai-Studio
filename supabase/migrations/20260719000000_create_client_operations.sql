@@ -11,7 +11,10 @@ create table if not exists public.client_intakes (
   services_offered text[] not null default '{}',
   goals text[] not null default '{}',
   current_software text[] not null default '{}',
-  onboarding_status text not null default 'submitted' check (onboarding_status in ('submitted', 'preparing', 'ready', 'failed')),
+  preferred_integrations text[] not null default '{}',
+  onboarding_status text not null default 'submitted' check (onboarding_status in ('submitted', 'research_started', 'research_running', 'research_complete', 'research_failed')),
+  research_status text not null default 'not_started' check (research_status in ('not_started', 'started', 'running', 'complete', 'failed')),
+  research_error text,
   research_run_id uuid references public.research_runs(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
