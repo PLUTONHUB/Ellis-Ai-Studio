@@ -21,6 +21,10 @@ export const startCheckout = createServerFn({ method: "POST" }).validator(valida
 export const confirmCheckout = createServerFn({ method: "POST" }).validator((data: { sessionId: string }) => { if (!data?.sessionId || !/^cs_/.test(data.sessionId)) throw new Error("Invalid Stripe Checkout session."); return data; }).handler(async ({ data }) => completePayment(data.sessionId));
 
 export const getWorkspaceAccess = createServerFn({ method: "POST" }).validator(validateProposal).handler(async ({ data }) => {
+  // Development-only escape hatch for building and reviewing the workspace without
+  // creating a real proposal or Stripe payment. This is evaluated on the server so
+  // a browser cannot enable it, and production keeps the normal paid-status gate.
+  if (isDevelopmentWorkspaceBypassEnabled()) return { paid: true, clientName: proposal.clientName };
   const { ClientProposalRepository } = await import("~/lib/supabase/client-proposal-repository.server");
   const record = await ClientProposalRepository.fromEnvironment().getByKey(data.proposalId);
   return { paid: record.paymentStatus === "paid" && record.workspaceActivated, clientName: record.clientName };
@@ -46,3 +50,4 @@ export async function completePayment(sessionId: string): Promise<{ proposalId: 
 function validateProposal(data: ProposalSeed): ProposalSeed { if (!data?.proposalId || !/^[a-z0-9-]{3,100}$/i.test(data.proposalId)) throw new Error("Invalid proposal reference."); return data; }
 function seed(proposalId: string) { return { proposalKey: proposalId, clientName: proposal.clientName, clientEmail: proposal.clientEmail, businessName: proposal.businessName, projectName: proposal.projectName, projectTotal: proposal.projectTotal * 100, depositAmount: proposal.deposit * 100 }; }
 function requiredOrigin(): string { const value = process.env.PUBLIC_APP_URL; if (!value) throw new Error("PUBLIC_APP_URL must be configured as a Cloudflare Worker secret."); return value.replace(/\/$/, ""); }
+function isDevelopmentWorkspaceBypassEnabled(): boolean { return process.env.NODE_ENV === "development" || process.env.DEV_BYPASS_WORKSPACE === "true"; }
