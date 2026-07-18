@@ -47,8 +47,8 @@ Call the exported TanStack Start server function with a stable idempotency key. 
 ```ts
 await runBusinessResearch({
   data: {
-    name: "Apex Roofing",
-    websiteUrl: "https://apexroofing.example",
+    name: "Apex Service Group",
+    websiteUrl: "https://apexservice.example",
     idempotencyKey: crypto.randomUUID(),
   },
 });

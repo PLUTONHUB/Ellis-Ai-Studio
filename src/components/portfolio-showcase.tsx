@@ -10,14 +10,14 @@ type PortfolioCardData = {
 
 const portfolioCards: PortfolioCardData[] = [
   {
-    title: "Roofing Conversion Command",
+    title: "Service Business Conversion System",
     description:
-      "Structured for emergency quote demand with rapid trust proof and one-click call CTAs.",
+      "Structured for high-intent service demand with rapid trust proof and clear conversion paths.",
     label: "Primary Niche · Demo System",
     icon: "home",
-    tags: ["Acquisition", "Response", "Roofing"],
-    imageSrc: "/portfolio/demo-roofing-conversion-thumbnail.png",
-    imageAlt: "Demo roofing conversion page preview",
+    tags: ["Acquisition", "Response", "Conversion"],
+    imageSrc: "/portfolio/demo-hvac-booking-thumbnail.png",
+    imageAlt: "Service business conversion page preview",
   },
   {
     title: "HVAC Booking Velocity",

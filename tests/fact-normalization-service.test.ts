@@ -7,7 +7,7 @@ test("normalizes and deduplicates email facts while preserving provenance", () =
   const service = new FactNormalizationService();
   const input = {
     factType: "email" as const,
-    subject: "  Apex Roofing  ",
+    subject: "  Apex Service Group  ",
     predicate: "Has Email",
     value: " SALES@APEX.EXAMPLE ",
     sourceUrl: "https://APEX.example/contact/?utm_source=test#form",
