@@ -16,17 +16,17 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#ffffff" },
       { name: "application-name", content: "Ellis AI Studio" },
       { name: "robots", content: "index, follow" },
-      { title: "Ellis AI Studio | Intelligent Growth Systems" },
+      { title: "Ellis AI Studio | Systems Built for Service Businesses" },
       {
         name: "description",
         content:
-          "Ellis AI Studio helps service businesses identify revenue leaks and implement intelligent growth systems.",
+          "Ellis AI Studio builds practical websites, automations, and AI tools for service businesses.",
       },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "en_US" },
       { property: "og:site_name", content: "Ellis AI Studio" },
-      { property: "og:title", content: "Ellis AI Studio | Intelligent Growth Systems" },
-      { property: "og:description", content: "Find and remove the friction holding your service business back." },
+      { property: "og:title", content: "Ellis AI Studio | Systems Built for Service Businesses" },
+      { property: "og:description", content: "Practical websites, automations, and AI tools for service businesses." },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
