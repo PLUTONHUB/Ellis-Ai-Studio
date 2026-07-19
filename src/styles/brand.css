@@ -1,0 +1,31 @@
+.brand-link {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.brand-logo {
+  display: block;
+  object-fit: contain;
+}
+
+.brand-logo-nav {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}
+
+.brand-logo-footer {
+  width: min(180px, 48vw);
+  height: auto;
+}
+
+.site-footer .wrap {
+  align-items: center;
+}
+
+.site-footer .footer-brand {
+  align-items: center;
+  gap: 12px;
+  margin-top: 0;
+}

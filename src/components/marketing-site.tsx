@@ -1,3 +1,6 @@
+import { BrandLogo } from "./brand-logo";
+import "~/styles/brand.css";
+
 const bookingUrl = "https://calendar.app.google/YytWSVvdNyPhCBK58";
 
 const services = [["Website Development", "Professional websites designed to generate more calls, leads, and bookings."], ["Business Automation", "Automate repetitive tasks so you can spend more time running your business."], ["AI Receptionist", "Answer calls and customer questions even when you’re unavailable."], ["CRM Setup", "Organize customers, jobs, and estimates in one place."], ["Online Booking", "Allow customers to request quotes and schedule appointments online."], ["Custom Solutions", "Need something unique? We’ll build a solution that fits your business."]];
@@ -6,7 +9,7 @@ const steps = [["Discovery", "We learn about your business and understand what y
 
 export function MarketingPage() {
   return <div className="site-shell">
-    <header className="site-nav"><a className="wordmark" href="#home">ELLIS <span>AI STUDIO</span></a><nav aria-label="Primary navigation"><a href="#home">Home</a><a href="#services">Services</a><a href="#industries">Industries</a><a href="#about">About</a><a href={bookingUrl} target="_blank" rel="noreferrer">Contact</a></nav><a className="button nav-cta" href={bookingUrl} target="_blank" rel="noreferrer">Book a Free Consultation</a></header>
+    <header className="site-nav"><a className="brand-link" href="#home"><BrandLogo variant="icon" className="brand-logo brand-logo-nav" /></a><nav aria-label="Primary navigation"><a href="#home">Home</a><a href="#services">Services</a><a href="#industries">Industries</a><a href="#about">About</a><a href={bookingUrl} target="_blank" rel="noreferrer">Contact</a></nav><a className="button nav-cta" href={bookingUrl} target="_blank" rel="noreferrer">Book a Free Consultation</a></header>
     <main>
       <section className="hero" id="home"><div className="hero-orbit" aria-hidden="true"/><div className="wrap hero-content"><p className="eyebrow">Websites, automation &amp; AI tools</p><h1>Technology Built for Service Businesses</h1><p className="lede">We help service businesses build better websites, automate repetitive work, improve customer communication, and simplify everyday operations.</p><div className="actions"><a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Book a Free Consultation <span aria-hidden="true">→</span></a><a className="button button-secondary" href="#services">View Services</a></div></div></section>
       <section className="section" id="services"><div className="wrap"><div className="section-heading"><p className="eyebrow">What we build</p><h2>Practical technology for the way your business works.</h2></div><div className="service-grid">{services.map(([title, description], index) => <article className="service-card" key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{description}</p></article>)}</div></div></section>
@@ -17,7 +20,7 @@ export function MarketingPage() {
       <section className="callout"><div className="wrap"><div><p className="eyebrow">Ready to get started?</p><h2>Let’s build something that makes your business easier to run.</h2></div><a className="button button-light" href={bookingUrl} target="_blank" rel="noreferrer">Book a Free Consultation <span aria-hidden="true">→</span></a></div></section>
       <section className="section" id="contact"><div className="wrap contact-grid"><div><p className="eyebrow">Contact</p><h2>Schedule a Free Consultation</h2><p className="lede">Tell us what you would like to improve. We’ll be in touch to talk through the right next step.</p></div><InquiryForm /></div></section>
     </main>
-    <footer className="site-footer"><div className="wrap"><span>© {new Date().getFullYear()} Ellis AI Studio</span><div><a href="#services">Services</a><a href="#industries">Industries</a><a href="#about">About</a><a href={bookingUrl} target="_blank" rel="noreferrer">Contact</a></div></div></footer>
+    <footer className="site-footer"><div className="wrap"><div className="footer-brand"><a href="#home"><BrandLogo className="brand-logo brand-logo-footer" /></a><span>© {new Date().getFullYear()} Ellis AI Studio</span></div><div><a href="#services">Services</a><a href="#industries">Industries</a><a href="#about">About</a><a href={bookingUrl} target="_blank" rel="noreferrer">Contact</a></div></div></footer>
   </div>;
 }
 

@@ -9,8 +9,8 @@ export function BrandLogo({
 }: BrandLogoProps) {
   const src =
     variant === "icon"
-      ? "/logo/ellis-icon-dark.svg"
-      : "/logo/ellis-lockup-horizontal-dark.svg";
+      ? "/logo/ellis-logo-icon.png"
+      : "/logo/ellis-logo-lockup.webp";
 
   const alt = "Ellis AI Studio";
 

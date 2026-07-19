@@ -1,7 +1,0 @@
-<svg width="980" height="220" viewBox="0 0 490 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="12" y="23" width="64" height="64" rx="18" fill="#2F6BFF"/>
-  <path d="M33 42H57M33 54H53M33 66H57M33 42V66" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M55 54H63M60 51L63 54L60 57" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="96" y="57" fill="#F5F7FF" font-family="Inter, Arial, sans-serif" font-size="29" font-weight="800" letter-spacing="1.1">ELLIS AI</text>
-  <text x="96" y="83" fill="#B2BDD3" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="3.3">STUDIO</text>
-</svg>
