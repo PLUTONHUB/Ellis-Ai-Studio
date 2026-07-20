@@ -1,5 +1,7 @@
 import { BrandLogo } from "./brand-logo";
+import { StudioPricing, StudioReviews } from "./studio-sections";
 import "~/styles/brand.css";
+import "~/styles/studio-sections.css";
 
 const bookingUrl = "https://calendar.app.google/YytWSVvdNyPhCBK58";
 
@@ -13,12 +15,15 @@ export function MarketingPage() {
     <main>
       <section className="hero" id="home"><div className="hero-orbit" aria-hidden="true"/><div className="wrap hero-content"><p className="eyebrow">Websites, automation &amp; AI tools</p><h1>Technology Built for Service Businesses</h1><p className="lede">We help service businesses build better websites, automate repetitive work, improve customer communication, and simplify everyday operations.</p><div className="actions"><a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Book a Free Consultation <span aria-hidden="true">→</span></a><a className="button button-secondary" href="#services">View Services</a></div></div></section>
       <section className="section" id="services"><div className="wrap"><div className="section-heading"><p className="eyebrow">What we build</p><h2>Practical technology for the way your business works.</h2></div><div className="service-grid">{services.map(([title, description], index) => <article className="service-card" key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{description}</p></article>)}</div></div></section>
+      <section className="portfolio-intro"><div className="wrap portfolio-intro-grid"><div><p className="eyebrow">See our work</p><h2>Explore interactive demo websites built to showcase the level of quality, creativity, and performance you can expect from Ellis AI Studio.</h2></div><a className="button" href="/portfolio">Explore Interactive Demos <span aria-hidden="true">→</span></a></div></section>
+      <StudioPricing />
       <section className="section section-tint" id="industries"><div className="wrap"><div className="section-heading"><p className="eyebrow">Industries</p><h2>Who We Help</h2><p>We build tools that fit the day-to-day realities of service businesses.</p></div><div className="industry-grid">{industries.map((industry) => <article key={industry}>{industry}</article>)}<article className="industry-more">…and many other service businesses.</article></div></div></section>
       <section className="section" id="how-it-works"><div className="wrap"><div className="section-heading"><p className="eyebrow">How it works</p><h2>A clear process from first conversation to long-term support.</h2></div><div className="process-grid">{steps.map(([title, description], index) => <article className="process-step" key={title}><span>0{index + 1}</span><h3>{title}</h3><p>{description}</p></article>)}</div></div></section>
       <section className="section section-tint" id="about"><div className="wrap about"><p className="eyebrow">About Ellis AI Studio</p><h2>Technology should make running your business easier.</h2><p>Ellis AI Studio builds practical technology for service businesses. Whether you need a website, automation, AI assistant, CRM, or custom workflow, we build solutions designed around the way your business operates.</p></div></section>
       <section className="fit-note"><div className="wrap"><p className="eyebrow">Custom-fit solutions</p><h2>Every business is different.</h2><p>We’ll recommend the right solution after learning about your goals.</p></div></section>
       <section className="callout"><div className="wrap"><div><p className="eyebrow">Ready to get started?</p><h2>Let’s build something that makes your business easier to run.</h2></div><a className="button button-light" href={bookingUrl} target="_blank" rel="noreferrer">Book a Free Consultation <span aria-hidden="true">→</span></a></div></section>
-      <section className="section" id="contact"><div className="wrap contact-grid"><div><p className="eyebrow">Contact</p><h2>Schedule a Free Consultation</h2><p className="lede">Tell us what you would like to improve. We’ll be in touch to talk through the right next step.</p></div><InquiryForm /></div></section>
+    <section className="section" id="contact"><div className="wrap contact-grid"><div><p className="eyebrow">Contact</p><h2>Schedule a Free Consultation</h2><p className="lede">Tell us what you would like to improve. We’ll be in touch to talk through the right next step.</p></div><InquiryForm /></div></section>
+    <StudioReviews />
     </main>
     <footer className="site-footer"><div className="wrap"><div className="footer-brand"><a href="#home"><BrandLogo className="brand-logo brand-logo-footer" /></a><span>© {new Date().getFullYear()} Ellis AI Studio</span></div><div><a href="#services">Services</a><a href="#industries">Industries</a><a href="#about">About</a><a href={bookingUrl} target="_blank" rel="noreferrer">Contact</a></div></div></footer>
   </div>;

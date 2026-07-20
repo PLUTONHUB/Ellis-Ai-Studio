@@ -1,0 +1,75 @@
+.project-preview > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.42;
+  mix-blend-mode: multiply;
+  filter: saturate(0.78) contrast(1.04);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-card:hover .project-preview > img {
+  transform: scale(1.06);
+}
+
+.demo-hero-art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+  opacity: 0.46;
+  filter: saturate(0.78) contrast(1.1);
+}
+
+.demo-gallery figure img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.52;
+  mix-blend-mode: multiply;
+  filter: saturate(0.75) contrast(1.05);
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.demo-gallery figure:hover img {
+  transform: scale(1.07);
+}
+
+.demo-final-cta > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.demo-final-cta > div a {
+  margin-top: 0;
+}
+
+.demo-final-cta > div .demo-proposal {
+  border: 1px solid rgba(255,255,255,.55);
+  background: transparent;
+  color: #fff;
+}
+
+@media (max-width: 620px) {
+  .demo-final-cta > div {
+    display: grid;
+  }
+
+  .demo-final-cta > div a {
+    justify-content: center;
+  }
+}
+
+/* Industry-native conversion modules: intentionally different information architecture per demo. */
+.industry-module,.industry-cards,.service-command,.emergency-rail,.electric-dashboard,.clean-plan,.paint-swatch,.build-timeline,.garage-config,.tree-risk,.patient-path,.law-intake,.law-practices,.ledger-grid,.fitness-schedule,.auto-inspection,.restaurant-reserve,.menu-moment,.listing-search{padding:clamp(72px,10vw,145px) 9vw}.industry-module h2,.service-command h2,.electric-dashboard h2,.clean-plan h2,.paint-swatch h2,.garage-config h2,.tree-risk h2,.patient-path h2,.law-intake h2,.fitness-schedule h2,.auto-inspection h2,.restaurant-reserve h2,.listing-search h2{max-width:820px;margin:0;font-size:clamp(42px,6vw,86px);line-height:.94;letter-spacing:-.07em}.industry-cards>div{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:42px}.industry-cards article{min-height:270px;padding:32px;background:#f7f7f3}.industry-cards span{font-size:11px;font-weight:800}.industry-cards h3{margin:65px 0 10px;font-size:27px;letter-spacing:-.05em}.industry-cards p{color:#52615b;line-height:1.6;font-size:14px}.industry-cards a{font-size:12px;font-weight:800}.service-command{display:grid;grid-template-columns:1fr 260px;gap:60px;background:#174857;color:#eff8f6}.service-command aside{display:grid;align-content:end;border-left:1px solid #86a5a9;padding-left:25px}.service-command aside strong{font-size:62px;letter-spacing:-.08em}.service-command aside span{font-size:12px;text-transform:uppercase;letter-spacing:.1em}.command-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:35px}.command-actions a,.emergency-rail a,.electric-dashboard a,.clean-plan a,.garage-config a,.tree-risk a,.patient-path>a,.law-intake a,.fitness-schedule a,.auto-inspection>a,.restaurant-reserve a,.listing-search a,.paint-quote a{display:inline-flex;width:max-content;padding:13px 16px;background:#fff;color:#173c30;font-size:12px;font-weight:800}.membership-band{background:#e4efe9}.emergency-rail{display:flex;align-items:center;justify-content:space-between;gap:30px;background:#10455e;color:#fff}.emergency-rail p{max-width:260px;margin:0;font-size:29px;line-height:1}.emergency-rail small{font-size:10px;text-transform:uppercase;letter-spacing:.1em}.plumbing-routes{background:#fff8f4}.service-proof{display:flex;align-items:center;gap:40px;padding:80px 12vw;background:#e9c1a7}.service-proof span{font-size:15px;font-weight:800}.service-proof p{max-width:660px;margin:0;font-family:Georgia,serif;font-size:clamp(33px,5vw,62px);line-height:.98}.electric-dashboard{display:grid;grid-template-columns:1.2fr .8fr;gap:50px;background:#f6ce30;color:#151515}.electric-dashboard ul{display:grid;align-content:center;gap:14px;margin:0;padding:0;list-style:none;font-weight:800;font-size:20px}.electric-dashboard li{border-bottom:1px solid;padding-bottom:12px}.electric-statement{background:#111;color:#f5cd33}.clean-plan{display:grid;grid-template-columns:1fr 1fr;gap:60px;background:#e7f4ff}.clean-plan>div:last-child{display:grid;gap:10px;align-content:center}.clean-plan button{border:1px solid #8bbbdc;background:transparent;padding:14px;text-align:left;font:inherit;cursor:pointer}.clean-plan a{background:#1e71ae;color:#fff}.clean-standard{background:#fff}.paint-swatch{background:#f7ded3}.paint-swatch>div{display:flex;gap:9px;flex-wrap:wrap;margin-top:45px}.paint-swatch span{padding:16px 22px;border-radius:50%;background:#d64e69;color:#fff;font-size:12px}.paint-swatch span:nth-child(2){background:#703e92}.paint-swatch span:nth-child(3){background:#274e74}.paint-swatch span:nth-child(4){background:#d58d37}.paint-cards{background:#fff7ef}.paint-quote{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:70px 10vw;background:#2b2241;color:#fff}.paint-quote p{margin:0;font-family:Georgia,serif;font-size:38px}.build-timeline{background:#25231f;color:#eee9df}.build-timeline ol{display:grid;grid-template-columns:repeat(3,1fr);gap:25px;margin:45px 0 0;padding:0;list-style:none;font-family:Georgia,serif;font-size:32px}.build-timeline li{border-top:1px solid #a49a89;padding-top:16px}.build-timeline span{display:block;margin-bottom:60px;font:800 11px Inter,Arial,sans-serif}.build-cards{background:#e7dfd2}.garage-config{display:grid;grid-template-columns:1fr 1fr;gap:50px;background:#b6d0e8}.garage-config>div:last-child{display:grid;align-content:center;gap:12px;font-size:13px;font-weight:800}.garage-service{background:#1c2731;color:#d4e7fb}.tree-risk{display:grid;grid-template-columns:1fr .7fr;gap:80px;background:#d5e5ca}.tree-risk ul{display:grid;gap:15px;align-content:center;margin:0;padding:0;list-style:none;font-family:Georgia,serif;font-size:28px}.tree-risk li{border-bottom:1px solid #597451;padding-bottom:12px}.tree-statement{background:#284634;color:#e4f0db}.patient-path{background:#eef8f8;text-align:center}.patient-path h2{margin:0 auto}.patient-path div{display:flex;justify-content:center;gap:22px;margin:42px 0}.patient-path span{border:1px solid #83a5ab;border-radius:99px;padding:11px 15px;font-size:12px}.dental-cards{background:#fff}.law-intake{background:#182a43;color:#fff}.law-intake span{font-size:10px;letter-spacing:.14em}.law-intake h2{margin:26px 0 38px;font-family:Georgia,serif;font-weight:400}.law-practices{display:grid;grid-template-columns:1fr repeat(3,1fr);gap:20px;background:#e5e2da}.law-practices p{margin:0;font:400 28px Georgia,serif}.law-practices a{font-size:14px;color:#182a43}.ledger-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#d4ded6}.ledger-grid div{min-height:260px;padding:30px;background:#eef1eb;display:grid;align-content:space-between}.ledger-grid strong{font-size:clamp(42px,5vw,74px);letter-spacing:-.08em}.ledger-statement{background:#273d35;color:#d3e8dd}.fitness-schedule{background:#181818;color:#efff4e}.fitness-schedule>div{display:grid;gap:1px;margin-top:42px}.fitness-schedule a{display:flex;width:auto;justify-content:space-between;background:#292929;color:#fff;padding:20px;font-size:17px}.fitness-schedule a span{color:#efff4e;font-size:12px}.fitness-statement{background:#efff4e;color:#151515}.auto-inspection{background:#e94d38;color:#251314}.auto-inspection>div{display:flex;gap:35px;margin:45px 0;font-weight:800}.auto-cards{background:#f7e1db}.restaurant-reserve{min-height:540px;display:grid;align-content:center;justify-items:center;text-align:center;background:#32261d;color:#f2dfc5}.restaurant-reserve p{font-size:11px;letter-spacing:.15em}.restaurant-reserve h2{font-family:Georgia,serif;font-weight:400}.restaurant-reserve>div{display:flex;gap:10px;margin-top:35px}.restaurant-reserve a:last-child{background:transparent;border:1px solid #f2dfc5;color:#f2dfc5}.menu-moment{background:#ead9c1;display:grid;grid-template-columns:.5fr 1fr;gap:60px}.menu-moment span{font-size:12px;font-weight:800;text-transform:uppercase}.menu-moment p{margin:0;font:clamp(30px,4vw,56px)/.98 Georgia,serif}.listing-search{background:#d8e0d2}.listing-search>div{display:flex;gap:10px;flex-wrap:wrap;margin-top:40px}.listing-search button{border:1px solid #758a77;background:transparent;padding:12px 14px;font:inherit;font-size:12px}.realty-statement{background:#eff1ea}@media(max-width:760px){.industry-cards>div,.service-command,.electric-dashboard,.clean-plan,.garage-config,.tree-risk,.law-practices,.ledger-grid,.build-timeline{grid-template-columns:1fr}.service-command aside{border-left:0;border-top:1px solid #86a5a9;padding:25px 0 0}.emergency-rail,.paint-quote,.menu-moment{display:grid}.patient-path div,.auto-inspection>div,.restaurant-reserve>div{display:grid}.law-practices{gap:24px}.industry-module,.industry-cards,.service-command,.emergency-rail,.electric-dashboard,.clean-plan,.paint-swatch,.build-timeline,.garage-config,.tree-risk,.patient-path,.law-intake,.law-practices,.ledger-grid,.fitness-schedule,.auto-inspection,.restaurant-reserve,.menu-moment,.listing-search{padding:72px 8vw}}
+
+/* Individual visual systems keep each industry foundation visually distinct. */
+.demo-copperline-plumbing .demo-nav{background:#123a52;color:#ecf5f7}.demo-copperline-plumbing .demo-hero{background:#d9f0f5}.demo-copperline-plumbing .demo-hero-art{border-radius:50% 50% 0 0;transform:rotate(-4deg)}.demo-copperline-plumbing .demo-hero h1{font-family:Georgia,serif}.demo-current-electric .demo-nav{background:#151515;color:#f5cd33}.demo-current-electric .demo-hero{background:#f5cd33}.demo-current-electric .demo-hero-art{clip-path:polygon(12% 0,100% 0,88% 100%,0 100%)}.demo-current-electric .demo-hero h1{letter-spacing:-.1em}.demo-brightwell-clean .demo-nav{background:#fff;color:#1f60a5;border-bottom:1px solid #cfe2f5}.demo-brightwell-clean .demo-hero{background:#eaf5ff}.demo-brightwell-clean .demo-hero-art{border-radius:99px}.demo-brightwell-clean .demo-hero h1{font-weight:400;letter-spacing:-.04em}.demo-morrow-paint .demo-nav{background:#2b2241;color:#ffe6ca}.demo-morrow-paint .demo-hero{background:#f6ded4}.demo-morrow-paint .demo-hero-art{clip-path:polygon(0 12%,100% 0,92% 88%,6% 100%)}.demo-morrow-paint .demo-hero h1{font-family:Georgia,serif;font-weight:400}.demo-stone-and-beam .demo-nav{background:#26231e;color:#efeadc}.demo-stone-and-beam .demo-hero{background:#ded8cc}.demo-stone-and-beam .demo-hero-art{border-radius:0}.demo-stone-and-beam .demo-hero h1{max-width:740px;font-size:clamp(53px,7vw,108px)}.demo-apex-garage .demo-nav{background:#1a1f25;color:#bbd6ff}.demo-apex-garage .demo-hero{background:#b9d2e7}.demo-apex-garage .demo-hero-art{clip-path:polygon(0 0,100% 0,100% 78%,72% 100%,0 100%)}.demo-apex-garage .demo-hero h1{text-transform:uppercase;letter-spacing:-.08em}.demo-canopy-tree .demo-nav{background:#244331;color:#e5f0d9}.demo-canopy-tree .demo-hero{background:#d5e3c8}.demo-canopy-tree .demo-hero-art{border-radius:50% 0 50% 50%}.demo-canopy-tree .demo-hero h1{font-family:Georgia,serif;font-weight:400}.demo-ivory-dental .demo-nav{background:#fbfbf9;color:#315c72;border-bottom:1px solid #d7e3e6}.demo-ivory-dental .demo-hero{background:#e8f2f2}.demo-ivory-dental .demo-hero-art{border-radius:44%}.demo-ivory-dental .demo-hero h1{font-weight:400;letter-spacing:-.045em}.demo-harbor-law .demo-nav{background:#17263c;color:#d2b57e}.demo-harbor-law .demo-hero{background:#e5e1d7}.demo-harbor-law .demo-hero-art{clip-path:inset(0)}.demo-harbor-law .demo-hero h1{font-family:Georgia,serif;font-weight:400}.demo-ledgerline .demo-nav{background:#f2f0ea;color:#263c34;border-bottom:1px solid #c3c8be}.demo-ledgerline .demo-hero{background:#e8e9df}.demo-ledgerline .demo-hero-art{transform:rotate(3deg);border-radius:3px}.demo-ledgerline .demo-hero h1{font-size:clamp(50px,6vw,92px)}.demo-arc-fitness .demo-nav{background:#111;color:#edff4c}.demo-arc-fitness .demo-hero{background:#282828;color:#fff}.demo-arc-fitness .demo-hero-art{clip-path:polygon(15% 0,100% 0,85% 100%,0 100%)}.demo-arc-fitness .demo-hero h1{text-transform:uppercase;font-size:clamp(56px,8vw,122px);letter-spacing:-.09em}.demo-redline-auto .demo-nav{background:#271314;color:#ffe3d8}.demo-redline-auto .demo-hero{background:#ed4c37}.demo-redline-auto .demo-hero-art{border-radius:100% 0 100% 0}.demo-redline-auto .demo-hero h1{font-style:italic;letter-spacing:-.09em}.demo-sable-table .demo-nav{background:#30271f;color:#f5dfbe}.demo-sable-table .demo-hero{background:#ede0ca}.demo-sable-table .demo-hero-art{clip-path:ellipse(46% 50% at 50% 50%)}.demo-sable-table .demo-hero h1{font-family:Georgia,serif;font-weight:400}.demo-provenance-realty .demo-nav{background:#eef0ea;color:#26382d;border-bottom:1px solid #bfc8b9}.demo-provenance-realty .demo-hero{background:#d4ddcf}.demo-provenance-realty .demo-hero-art{border-radius:0 0 0 50%}.demo-provenance-realty .demo-hero h1{font-family:Georgia,serif;font-weight:400;font-size:clamp(54px,7vw,106px)}
