@@ -20,10 +20,6 @@ export const industries = ["All", "HVAC", "Roofing", "Plumbing", "Electrical", "
 /** The only concepts that currently have a complete interactive experience. */
 export const interactiveDemoSlugs = [
   "northstar-air",
-  "ridgeway-roofing",
-  "copperline-plumbing",
-  "current-electric",
-  "field-and-form",
 ] as const;
 
 export const isInteractiveDemo = (slug: string) =>

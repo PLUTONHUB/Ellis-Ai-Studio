@@ -10,6 +10,7 @@ import northStarEmergency from "~/assets/northstar/services/emergency.webp";
 import { consultationUrl, industries, isInteractiveDemo, portfolioProjects, type PortfolioProject } from "~/data/portfolio";
 import "~/styles/portfolio.css";
 import "~/styles/portfolio-media.css";
+import "~/styles/portfolio-featured.css";
 import "~/styles/portfolio-coming-soon.css";
 import "~/styles/northstar-air.css";
 import "~/styles/northstar-motion.css";
@@ -44,9 +45,9 @@ export function PortfolioPage() {
 
 function ProjectCard({ project }: { project: PortfolioProject }) {
   const isLive = isInteractiveDemo(project.slug);
-  return <article className={`project-card project-card-${project.slug}`} style={{ "--project-accent": project.accent, "--project-soft": project.accentSoft } as React.CSSProperties}>
-    <div className="project-preview"><img src={project.photo} alt={`Fictional ${project.industry.toLowerCase()} project for ${project.company}`} loading="lazy" /><div className="preview-browser"><span /><span /><span /></div><div className="preview-identity">{project.company}</div><div className="preview-scene"><i /><i /><i /></div><p>{project.tagline}</p></div>
-    <div className="project-card-body"><div className="project-card-meta"><span>{project.industry}</span><span>{project.style}</span></div><h3>{project.company}</h3><p>{project.slug === "northstar-air" ? "Deployment Test — a calm, conversion-focused HVAC experience designed around urgent service, seasonal plans, and clear scheduling." : project.description}</p><div className="project-feature-list">{project.features.map((feature) => <span key={feature}>{feature}</span>)}</div><div className="project-card-bottom"><small>Estimated build time <strong>{project.buildTime}</strong></small><a href={`/portfolio?demo=${project.slug}`} aria-label={`${isLive ? "View interactive demo" : "View coming soon"} for ${project.company}`}>{isLive ? <>View Interactive Demo <span>→</span></> : <>Coming Soon <span>→</span></>}</a></div></div>
+  return <article className={`project-card project-card-${project.slug} ${isLive ? "project-card-featured" : "project-card-coming"}`} style={{ "--project-accent": project.accent, "--project-soft": project.accentSoft } as React.CSSProperties}>
+    {isLive ? <div className="project-preview"><img src={project.photo} alt={`Fictional ${project.industry.toLowerCase()} project for ${project.company}`} loading="lazy" /><div className="project-featured-badges"><span>Featured Portfolio Project</span><span>Newest Project</span></div><div className="preview-browser"><span /><span /><span /></div><div className="preview-identity">{project.company}</div><div className="preview-scene"><i /><i /><i /></div><p>{project.tagline}</p></div> : <div className="project-coming-preview"><img src={project.photo} alt="" loading="lazy" /><div><span>Coming Soon</span><p>{project.industry}</p><strong>Currently in development</strong></div></div>}
+    <div className="project-card-body"><div className="project-card-meta"><span>{project.industry}</span><span>{isLive ? "Interactive demo" : "In development"}</span></div><h3>{project.company}</h3><p>{isLive ? "A calm, conversion-focused HVAC experience designed around urgent service, seasonal plans, and clear scheduling." : `Premium conversion-focused website experience designed specifically for modern ${project.industry.toLowerCase()} companies.`}</p>{isLive ? <div className="project-feature-list">{project.features.map((feature) => <span key={feature}>{feature}</span>)}</div> : <p className="project-coming-status">Currently in development.</p>}<div className="project-card-bottom"><small>{isLive ? <>Featured experience <strong>Explore the full demo</strong></> : <>Ellis AI Studio <strong>Concept library</strong></>}</small><a href={`/portfolio?demo=${project.slug}`} aria-label={`${isLive ? "View interactive demo" : "View coming soon"} for ${project.company}`}>{isLive ? <>View Interactive Demo <span>→</span></> : <>View Coming Soon <span>→</span></>}</a></div></div>
   </article>;
 }
 
