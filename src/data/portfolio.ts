@@ -17,6 +17,18 @@ export type PortfolioProject = {
 
 export const industries = ["All", "HVAC", "Roofing", "Plumbing", "Electrical", "Landscaping", "Cleaning Services", "Painting", "General Contractors", "Garage Doors", "Tree Service", "Dentists", "Med Spas", "Law Firms", "Accountants", "Fitness", "Auto Repair", "Restaurants", "Real Estate"];
 
+/** The only concepts that currently have a complete interactive experience. */
+export const interactiveDemoSlugs = [
+  "northstar-air",
+  "ridgeway-roofing",
+  "copperline-plumbing",
+  "current-electric",
+  "field-and-form",
+] as const;
+
+export const isInteractiveDemo = (slug: string) =>
+  interactiveDemoSlugs.includes(slug as (typeof interactiveDemoSlugs)[number]);
+
 export const portfolioProjects: PortfolioProject[] = [
   { slug: "northstar-air", company: "Northstar Air", industry: "HVAC", style: "Modern minimal", buildTime: "2–3 weeks", description: "A calm, conversion-focused HVAC experience designed around urgent service, seasonal plans, and clear scheduling.", features: ["Online booking", "Service-plan CTA", "Review system"], accent: "#194a58", accentSoft: "#d9eff0", tagline: "Comfort, tuned to your home.", location: "Austin, Texas", quote: "They made getting help feel effortless.", stats: [["24/7", "response"], ["4.9", "customer rating"], ["12", "service zones"]], photo: "https://images.unsplash.com/photo-1631545806609-4f3dd3d2e8a4?auto=format&fit=crop&w=1400&q=85" },
   { slug: "ridgeway-roofing", company: "Ridgeway Roofing", industry: "Roofing", style: "Bold editorial", buildTime: "3–4 weeks", description: "An expressive roofing brand with an architectural project gallery, high-contrast type, and a direct inspection path.", features: ["Project gallery", "Inspection form", "Before / after"], accent: "#df5a2f", accentSoft: "#fde4d8", tagline: "A better roof starts with a closer look.", location: "Denver, Colorado", quote: "Straight answers. Exceptional work.", stats: [["30 yrs", "craftsmanship"], ["1,200+", "roofs protected"], ["5★", "local reviews"]], photo: "https://images.unsplash.com/photo-1632759145351-1d592919f522?auto=format&fit=crop&w=1400&q=85" },

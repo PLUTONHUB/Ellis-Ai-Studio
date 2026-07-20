@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { BrandLogo } from "./brand-logo";
-import { consultationUrl, industries, portfolioProjects, type PortfolioProject } from "~/data/portfolio";
+import { consultationUrl, industries, isInteractiveDemo, portfolioProjects, type PortfolioProject } from "~/data/portfolio";
 import "~/styles/portfolio.css";
 import "~/styles/portfolio-media.css";
+import "~/styles/portfolio-coming-soon.css";
 
 export function PortfolioPage() {
   const [search, setSearch] = useState("");
@@ -14,7 +15,7 @@ export function PortfolioPage() {
   const selectedProject = portfolioProjects.find((project) => project.slug === activeDemo);
   const projects = useMemo(() => portfolioProjects.filter((project) => (industry === "All" || project.industry === industry) && `${project.company} ${project.industry} ${project.style}`.toLowerCase().includes(search.toLowerCase())), [industry, search]);
 
-  if (selectedProject) return <DemoWebsite project={selectedProject} />;
+  if (selectedProject) return isInteractiveDemo(selectedProject.slug) ? <DemoWebsite project={selectedProject} /> : <ComingSoonDemo project={selectedProject} />;
 
   return <main className="portfolio-shell">
     <header className="portfolio-nav"><a href="/" className="portfolio-brand"><BrandLogo variant="icon" className="portfolio-brand-icon" /><span>ELLIS AI STUDIO</span></a><a href="/" className="portfolio-return">← Back to studio</a></header>
@@ -26,10 +27,21 @@ export function PortfolioPage() {
 }
 
 function ProjectCard({ project }: { project: PortfolioProject }) {
+  const isLive = isInteractiveDemo(project.slug);
   return <article className={`project-card project-card-${project.slug}`} style={{ "--project-accent": project.accent, "--project-soft": project.accentSoft } as React.CSSProperties}>
     <div className="project-preview"><img src={project.photo} alt={`Fictional ${project.industry.toLowerCase()} project for ${project.company}`} loading="lazy" /><div className="preview-browser"><span /><span /><span /></div><div className="preview-identity">{project.company}</div><div className="preview-scene"><i /><i /><i /></div><p>{project.tagline}</p></div>
-    <div className="project-card-body"><div className="project-card-meta"><span>{project.industry}</span><span>{project.style}</span></div><h3>{project.company}</h3><p>{project.description}</p><div className="project-feature-list">{project.features.map((feature) => <span key={feature}>{feature}</span>)}</div><div className="project-card-bottom"><small>Estimated build time <strong>{project.buildTime}</strong></small><a href={`/portfolio?demo=${project.slug}`}>View Interactive Demo <span>→</span></a></div></div>
+    <div className="project-card-body"><div className="project-card-meta"><span>{project.industry}</span><span>{project.style}</span></div><h3>{project.company}</h3><p>{project.description}</p><div className="project-feature-list">{project.features.map((feature) => <span key={feature}>{feature}</span>)}</div><div className="project-card-bottom"><small>Estimated build time <strong>{project.buildTime}</strong></small><a href={`/portfolio?demo=${project.slug}`} aria-label={`${isLive ? "View interactive demo" : "View coming soon"} for ${project.company}`}>{isLive ? <>View Interactive Demo <span>→</span></> : <>Coming Soon <span>→</span></>}</a></div></div>
   </article>;
+}
+
+function ComingSoonDemo({ project }: { project: PortfolioProject }) {
+  return <main className="coming-soon-site" style={{ "--coming-accent": project.accent, "--coming-soft": project.accentSoft } as React.CSSProperties}>
+    <div className="coming-soon-notice">Concept website created by Ellis AI Studio for demonstration purposes only.</div>
+    <nav className="coming-soon-nav"><a href="/portfolio">Back to portfolio</a><span>ELLIS AI STUDIO / CONCEPT LIBRARY</span></nav>
+    <section className="coming-soon-hero"><p>{project.industry} concept</p><h1>Interactive Demo<br /><em>Coming Soon</em></h1><p className="coming-soon-copy">We are developing a distinctive {project.industry.toLowerCase()} experience for <strong>{project.company}</strong> - a fictional concept that will demonstrate a custom visual system, conversion strategy, and responsive interactions.</p><div><a href={consultationUrl} target="_blank" rel="noreferrer">Book a Consultation <span>→</span></a><a href="/portfolio">Explore more concepts</a></div></section>
+    <section className="coming-soon-detail"><div><span>01</span><h2>Designed for the work that matters.</h2></div><p>Each Ellis AI Studio concept is intentionally built around its industry, customer decisions, and brand personality - never a recycled template or a real client claim.</p><dl><div><dt>{project.style}</dt><dd>creative direction</dd></div><div><dt>{project.buildTime}</dt><dd>typical timeline</dd></div><div><dt>{project.features.length}</dt><dd>core journeys</dd></div></dl></section>
+    <footer className="coming-soon-footer"><span>{project.company} is a fictional demonstration.</span><a href="https://ellisaistudio.com">Return to Ellis AI Studio</a></footer>
+  </main>;
 }
 
 function DemoWebsite({ project }: { project: PortfolioProject }) {
