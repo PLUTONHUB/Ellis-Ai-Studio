@@ -17,6 +17,7 @@ import "~/styles/northstar-hero-polish.css";
 import "~/styles/northstar-services.css";
 import "~/styles/northstar-services-media.css";
 import "~/styles/northstar-services-desktop.css";
+import "~/styles/northstar-services-polish.css";
 
 export function PortfolioPage() {
   const [search, setSearch] = useState("");
