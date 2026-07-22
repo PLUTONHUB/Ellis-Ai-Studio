@@ -1,23 +1,14 @@
-# Automation Framework
+# Marketing Automation v1
 
-Automation is a future layer that accelerates routing and draft generation; it must always consume `marketing/shared/` and require human review before publishing. Do not automate unsupported claims, private customer data, or final publication without explicit approval.
+Automation v1 connects development events to marketing drafts. It is deliberately **draft-only**: no integration in this folder may publish content automatically.
 
-## Trigger events
+## Architecture
 
-- GitHub Commit
-- Pull Request Merged
-- Website Launch
-- Portfolio Update
-- Client Launch
-- Service Launch
-- Case Study Complete
+1. Detect a verified event in `event-detection/`.
+2. Classify it in `classification/`.
+3. Load voice, messaging, hooks, storytelling, CTAs, hashtags, and positioning from `marketing/shared/`.
+4. Generate source-linked platform drafts in `draft-generation/` and record them in `outputs/` and the content library.
+5. Route every draft through `approval-queue/` and `marketing/scheduling/`.
+6. A human may move an approved item to Ready to Publish; official publishing integrations remain disabled.
 
-## Flow
-
-1. Detect an approved trigger.
-2. Gather verified source context and shared message inputs.
-3. Generate platform-specific drafts and operational records.
-4. Route drafts to content library, scheduling, and approvals.
-5. Publish only through an approved, human-reviewed step.
-
-See `triggers/trigger-output-matrix.md` for required future outputs and `future-integrations/` for implementation notes.
+See `workflows/event-to-draft.md`, `triggers/trigger-output-matrix.md`, and `future-integrations/integration-status.md`.
