@@ -6,7 +6,7 @@
   "type": "module",
   "description": "Ellis AI Studio service business website.",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --force",
     "build": "vite build",
     "start": "bun run serve.ts",
     "preview": "vite preview",

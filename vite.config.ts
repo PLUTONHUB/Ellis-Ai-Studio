@@ -8,11 +8,17 @@ import tsConfigPaths from "vite-tsconfig-paths";
 export default defineConfig(({ command }) => ({
   server: {
     port: 3000,
-    host: true,
-    // The site is reverse-proxied behind <label>.<PUBLIC_SITE_DOMAIN>; the proxy
-    // masks the Host to localhost:3000, but accept any host so a dev server never
-    // rejects a proxied request with "Blocked request".
-    allowedHosts: true,
+    // A fixed loopback host and strict port prevent a stale process on :3000 from
+    // being mistaken for Vite after it silently falls back to another port.
+    host: "127.0.0.1",
+    strictPort: true,
+    headers: {
+      "Cache-Control": "no-store",
+    },
+    forwardConsole: {
+      unhandledErrors: true,
+      logLevels: ["warn", "error"],
+    },
   },
   plugins: [
     // Miniflare is only needed when producing the Cloudflare deployment bundle.
