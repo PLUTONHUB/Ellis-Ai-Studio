@@ -1,11 +1,10 @@
 import { createHmac, randomBytes, timingSafeEqual, webcrypto } from "node:crypto";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import { env } from "cloudflare:workers";
 import { getRequestHeader, setResponseHeader } from "@tanstack/react-start/server";
 
 const GOOGLE_SCOPE = "https://www.googleapis.com/auth/business.manage";
-const TOKEN_STORE_PATH = process.env.GBP_TOKEN_STORE_PATH ?? ".data/google-business-tokens.json";
 const CONNECTION_ID = "ellis-default";
+const TOKEN_STORE_KEY = "google-business/tokens";
 
 type OAuthToken = { accessToken: string; refreshToken: string; expiresAt: number };
 type StoredTokens = Record<string, OAuthToken>;
@@ -47,7 +46,7 @@ function required(name: string) {
 }
 
 function configReady() {
-  return ["GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_OAUTH_REDIRECT_URI", "GBP_OAUTH_STATE_SECRET", "GBP_TOKEN_ENCRYPTION_KEY", "GBP_DASHBOARD_ACCESS_TOKEN"].every((name) => Boolean(process.env[name]));
+  return Boolean(env.GBP_TOKEN_STORE) && ["GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_OAUTH_REDIRECT_URI", "GBP_OAUTH_STATE_SECRET", "GBP_TOKEN_ENCRYPTION_KEY", "GBP_DASHBOARD_ACCESS_TOKEN"].every((name) => Boolean(process.env[name]));
 }
 
 function cookieValue(name: string) {
@@ -89,11 +88,12 @@ function encryptionKey() {
 
 async function readTokens(): Promise<StoredTokens> {
   try {
-    const envelope = JSON.parse(await readFile(TOKEN_STORE_PATH, "utf8")) as { iv: string; ciphertext: string };
+    const stored = await env.GBP_TOKEN_STORE.get(TOKEN_STORE_KEY);
+    if (!stored) return {};
+    const envelope = JSON.parse(stored) as { iv: string; ciphertext: string };
     const plain = await webcrypto.subtle.decrypt({ name: "AES-GCM", iv: Buffer.from(envelope.iv, "base64url") }, await encryptionKey(), Buffer.from(envelope.ciphertext, "base64url"));
     return JSON.parse(new TextDecoder().decode(plain)) as StoredTokens;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return {};
+  } catch {
     throw new Error("The encrypted Google token store could not be read.");
   }
 }
@@ -102,10 +102,7 @@ async function writeTokens(tokens: StoredTokens) {
   const iv = randomBytes(12);
   const plain = new TextEncoder().encode(JSON.stringify(tokens));
   const ciphertext = await webcrypto.subtle.encrypt({ name: "AES-GCM", iv }, await encryptionKey(), plain);
-  await mkdir(dirname(TOKEN_STORE_PATH), { recursive: true });
-  const temporaryPath = `${TOKEN_STORE_PATH}.tmp`;
-  await writeFile(temporaryPath, JSON.stringify({ iv: base64Url(iv), ciphertext: base64Url(new Uint8Array(ciphertext)) }), { mode: 0o600 });
-  await rename(temporaryPath, TOKEN_STORE_PATH);
+  await env.GBP_TOKEN_STORE.put(TOKEN_STORE_KEY, JSON.stringify({ iv: base64Url(iv), ciphertext: base64Url(new Uint8Array(ciphertext)) }));
 }
 
 async function refreshToken(token: OAuthToken) {
@@ -180,7 +177,7 @@ async function verificationStatus(locationName: string): Promise<BusinessProfile
 
 export async function dashboard(): Promise<GoogleBusinessDashboard> {
   if (!accessAllowed()) return { accessRequired: true, configured: configReady(), connected: false, accounts: [], locations: [] };
-  if (!configReady()) return { accessRequired: false, configured: false, connected: false, message: "Add Google OAuth, state, encryption, and dashboard-access secrets to enable this connection.", accounts: [], locations: [] };
+  if (!configReady()) return { accessRequired: false, configured: false, connected: false, message: "Add the GBP_TOKEN_STORE binding plus Google OAuth, state, encryption, and dashboard-access secrets to enable this connection.", accounts: [], locations: [] };
   const tokens = await readTokens();
   if (!tokens[CONNECTION_ID]) return { accessRequired: false, configured: true, connected: false, accounts: [], locations: [] };
   try {

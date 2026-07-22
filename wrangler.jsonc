@@ -3,5 +3,11 @@
   "name": "ellis-ai-studio",
   "compatibility_date": "2025-09-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry"
+  "main": "@tanstack/react-start/server-entry",
+  "kv_namespaces": [
+    {
+      "binding": "GBP_TOKEN_STORE",
+      "id": "820e0a93dc79466687e804812e0cfd0b"
+    }
+  ]
 }
