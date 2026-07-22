@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
-import { completeAuthorization } from "~/lib/google-business.server";
 
-const finishOauth = createServerFn({ method: "POST" }).validator((data: { code: string; state: string }) => data).handler(({ data }) => completeAuthorization(data.code, data.state));
+const finishOauth = createServerFn({ method: "POST" }).validator((data: { code: string; state: string }) => data).handler(async ({ data }) => {
+  const { completeAuthorization } = await import("~/lib/google-business.server");
+  return completeAuthorization(data.code, data.state);
+});
 
 export const Route = createFileRoute("/dashboard/google-business-callback")({ validateSearch: (search: Record<string, unknown>) => ({ code: typeof search.code === "string" ? search.code : "", state: typeof search.state === "string" ? search.state : "", error: typeof search.error === "string" ? search.error : "" }), component: GoogleBusinessCallback });
 
