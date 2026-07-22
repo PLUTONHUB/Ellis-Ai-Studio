@@ -12,7 +12,7 @@ This is a disabled-by-default integration contract for the official Google Busin
 
 ## Enabled behavior in v1
 
-Documentation, schemas, and draft routing only. Runtime API access requires explicit future enablement, a configured Google Cloud project, approved Business Profile API access, secure OAuth storage, and a human approval flow.
+The Bun server implementation at `src/lib/google-business.server.ts` provides OAuth authorization, encrypted refresh-token persistence, automatic access-token refresh, account/location discovery, verification-state lookup, and a protected dashboard at `/dashboard/google-business`. Runtime access requires the deployment secrets listed in `.env.example`, approved Business Profile API access, and the configured Google OAuth redirect URI.
 
 ## Prohibited behavior
 
@@ -21,4 +21,4 @@ Documentation, schemas, and draft routing only. Runtime API access requires expl
 - No storage of credentials or refresh tokens in this repository
 - No unreviewed customer data or claims in marketing drafts
 
-See the official [Business Profile APIs overview](https://developers.google.com/my-business/content/overview), [OAuth guide](https://developers.google.com/my-business/content/implement-oauth), and [Performance API reference overview](https://developers.google.com/my-business/ref_overview).
+See `connection-v1.md` for setup and validation. The official [Business Profile APIs overview](https://developers.google.com/my-business/content/overview), [OAuth guide](https://developers.google.com/my-business/content/implement-oauth), and [Performance API reference overview](https://developers.google.com/my-business/ref_overview) remain the API authority.
