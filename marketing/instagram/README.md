@@ -2,6 +2,10 @@
 
 This folder converts meaningful product work into reusable Instagram content. Templates establish the content shape, prompts generate a first draft, and the format folders hold review-ready assets.
 
+## Shared foundation
+
+Before drafting, use `../shared/` for Ellis AI Studio brand voice, messaging, storytelling, hooks, CTAs, hashtags, and approved assets. This module adapts that source of truth for Instagram formats rather than duplicating it.
+
 ## Folder guide
 
 - `templates/` — Reusable structures for campaign and format types.

@@ -2,6 +2,10 @@
 
 This folder turns product and service progress into accurate, reusable Google Business Profile content. Keep public post copy, review communication, service information, and generated drafts organized here for review before publishing.
 
+## Shared foundation
+
+Before drafting, use `../shared/` for Ellis AI Studio brand voice, messaging, storytelling, calls to action, hashtags, and approved assets. This module adapts that source of truth for Google Business Profile content rather than duplicating it.
+
 ## Folder guide
 
 - `templates/` — Reusable structures for posts, reviews, services, and FAQs.

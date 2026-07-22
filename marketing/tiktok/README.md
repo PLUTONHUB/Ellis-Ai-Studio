@@ -2,6 +2,10 @@
 
 This module turns meaningful product and client work into short-form video content. Use templates to choose a story, prompts to generate a first draft, and the asset folders to prepare recording-ready material.
 
+## Shared foundation
+
+Before drafting, use `../shared/` for Ellis AI Studio brand voice, messaging, storytelling, hooks, CTAs, hashtags, and approved assets. This module adapts that source of truth for TikTok rather than duplicating it.
+
 ## Folder guide
 
 - `templates/` — Reusable story structures.

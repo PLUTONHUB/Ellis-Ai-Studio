@@ -2,6 +2,10 @@
 
 This folder turns meaningful engineering work into reviewable LinkedIn content. Use the files here as modular building blocks: templates shape the message, prompts generate a first draft, examples preserve strong references, and drafts and published posts record the lifecycle.
 
+## Shared foundation
+
+Before drafting, use `../shared/` for Ellis AI Studio brand voice, messaging, storytelling, hooks, CTAs, hashtags, and approved assets. This module adapts that source of truth for LinkedIn; it does not replace or duplicate it.
+
 ## Folder guide
 
 - `templates/` — Post structures for common announcement types.

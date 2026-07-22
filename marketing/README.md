@@ -4,6 +4,7 @@ This folder keeps social content close to the product work that inspires it. It 
 
 ## Directory guide
 
+- `shared/` — The single source of truth for brand, messaging, hooks, CTAs, hashtags, frameworks, and reusable assets across every platform.
 - `linkedin/` — LinkedIn-specific content and workflow.
   - `templates/` — Reusable writing structures, including the standard LinkedIn post template.
   - `drafts/` — Work-in-progress posts awaiting review or scheduling.
