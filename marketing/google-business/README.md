@@ -6,6 +6,10 @@ This folder turns product and service progress into accurate, reusable Google Bu
 
 Before drafting, use `../shared/` for Ellis AI Studio brand voice, messaging, storytelling, calls to action, hashtags, and approved assets. This module adapts that source of truth for Google Business Profile content rather than duplicating it.
 
+## Integration boundary
+
+The draft-only official API integration contract lives at `../integrations/google-business/`. It retrieves authorized business, review, and performance data but routes all copy through this module, the shared engine, content library, approval queue, and scheduling system. It does not publish posts or reply to reviews automatically.
+
 ## Folder guide
 
 - `templates/` — Reusable structures for posts, reviews, services, and FAQs.

@@ -13,6 +13,7 @@ This folder keeps social content close to the product work that inspires it. It 
 - `scheduling/` — Draft, review, approval, and publishing queue records.
 - `automation/` — Future trigger, output, and integration design.
 - `intelligence/` — Research, performance learning, ideas, experiments, insights, and reporting that inform the operating system.
+- `integrations/` — Disabled-by-default external API integration contracts that route through the shared engine and operations layer.
 - `linkedin/` — LinkedIn-specific content and workflow.
   - `templates/` — Reusable writing structures, including the standard LinkedIn post template.
   - `drafts/` — Work-in-progress posts awaiting review or scheduling.
