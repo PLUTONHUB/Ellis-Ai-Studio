@@ -5,6 +5,13 @@ This folder keeps social content close to the product work that inspires it. It 
 ## Directory guide
 
 - `shared/` — The single source of truth for brand, messaging, hooks, CTAs, hashtags, frameworks, and reusable assets across every platform.
+- `content-library/` — Lifecycle, media, version history, campaign, and launch records for every marketing asset.
+- `calendar/` — Weekly, monthly, and launch scheduling plans.
+- `campaigns/` — Campaign briefs and active/upcoming/completed execution records.
+- `analytics/` — Platform, campaign, engagement, traffic, lead, and conversion reporting.
+- `repurpose/` — Verified source-to-multichannel workflows.
+- `scheduling/` — Draft, review, approval, and publishing queue records.
+- `automation/` — Future trigger, output, and integration design.
 - `linkedin/` — LinkedIn-specific content and workflow.
   - `templates/` — Reusable writing structures, including the standard LinkedIn post template.
   - `drafts/` — Work-in-progress posts awaiting review or scheduling.
