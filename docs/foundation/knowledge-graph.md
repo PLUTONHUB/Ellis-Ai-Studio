@@ -29,6 +29,8 @@ Revenue Engine links the canonical report to acquisition-package versions, disco
 
 Validation sessions link the acquisition package to section decisions, review notes, quality scores, exports, edit counts, and lessons learned. They are evidence about package quality, not duplicate package content.
 
+Publishing Platform adds connected accounts, permission and health evidence, approved jobs, delivery attempts, platform analytics, scheduling preferences, performance trends, and failure lessons. Every record links to campaign and adapter provenance; analytics facts drive future recommendations without overwriting source history.
+
 ## Future AI usage
 
 Workers retrieve least-privilege, cited context through contracts, write candidate memories through the Memory Worker, and preserve model/prompt/source provenance. The graph enables cross-client pattern learning only from authorized, appropriately anonymized knowledge. See [AI Worker Contracts](ai-worker-contracts.md).

@@ -11,7 +11,7 @@ const VERSION = process.env.META_GRAPH_API_VERSION ?? "v24.0";
 const SCOPES = ["pages_show_list", "pages_read_engagement", "pages_manage_posts", "instagram_basic", "instagram_content_publish"].join(",");
 type Account = { id: string; name: string; accessToken: string; instagramId?: string; instagramUsername?: string };
 type Media = { url?: string; dataUrl?: string; filename?: string; mimeType?: string };
-export type MetaPost = { id: string; caption: string; media: Media[]; targets: Array<"facebook" | "instagram">; status: "draft" | "scheduled" | "published" | "failed"; scheduledFor?: number; createdAt: number; publishedAt?: number; results?: string[]; error?: string };
+export type MetaPost = { id: string; caption: string; media: Media[]; targets: Array<"facebook" | "instagram">; status: "draft" | "scheduled" | "published" | "failed"; scheduledFor?: number; createdAt: number; publishedAt?: number; results?: string[]; error?: string; retryCount?: number; lastRetriedAt?: number; lastRetryReason?: string; campaignId?: string };
 type Store = { token?: { accessToken: string; expiresAt: number }; accounts: Account[]; selected?: { pageId: string; instagramId?: string }; posts: MetaPost[] };
 export type MetaDashboard = { accessRequired: boolean; configured: boolean; connected: boolean; message?: string; accounts: Array<Omit<Account, "accessToken">>; selected?: { pageId: string; instagramId?: string }; posts: MetaPost[] };
 
@@ -43,3 +43,50 @@ async function publishFacebook(post: MetaPost, account: Account) { const endpoin
 async function publishInstagram(post: MetaPost, account: Account) { if (!account.instagramId) throw new Error("The selected Page has no linked Instagram Business account."); const media = post.media[0]; if (!media?.url || !/^https:\/\//.test(media.url)) throw new Error("Instagram publishing requires a public HTTPS media URL. Upload the file to your approved public media host first."); const accessToken = required("INSTAGRAM_ACCESS_TOKEN"); const params = new URLSearchParams({ access_token: accessToken, caption: post.caption, [media.mimeType?.startsWith("video/") ? "video_url" : "image_url"]: media.url, ...(media.mimeType?.startsWith("video/") ? { media_type: "REELS" } : {}) }); const container = await graphJson(`${account.instagramId}/media`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params }); const containerId = String(container.id ?? ""); if (!containerId) throw new Error("Instagram did not create a media container."); const published = await graphJson(`${account.instagramId}/media_publish`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ creation_id: containerId, access_token: accessToken }) }); return String(published.id ?? "Instagram post created"); }
 export async function publishPost(id: string) { requireAccess(); const store = await read(); const post = store.posts.find((item) => item.id === id); const account = store.accounts.find((item) => item.id === store.selected?.pageId); if (!post || !account) throw new Error("Choose a connected Facebook Page before publishing."); try { await refreshLongLivedToken(store); const results: string[] = []; if (post.targets.includes("facebook")) results.push(`Facebook: ${await publishFacebook(post, account)}`); if (post.targets.includes("instagram")) results.push(`Instagram: ${await publishInstagram(post, account)}`); post.status = "published"; post.publishedAt = Date.now(); post.results = results; post.error = undefined; } catch (error) { post.status = "failed"; post.error = error instanceof Error ? error.message : "Publishing failed."; } await write(store); return post; }
 export async function processScheduledPosts() { requireAccess(); const store = await read(); const due = store.posts.filter((post) => post.status === "scheduled" && post.scheduledFor && post.scheduledFor <= Date.now()); const results = []; for (const post of due) results.push(await publishPost(post.id)); return results; }
+
+export type MetaAnalytics = { postId: string; campaignId?: string; collectedAt: number; platform: "facebook" | "instagram"; reach?: number; impressions?: number; engagement?: number; reactions?: number; comments?: number; shares?: number; clicks?: number; videoViews?: number; unavailable?: string[] };
+type AnalyticsStore = Store & { analytics?: MetaAnalytics[] };
+const MAX_RETRIES = 3;
+
+export async function retryFailedPost(id: string, reason: string) {
+  requireAccess();
+  const store = await read() as AnalyticsStore;
+  const post = store.posts.find((item) => item.id === id);
+  if (!post || post.status !== "failed") throw new Error("Only failed posts can be retried.");
+  if ((post.retryCount ?? 0) >= MAX_RETRIES) throw new Error(`Retry limit reached (${MAX_RETRIES}). Reconnect Meta or correct the post before trying again.`);
+  post.retryCount = (post.retryCount ?? 0) + 1;
+  post.lastRetriedAt = Date.now();
+  post.lastRetryReason = reason.trim() || "Manual retry";
+  await write(store);
+  return publishPost(id);
+}
+
+function metric(values: unknown, names: string[]) { const items = values as Array<{ name?: string; values?: Array<{ value?: number }> }> | undefined; return items?.find((item) => names.includes(item.name ?? ""))?.values?.[0]?.value; }
+export async function collectAnalytics(id: string): Promise<MetaAnalytics[]> {
+  requireAccess();
+  const store = await read() as AnalyticsStore;
+  const post = store.posts.find((item) => item.id === id);
+  const account = store.accounts.find((item) => item.id === store.selected?.pageId);
+  if (!post || post.status !== "published" || !account) throw new Error("Publish a post from a selected account before collecting analytics.");
+  const output: MetaAnalytics[] = [];
+  for (const platform of post.targets) {
+    const result = post.results?.find((item) => item.toLowerCase().startsWith(platform));
+    const externalId = result?.split(":").slice(1).join(":").trim();
+    const record: MetaAnalytics = { postId: post.id, campaignId: post.campaignId, platform, collectedAt: Date.now(), unavailable: [] };
+    if (!externalId) { record.unavailable?.push("External post ID was not returned by Meta."); output.push(record); continue; }
+    try {
+      if (platform === "facebook") {
+        const data = await graphJson(`${externalId}/insights?metric=post_impressions,post_impressions_unique,post_engaged_users,post_clicks`) as { data?: unknown };
+        record.impressions = metric(data.data, ["post_impressions"]); record.reach = metric(data.data, ["post_impressions_unique"]); record.engagement = metric(data.data, ["post_engaged_users"]); record.clicks = metric(data.data, ["post_clicks"]);
+      } else {
+        const data = await graphJson(`${externalId}/insights?metric=reach,impressions,accounts_engaged,total_interactions,likes,comments,shares,saved,video_views`) as { data?: unknown };
+        record.reach = metric(data.data, ["reach"]); record.impressions = metric(data.data, ["impressions"]); record.engagement = metric(data.data, ["accounts_engaged", "total_interactions"]); record.reactions = metric(data.data, ["likes"]); record.comments = metric(data.data, ["comments"]); record.shares = metric(data.data, ["shares"]); record.videoViews = metric(data.data, ["video_views"]);
+      }
+    } catch (error) { record.unavailable?.push(error instanceof Error ? error.message : "Meta did not return metrics for this post."); }
+    output.push(record);
+  }
+  store.analytics = [...output, ...(store.analytics ?? []).filter((item) => item.postId !== id)].slice(0, 500);
+  await write(store);
+  return output;
+}
+export async function analyticsForDashboard() { requireAccess(); const store = await read() as AnalyticsStore; return store.analytics ?? []; }

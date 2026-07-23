@@ -42,3 +42,4 @@ Add accepted and proposed ADRs here as they are created.
 | [0008](0008-terminology-modernization.md) | Accepted | Canonical Growth Systems vocabulary |
 | [0009](0009-revenue-engine-acquisition-package.md) | Accepted | Prospect-to-proposal review workflow |
 | [0010](0010-validation-mode-review-layer.md) | Accepted | Validation review layer over acquisition packages |
+| [0011](0011-publishing-platform-adapter-contract.md) | Accepted | Modular social publishing adapters |
