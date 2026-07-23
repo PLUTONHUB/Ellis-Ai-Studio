@@ -7,11 +7,11 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#ffffff" }, { name: "application-name", content: "Ellis AI Studio" }, { name: "robots", content: "index, follow" },
-      { title: "Ellis AI Studio | Technology Built for Service Businesses" },
-      { name: "description", content: "Ellis AI Studio builds websites, automations, and AI-powered tools for service businesses." },
+      { title: "AI-Powered Growth Systems for Service Businesses | Ellis AI Studio" },
+      { name: "description", content: "Ellis AI Studio designs growth systems that help service businesses acquire more customers, convert more leads, and operate more efficiently." },
       { property: "og:type", content: "website" }, { property: "og:locale", content: "en_US" }, { property: "og:site_name", content: "Ellis AI Studio" },
-      { property: "og:title", content: "Ellis AI Studio | Technology Built for Service Businesses" },
-      { property: "og:description", content: "Websites, automations, and AI-powered tools for service businesses." }, { property: "og:image", content: "https://ellisaistudio.com/logo/ellis-og.png" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: "https://ellisaistudio.com/logo/ellis-og.png" },
+      { property: "og:title", content: "AI-Powered Growth Systems for Service Businesses | Ellis AI Studio" },
+      { property: "og:description", content: "Acquire more customers, convert more leads, and operate more efficiently." }, { property: "og:image", content: "https://ellisaistudio.com/logo/ellis-og.png" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: "https://ellisaistudio.com/logo/ellis-og.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" },

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MarketingPage } from "~/components/marketing-site";
+import { GrowthHome } from "~/components/growth-site";
 
 export const Route = createFileRoute("/")({ component: Home });
-function Home() { return <MarketingPage />; }
+function Home() { return <GrowthHome />; }

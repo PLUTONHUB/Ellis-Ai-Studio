@@ -1,0 +1,3 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { StandardPage, services } from "~/components/growth-site";
+export const Route = createFileRoute("/services" as never)({ component: () => <StandardPage eyebrow="Services" title="Growth systems built around your next business outcome." intro="Each system begins with the business result that matters, then creates a practical path to achieve and measure it."><div className="service-grid">{services.map(([t,d],i)=><article className="service-card" key={t}><span>0{i+1}</span><h3>{t}</h3><p>{d} Ideal for service businesses ready to improve a measurable growth priority.</p></article>)}</div></StandardPage> });
