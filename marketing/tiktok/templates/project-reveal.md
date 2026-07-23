@@ -6,7 +6,7 @@
 
 ## Problem
 
-<!-- Name the friction or opportunity. -->
+<!-- Name the growth opportunity. -->
 
 ## Reveal
 

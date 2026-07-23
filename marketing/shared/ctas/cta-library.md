@@ -2,7 +2,7 @@
 
 - Explore the update: [approved link].
 - See how this could fit your workflow.
-- Share the friction this would remove for your team.
+- Share the business outcome this could create for your team.
 - Save this for your next website or automation project.
 - Follow for practical service-business systems.
 - Tell us what you would improve next.

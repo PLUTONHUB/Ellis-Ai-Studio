@@ -7,7 +7,7 @@ Ellis AI Studio builds practical websites, automations, AI tools, and custom sys
 ## Supporting messages
 
 1. Make it easier for customers to find, understand, and choose a service.
-2. Reduce friction in the work behind the service with clear, useful systems.
+2. Improve operational efficiency with clear, useful systems.
 3. Build around the business and its customers instead of forcing a generic workflow.
 
 ## Proof guidance

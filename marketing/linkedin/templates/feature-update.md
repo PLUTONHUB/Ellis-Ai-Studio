@@ -6,7 +6,7 @@
 
 ## Before
 
-<!-- Describe the previous friction or limitation. -->
+<!-- Describe the previous growth opportunity or limitation. -->
 
 ## Now
 

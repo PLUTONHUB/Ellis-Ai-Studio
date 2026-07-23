@@ -2,7 +2,7 @@
 
 ## Before
 
-<!-- Describe the previous friction or state. -->
+<!-- Describe the previous business state or opportunity. -->
 
 ## After
 
