@@ -90,3 +90,15 @@ export async function collectAnalytics(id: string): Promise<MetaAnalytics[]> {
   return output;
 }
 export async function analyticsForDashboard() { requireAccess(); const store = await read() as AnalyticsStore; return store.analytics ?? []; }
+
+export type FacebookContent = { hook: string; body: string; cta: string; hashtags: string[]; imageIdea: string; readingTime: string; postingTime: string; caption: string };
+export async function generateFacebookContent(input: { category: string; tone: string; topic?: string }): Promise<FacebookContent> {
+  requireAccess();
+  const apiKey = required("OPENAI_API_KEY");
+  const categories = ["Educational", "Behind the Scenes", "Case Study", "Business Tips", "AI Myth Busting", "Client Results", "Founder Story", "Industry Trends", "Promotional Offer", "Engagement Question"];
+  if (!categories.includes(input.category)) throw new Error("Choose a supported Facebook content category.");
+  const response = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" }, body: JSON.stringify({ model: process.env.OPENAI_MODEL ?? "gpt-4.1-mini", input: `Return JSON only: hook, body, cta, hashtags (array), imageIdea, readingTime, postingTime. Write a Facebook post for Ellis AI Studio. Category: ${input.category}. Tone: ${input.tone}. Topic: ${input.topic || "Choose the most useful Ellis growth-systems topic"}. Brand voice: professional, confident, modern, educational, results-focused, never overly salesy. Ellis designs AI-powered growth systems that help businesses acquire customers, convert leads, and operate efficiently. Do not use archived friction terminology.` }) });
+  const result = await response.json() as { output_text?: string; error?: { message?: string } }; if (!response.ok || !result.output_text) throw new Error(result.error?.message ?? "Facebook content generation failed.");
+  const content = JSON.parse(result.output_text) as Omit<FacebookContent, "caption">; if (!content.hook || !content.body || !content.cta || !Array.isArray(content.hashtags)) throw new Error("Generated content did not meet the Facebook draft contract.");
+  return { ...content, hashtags: content.hashtags.map(String), caption: `${content.hook}\n\n${content.body}\n\n${content.cta}\n\n${content.hashtags.map(String).join(" ")}` };
+}
