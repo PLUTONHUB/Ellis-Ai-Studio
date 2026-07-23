@@ -7,6 +7,7 @@
   "description": "Ellis AI Studio service business website.",
   "scripts": {
     "dev": "vite dev --force",
+    "setup:https": "powershell -ExecutionPolicy Bypass -File scripts/setup-local-https.ps1",
     "build": "vite build",
     "start": "bun run serve.ts",
     "preview": "vite preview",

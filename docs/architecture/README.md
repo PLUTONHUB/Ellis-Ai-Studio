@@ -44,3 +44,4 @@ Add accepted and proposed ADRs here as they are created.
 | [0010](0010-validation-mode-review-layer.md) | Accepted | Validation review layer over acquisition packages |
 | [0011](0011-publishing-platform-adapter-contract.md) | Accepted | Modular social publishing adapters |
 | [0012](0012-facebook-content-generator-drafts.md) | Accepted | Facebook content saved through canonical Meta drafts |
+| [0013](0013-local-https-for-meta-oauth.md) | Accepted | Local HTTPS boundary for Meta OAuth |
