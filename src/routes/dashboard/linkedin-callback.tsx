@@ -13,7 +13,9 @@ export const Route = createFileRoute("/dashboard/linkedin-callback")({
   validateSearch: (search: Record<string, unknown>) => ({
     code: typeof search.code === "string" ? search.code : "",
     state: typeof search.state === "string" ? search.state : "",
-    error: typeof search.error === "string" ? search.error : "",
+    // Keep an absent error absent. Returning an empty string causes TanStack
+    // Start to normalize the OAuth URL with a 307 redirect to `error=`.
+    error: typeof search.error === "string" ? search.error : undefined,
   }),
   component: Page,
 });
