@@ -9,6 +9,7 @@
     "dev": "vite dev --force",
     "setup:https": "powershell -ExecutionPolicy Bypass -File scripts/setup-local-https.ps1",
     "diagnose:meta-oauth": "node scripts/meta-oauth-diagnostic.mjs",
+    "diagnose:meta-oauth:interactive": "node scripts/meta-oauth-diagnostic.mjs --interactive",
     "build": "vite build",
     "start": "bun run serve.ts",
     "preview": "vite preview",
