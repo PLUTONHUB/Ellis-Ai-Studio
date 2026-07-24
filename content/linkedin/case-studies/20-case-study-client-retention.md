@@ -1,33 +1,31 @@
 ---
 title: Case study: Client retention
 topic: case-studies
-tags: [case-studies, linkedin, business-systems]
-publish_date: 2026-09-24
+tags: [case-studies, linkedin, ai-systems-engineering]
+publish_date: 2026-09-20
 cta: Request an Ellis AI Studio business assessment.
-hashtags: [#BusinessSystems, #OperationalExcellence, #AIForBusiness, #CustomerExperience, #EllisAIStudio, #BusinessAssessment]
+hashtags: [#AISystems, #BusinessAutomation, #GrowthInfrastructure, #CustomSoftware, #OperationalIntelligence, #BusinessTechnology]
 ---
 
-Case study: Client retention.
+Case study: Client retention is not a tool decision. It is a systems decision.
 
-Most business friction does not look dramatic. It shows up as a delayed reply, a repeated question, or a decision made from incomplete context.
+Businesses grow when their customer, operational, and decision systems work together. That means clear inputs, reliable handoffs, useful context, and an outcome that can be measured.
 
-That delay compounds. It creates extra work internally and a less certain experience for the customer.
+At Ellis AI Studio, we engineer the infrastructure behind that work: intelligent websites that capture intent, custom software that connects the operation, AI agents that handle repeatable tasks, and reporting that gives leaders a clearer next move.
 
-Ellis AI Studio looks for the system behind the symptom: the missing owner, weak signal, or broken handoff.
+The lesson is practical: do not begin with a platform. Begin with the business outcome, the information required to reach it, and the people accountable for the decision. Then build the smallest durable system that makes that outcome easier to repeat.
 
-Actionable insight: map the trigger, next action, owner, and time allowed for one workflow before selecting a tool.
+Actionable takeaway: choose one customer journey this week and define its trigger, owner, source of truth, and success metric. That four-part design is a stronger foundation than another disconnected workflow.
 
-The goal is not more automation. The goal is a business system that makes the right next action easier to repeat.
+Ellis AI Studio builds AI-powered growth systems for businesses ready to turn good work into scalable infrastructure. Request an Ellis AI Studio business assessment to plan the next system with clarity.
 
-Request an Ellis AI Studio business assessment to identify the highest-leverage friction in your operation.
-
-#BusinessSystems #OperationalExcellence #AIForBusiness #CustomerExperience #EllisAIStudio #BusinessAssessment
+#AISystems #BusinessAutomation #GrowthInfrastructure #CustomSoftware #OperationalIntelligence #BusinessTechnology
 
 ## Supporting assets
 
-- Carousel text: 1. Case study: Client retention 2. The hidden friction 3. The system behind it 4. Actionable insight 5. Request an assessment.
-- Image caption: Case study: Client retention — a practical Ellis AI Studio operating principle.
-- Comment prompt: What have you seen work in this situation?
-- Follow-up question: What is one signal you could measure this week?
-- X version: Case study: Client retention. Map the trigger, owner, and next action before automating.
-- Instagram adaptation: Case study: Client retention. Save this for your next systems review.
+- Carousel text: 1. Case study: Client retention 2. Define the outcome 3. Connect the system 4. Measure the result 5. Request an assessment.
+- Image caption: Case study: Client retention — an Ellis AI Studio systems engineering principle.
+- Comment prompt: Which business system would create the most leverage for your team?
+- Follow-up question: What source of truth does that system need?
+- X version: Case study: Client retention. Start with the outcome, owner, source of truth, and metric. Then build the system.
+- Instagram adaptation: Case study: Client retention. Save this for your next business systems planning session.

@@ -1,6 +1,6 @@
 # Ellis AI Studio
 
-Ellis AI Studio builds practical websites, automations, AI tools, and custom systems for service businesses.
+Ellis AI Studio designs, builds, and manages AI-powered growth infrastructure: intelligent websites, custom software, AI agents, business automation, and operational intelligence for businesses.
 
 ## Development
 
