@@ -4,7 +4,7 @@ type PageSeo = { title: string; description: string; path: string; type?: "websi
 
 export function pageHead({ title, description, path, type = "website" }: PageSeo) {
   const url = `${siteUrl}${path}`;
-  return { meta: [{ title }, { name: "description", content: description }, { property: "og:type", content: type }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:url", content: url }, { property: "og:image", content: `${siteUrl}/logo/ellis-og.png` }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:title", content: title }, { name: "twitter:description", content: description }, { name: "twitter:image", content: `${siteUrl}/logo/ellis-og.png` }], links: [{ rel: "canonical", href: url }] };
+  return { meta: [{ title }, { name: "description", content: description }, { property: "og:type", content: type }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:url", content: url }, { property: "og:image", content: `${siteUrl}/logo/ellis-og.png` }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:title", content: title }, { name: "twitter:description", content: description }, { name: "twitter:image", content: `${siteUrl}/logo/ellis-og.png` }] };
 }
 
 export function jsonLd(data: Record<string, unknown>) { return [{ type: "application/ld+json", children: JSON.stringify(data) }]; }

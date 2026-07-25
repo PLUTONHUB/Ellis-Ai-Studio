@@ -1,8 +1,9 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import appCss from "~/styles/app.css?url";
 import contentStudioCss from "~/styles/content-studio.css?url";
-import { jsonLd, organizationSchema } from "~/lib/seo";
+import a11yCss from "~/styles/a11y.css?url";
+import { jsonLd, organizationSchema, siteUrl } from "~/lib/seo";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -16,8 +17,7 @@ export const Route = createRootRoute({
       { property: "og:description", content: "Intelligent websites, custom software, AI agents, automation, and operational intelligence for scalable business growth." }, { property: "og:image", content: "https://ellisaistudio.com/logo/ellis-og.png" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: "https://ellisaistudio.com/logo/ellis-og.png" },
     ],
     links: [
-      { rel: "canonical", href: "https://ellisaistudio.com/" },
-      { rel: "stylesheet", href: appCss }, { rel: "stylesheet", href: contentStudioCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "stylesheet", href: appCss }, { rel: "stylesheet", href: contentStudioCss }, { rel: "stylesheet", href: a11yCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/logo/ellis-favicon-32.png" }, { rel: "apple-touch-icon", sizes: "180x180", href: "/logo/ellis-apple-touch-icon.png" },
@@ -28,4 +28,9 @@ export const Route = createRootRoute({
   component: () => <RootDocument><Outlet /></RootDocument>,
 });
 
-function RootDocument({ children }: { children: ReactNode }) { return <html lang="en"><head><HeadContent /></head><body className="antialiased min-h-screen">{children}<Scripts /></body></html>; }
+function CanonicalUrl() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  return <link rel="canonical" href={`${siteUrl}${pathname === "/" ? "/" : pathname.replace(/\/$/, "")}`} />;
+}
+
+function RootDocument({ children }: { children: ReactNode }) { return <html lang="en"><head><HeadContent /><CanonicalUrl /></head><body className="antialiased min-h-screen">{children}<Scripts /></body></html>; }
