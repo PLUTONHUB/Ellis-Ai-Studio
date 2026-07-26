@@ -4,7 +4,7 @@ const bookingUrl = "https://calendar.app.google/YytWSVvdNyPhCBK58";
 
 const foundingPrices = [
   ["Landing Pages", "From $750", "Focused conversion pages for a single offer or campaign."],
-  ["Multi-page Websites", "From $1,800", "Custom service-business sites with clear journeys and conversion paths."],
+  ["Multi-page Websites", "From $1,800", "Custom websites with clear journeys, connected systems, and conversion paths."],
   ["Website Redesigns", "From $1,200", "A thoughtful visual and conversion upgrade for an existing website."],
   ["SEO Foundations", "From $500", "Technical and on-page essentials for a stronger search starting point."],
   ["Local SEO Setup", "From $650", "Google Business Profile, local structure, and service-area essentials."],
