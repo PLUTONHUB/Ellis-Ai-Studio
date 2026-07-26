@@ -1,3 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { StandardPage, bookingUrl } from "~/components/growth-site";
-export const Route = createFileRoute("/contact")({ component: () => <StandardPage eyebrow="Contact" title="Let’s identify your next growth opportunity." intro="Book a Growth Strategy Call and we’ll come prepared to discuss your business goals, current opportunities, and a practical next step."><div className="inquiry"><p>Bring your website, primary growth goal, and the part of the customer journey you want to improve. You’ll leave with clearer priorities—not a generic technology pitch.</p><a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Book a Growth Strategy Call</a></div></StandardPage> });
+import { pageHead } from "~/lib/seo";
+
+export const Route = createFileRoute("/contact")({
+  head: () => pageHead({ title: "Contact Ellis AI Studio | Intelligent Business Infrastructure", description: "Start a conversation about the connected digital infrastructure your organization needs next.", path: "/contact" }),
+  component: () => <StandardPage eyebrow="Contact" title="Let’s identify the next system your organization needs." intro="Bring the operating challenge, customer journey, or system gap you want to improve. We will discuss the current context and a practical next step."><div className="inquiry"><p>Ellis AI Studio designs infrastructure around real goals, existing tools, and the workflows your team owns—not generic technology packages.</p><a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Start a conversation</a></div></StandardPage>,
+});
