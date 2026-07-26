@@ -3,6 +3,6 @@ import { StandardPage, process } from "~/components/growth-site";
 import { pageHead } from "~/lib/seo";
 
 export const Route = createFileRoute("/process")({
-  head: () => pageHead({ title: "AI Systems Implementation Process | Ellis AI Studio", description: "See Ellis AI Studio’s practical process for designing, implementing, measuring, and improving AI systems for service businesses.", path: "/process" }),
-  component: () => <StandardPage eyebrow="Process" title="A clear path from insight to continuous growth." intro="We partner with your team through a practical, evidence-led client journey."><div className="process-grid">{process.map((x, i) => <article className="process-step" key={x}><span>0{i + 1}</span><h3>{x}</h3><p>Agree the outcome, create the system, review the evidence, and improve the next decision.</p></article>)}</div></StandardPage>,
+  head: () => pageHead({ title: "Infrastructure Engineering Lifecycle | Ellis AI Studio", description: "See how Ellis AI Studio researches, architects, engineers, deploys, monitors, and improves connected business infrastructure.", path: "/process" }),
+  component: () => <StandardPage eyebrow="Engineering lifecycle" title="Research to continuous improvement." intro="Every implementation begins with evidence, is shaped by architecture, and is improved through real operating signals."><div className="process-grid">{process.map((step, index) => <article className="process-step" key={step}><span>0{index + 1}</span><h3>{step}</h3><p>Establish the operating context, engineer the next layer, measure the result, and improve what follows.</p></article>)}</div></StandardPage>,
 });

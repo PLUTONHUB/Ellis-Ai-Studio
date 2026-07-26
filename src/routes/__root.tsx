@@ -9,11 +9,11 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#ffffff" }, { name: "application-name", content: "Ellis AI Studio" }, { name: "robots", content: "index, follow" },
-      { title: "AI Automation & Custom Software for Service Businesses | Ellis AI Studio" },
-      { name: "description", content: "Ellis AI Studio designs, builds, and manages AI-powered growth infrastructure: intelligent websites, custom software, AI agents, automation, and operational intelligence." },
+      { title: "Intelligent Business Infrastructure | Ellis AI Studio" },
+      { name: "description", content: "Ellis AI Studio researches, designs, engineers, deploys, and improves intelligent business infrastructure." },
       { property: "og:type", content: "website" }, { property: "og:locale", content: "en_US" }, { property: "og:site_name", content: "Ellis AI Studio" },
-      { property: "og:title", content: "AI Automation & Custom Software for Service Businesses | Ellis AI Studio" },
-      { property: "og:description", content: "Intelligent websites, custom software, AI agents, automation, and operational intelligence for scalable business growth." }, { property: "og:image", content: "https://ellisaistudio.com/logo/ellis-og.png" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: "https://ellisaistudio.com/logo/ellis-og.png" },
+      { property: "og:title", content: "Intelligent Business Infrastructure | Ellis AI Studio" },
+      { property: "og:description", content: "Connected digital infrastructure engineered for the way modern businesses operate." }, { property: "og:image", content: "https://ellisaistudio.com/logo/ellis-og.png" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: "https://ellisaistudio.com/logo/ellis-og.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss }, { rel: "stylesheet", href: a11yCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" },
