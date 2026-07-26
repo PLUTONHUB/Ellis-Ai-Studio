@@ -1,6 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRoute, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import appCss from "~/styles/app.css?url";
+import mobileNavigationCss from "~/styles/mobile-navigation.css?url";
 import { jsonLd, organizationSchema, siteUrl } from "~/lib/seo";
 
 export const Route = createRootRoute({
@@ -15,7 +16,7 @@ export const Route = createRootRoute({
       { property: "og:description", content: "Connected digital infrastructure engineered for the way modern businesses operate." }, { property: "og:image", content: "https://ellisaistudio.com/logo/ellis-og.png" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: "https://ellisaistudio.com/logo/ellis-og.png" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "stylesheet", href: appCss }, { rel: "stylesheet", href: mobileNavigationCss }, { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/logo/ellis-favicon-32.png" }, { rel: "apple-touch-icon", sizes: "180x180", href: "/logo/ellis-apple-touch-icon.png" },

@@ -1,0 +1,22 @@
+@media (max-width: 760px) {
+  .site-nav {
+    min-height: 66px;
+    padding: 10px 20px;
+    flex-wrap: wrap;
+  }
+
+  .site-nav nav {
+    order: 3;
+    display: flex;
+    width: 100%;
+    gap: 18px;
+    overflow-x: auto;
+    padding: 3px 0 2px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .site-nav nav a {
+    flex: 0 0 auto;
+  }
+}
