@@ -45,3 +45,27 @@ test("scheduled sends serialize through the same safe outbound builder", () => {
   assert.equal(decodedSubject(raw), "Scheduled note");
   assert.ok(decodedParts(raw).includes("This is scheduled for tomorrow."));
 });
+
+test("UTF-8 subjects and bodies preserve smart punctuation across MIME alternatives", () => {
+  const subject = "Ellis AI Studio — “your next step” … it’s ready";
+  const html = "<p>We’re ready — with “connected systems” … not isolated tools.</p>";
+  const raw = buildGmailRawMessage({ to: ["client@example.com"], subject, html });
+  assert.match(raw, /^Subject: =\?UTF-8\?B\?.+\?=$/mi);
+  assert.match(raw, /Content-Type: text\/plain; charset=UTF-8\r?\nContent-Transfer-Encoding: base64/i);
+  assert.match(raw, /Content-Type: text\/html; charset=UTF-8\r?\nContent-Transfer-Encoding: base64/i);
+  assert.equal(decodedSubject(raw), subject);
+  const parts = decodedParts(raw);
+  assert.ok(parts.includes("We’re ready — with “connected systems” … not isolated tools."));
+  assert.ok(parts.includes(html));
+  assert.equal(Buffer.from(parts.at(-1)!, "utf8").toString("utf8"), html);
+  assert.ok(!/charset=(?:ISO-8859-1|Windows-1252)/i.test(raw));
+});
+
+test("UTF-8 transport payload is Gmail-safe base64url without character-set fallback", () => {
+  const raw = buildGmailRawMessage({ to: ["client@example.com"], subject: "Quotes “ ”, apostrophe ’, dash —, ellipsis …", html: "<p>Quotes “ ”, apostrophe ’, dash —, ellipsis …</p>" });
+  const gmailPayload = Buffer.from(raw, "utf8").toString("base64url");
+  const reconstructed = Buffer.from(gmailPayload, "base64url").toString("utf8");
+  assert.equal(reconstructed, raw);
+  assert.equal(decodedSubject(reconstructed), "Quotes “ ”, apostrophe ’, dash —, ellipsis …");
+  assert.ok(decodedParts(reconstructed).some((part) => part.includes("apostrophe ’, dash —, ellipsis …")));
+});

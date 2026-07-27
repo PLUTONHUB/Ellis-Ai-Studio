@@ -19,9 +19,10 @@ export type GmailConnection = { accessRequired: boolean; configured: boolean; co
 type ScheduledDraft = { id: string; to: string[]; subject: string; html: string; attachments: GmailAttachment[]; scheduledFor: number; createdAt: number };
 
 function required(name: string) { const value = process.env[name]; if (!value) throw new Error(`${name} is not configured.`); return value; }
-function configured() { return ["GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GMAIL_OAUTH_REDIRECT_URI", "GMAIL_OAUTH_STATE_SECRET", "GMAIL_TOKEN_ENCRYPTION_KEY", "GMAIL_DASHBOARD_ACCESS_TOKEN"].every((name) => Boolean(process.env[name])); }
+function localDevelopment() { return process.env.NODE_ENV !== "production"; }
+function configured() { const required = ["GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "GMAIL_OAUTH_REDIRECT_URI", "GMAIL_OAUTH_STATE_SECRET", "GMAIL_TOKEN_ENCRYPTION_KEY"]; return required.every((name) => Boolean(process.env[name])) && (localDevelopment() || Boolean(process.env.GMAIL_DASHBOARD_ACCESS_TOKEN)); }
 function cookie(name: string) { return (getRequestHeader("cookie") ?? "").split(";").map((value) => value.trim()).find((value) => value.startsWith(`${name}=`))?.slice(name.length + 1); }
-function allowed() { const expected = process.env.GMAIL_DASHBOARD_ACCESS_TOKEN; const actual = cookie("ellis_gmail_dashboard"); return Boolean(expected && actual && expected.length === actual.length && timingSafeEqual(Buffer.from(expected), Buffer.from(actual))); }
+function allowed() { if (localDevelopment()) return true; const expected = process.env.GMAIL_DASHBOARD_ACCESS_TOKEN; const actual = cookie("ellis_gmail_dashboard"); return Boolean(expected && actual && expected.length === actual.length && timingSafeEqual(Buffer.from(expected), Buffer.from(actual))); }
 function access() { if (!allowed()) throw new Error("Dashboard access is required."); }
 const store = createEncryptedJsonStore<Token | undefined>({ path: STORE_PATH, encryptionSecret: () => required("GMAIL_TOKEN_ENCRYPTION_KEY"), empty: () => undefined });
 const scheduleStore = createEncryptedJsonStore<ScheduledDraft[]>({ path: SCHEDULE_PATH, encryptionSecret: () => required("GMAIL_TOKEN_ENCRYPTION_KEY"), empty: () => [] });
