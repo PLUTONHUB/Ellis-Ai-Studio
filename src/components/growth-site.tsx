@@ -2,6 +2,7 @@ import { BrandLogo } from "./brand-logo";
 import { StudioPricing } from "./studio-sections";
 import type { ReactNode } from "react";
 import "~/styles/brand.css";
+import "~/styles/page-back.css";
 import "~/styles/studio-sections.css";
 
 export const bookingUrl = "https://calendar.app.google/YytWSVvdNyPhCBK58";
@@ -40,5 +41,5 @@ export function GrowthHome() {
 }
 
 export function StandardPage({ eyebrow, title, intro, children }: { eyebrow: string; title: string; intro: string; children: ReactNode }) {
-  return <PublicPage><section className="hero"><div className="wrap hero-content"><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="lede">{intro}</p></div></section><section className="section"><div className="wrap">{children}</div></section><section className="callout"><div className="wrap"><div><p className="eyebrow">Next step</p><h2>Discuss your business goals with Ellis AI Studio.</h2></div><a className="button button-light" href={bookingUrl} target="_blank" rel="noreferrer">Schedule a consultation</a></div></section></PublicPage>;
+  return <PublicPage><section className="hero"><div className="wrap hero-content"><a className="page-back" href="/" onClick={(event) => { if (typeof window !== "undefined" && document.referrer.startsWith(window.location.origin)) { event.preventDefault(); window.history.back(); } }}><span aria-hidden="true">←</span> Back</a><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="lede">{intro}</p></div></section><section className="section"><div className="wrap">{children}</div></section><section className="callout"><div className="wrap"><div><p className="eyebrow">Next step</p><h2>Discuss your business goals with Ellis AI Studio.</h2></div><a className="button button-light" href={bookingUrl} target="_blank" rel="noreferrer">Schedule a consultation</a></div></section></PublicPage>;
 }

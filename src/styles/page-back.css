@@ -1,0 +1,38 @@
+.page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 30px;
+  color: #42524c;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .01em;
+  transition: color .25s var(--ease), transform .25s var(--ease);
+}
+
+.page-back span {
+  color: var(--green);
+  font-size: 17px;
+  line-height: 1;
+  transition: transform .25s var(--ease);
+}
+
+.page-back:hover {
+  color: var(--green);
+  transform: translateX(-3px);
+}
+
+.page-back:hover span { transform: translateX(-3px); }
+
+.page-back:focus-visible {
+  outline: 3px solid #c5e2d6;
+  outline-offset: 5px;
+  border-radius: 3px;
+}
+
+@media (max-width: 760px) {
+  .page-back {
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+}
