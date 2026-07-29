@@ -1,4 +1,5 @@
 import { BrandLogo } from "./brand-logo";
+import { PromoCountdown } from "./promo-countdown";
 import { StudioPricing } from "./studio-sections";
 import type { ReactNode } from "react";
 import "~/styles/brand.css";
@@ -26,7 +27,7 @@ function Nav() {
 
 function Footer() { return <footer className="site-footer"><div className="wrap"><span>© {new Date().getFullYear()} Ellis AI Studio</span></div></footer>; }
 
-export function PublicPage({ children }: { children: ReactNode }) { return <div className="site-shell"><Nav /><main id="main-content">{children}</main><Footer /></div>; }
+export function PublicPage({ children }: { children: ReactNode }) { return <div className="site-shell"><PromoCountdown /><Nav /><main id="main-content">{children}</main><Footer /></div>; }
 
 export function GrowthHome() {
   const outcomes = [["Create a connected experience", "Design websites, communications, and content systems that give customers a clear path forward."], ["Engineer better operations", "Connect CRM, automation, custom software, and workflows so important work moves with context."], ["Improve with intelligence", "Use AI, analytics, and operating signals to make better decisions and continuously strengthen the system."]];
