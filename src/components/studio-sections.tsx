@@ -48,7 +48,7 @@ export function StudioPricing() {
   );
 }
 
-function LegacyStudioPricing() {
+export function LegacyStudioPricing() {
   return <section className="studio-pricing" id="pricing"><div className="wrap"><div className="studio-section-heading"><p className="eyebrow">Founding Client Pricing</p><h2>Launch pricing for practical systems that move your business forward.</h2><p>Available while Ellis AI Studio builds its initial portfolio. Every project is scoped around your goals, so final pricing is confirmed before work begins.</p></div><div className="pricing-grid">{foundingPrices.map(([service, price, description]) => <article key={service}><p>{service}</p><strong>{price}</strong><span>{description}</span></article>)}</div><a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Request a Business Assessment <span aria-hidden="true">→</span></a></div></section>;
 }
 
