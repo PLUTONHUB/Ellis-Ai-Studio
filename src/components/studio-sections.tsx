@@ -1,27 +1,55 @@
 import { useState, type FormEvent } from "react";
+import "../styles/studio-pricing-promo.css";
 
 const bookingUrl = "https://calendar.app.google/YytWSVvdNyPhCBK58";
 
-const foundingPrices = [
-  ["Landing Pages", "From $750", "Focused conversion pages for a single offer or campaign."],
-  ["Multi-page Websites", "From $1,800", "Custom websites with clear journeys, connected systems, and conversion paths."],
-  ["Website Redesigns", "From $1,200", "A thoughtful visual and conversion upgrade for an existing website."],
-  ["SEO Foundations", "From $500", "Technical and on-page essentials for a stronger search starting point."],
-  ["Local SEO Setup", "From $650", "Google Business Profile, local structure, and service-area essentials."],
-  ["AI Chat Assistants", "From $900", "Always-on website assistance for customer questions and lead routing."],
-  ["Appointment Booking Systems", "From $450", "Simple booking flows that make it easier for customers to choose a time."],
-  ["Lead Capture Systems", "From $500", "Quote forms and follow-up paths designed to keep leads moving."],
-  ["Business Automation", "From $1,000", "Practical workflows that reduce repetitive admin work."],
-  ["CRM Integrations", "From $1,200", "Connected customer, estimate, and job information in one place."],
-  ["Review Management", "From $250/mo", "A clean process for requesting and organizing customer feedback."],
-  ["Maintenance Plans", "From $149/mo", "Ongoing website care, updates, and small improvements."],
+const promotionalPrices = [
+  ["Landing Pages", "From $750", "From $300", "Focused conversion pages for a single offer or campaign."],
+  ["Multi-page Websites", "From $1,800", "From $720", "Custom websites with clear journeys, connected systems, and conversion paths."],
+  ["Website Redesigns", "From $1,200", "From $480", "A thoughtful visual and conversion upgrade for an existing website."],
+  ["SEO Foundations", "From $500", "From $200", "Technical and on-page essentials for a stronger search starting point."],
+  ["Local SEO Setup", "From $650", "From $260", "Google Business Profile, local structure, and service-area essentials."],
+  ["AI Chat Assistants", "From $900", "From $360", "Always-on website assistance for customer questions and lead routing."],
+  ["Appointment Booking Systems", "From $450", "From $180", "Simple booking flows that make it easier for customers to choose a time."],
+  ["Lead Capture Systems", "From $500", "From $200", "Quote forms and follow-up paths designed to keep leads moving."],
+  ["Business Automation", "From $1,000", "From $400", "Practical workflows that reduce repetitive admin work."],
+  ["CRM Integrations", "From $1,200", "From $480", "Connected customer, estimate, and job information in one place."],
+  ["Review Management", "From $250/mo", "From $100/mo", "A clean process for requesting and organizing customer feedback."],
+  ["Maintenance Plans", "From $149/mo", "From $59.60/mo", "Ongoing website care, updates, and small improvements."],
 ];
+const foundingPrices = promotionalPrices;
 
 type ReviewSubmission = { name: string; rating: string; message: string };
 const reviewNotice = "No client reviews yet. This section will display verified customer feedback as projects are completed.";
 
 export function StudioPricing() {
-  return <section className="studio-pricing" id="pricing"><div className="wrap"><div className="studio-section-heading"><p className="eyebrow">Founding Client Pricing</p><h2>Launch pricing for practical systems that move your business forward.</h2><p>Available while Ellis AI Studio builds its initial portfolio. Every project is scoped around your goals, so final pricing is confirmed before work begins.</p></div><div className="pricing-grid">{foundingPrices.map(([service, price, description]) => <article key={service}><p>{service}</p><strong>{price}</strong><span>{description}</span></article>)}</div><a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Schedule a consultation <span aria-hidden="true">→</span></a></div></section>;
+  return (
+    <section className="studio-pricing" id="pricing">
+      <div className="wrap">
+        <div className="studio-section-heading">
+          <p className="eyebrow">60% Promotional Pricing</p>
+          <h2>Practical growth systems—now 60% off.</h2>
+          <p>Every service below is currently discounted by 60%. Final scope and pricing are confirmed before work begins.</p>
+        </div>
+        <div className="pricing-grid">
+          {promotionalPrices.map(([service, originalPrice, promotionalPrice, description]) => (
+            <article key={service}>
+              <p>{service}</p>
+              <span className="price-original">{originalPrice}</span>
+              <strong>{promotionalPrice}</strong>
+              <small className="price-discount">60% off</small>
+              <span>{description}</span>
+            </article>
+          ))}
+        </div>
+        <a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Request a Business Assessment <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  );
+}
+
+function LegacyStudioPricing() {
+  return <section className="studio-pricing" id="pricing"><div className="wrap"><div className="studio-section-heading"><p className="eyebrow">Founding Client Pricing</p><h2>Launch pricing for practical systems that move your business forward.</h2><p>Available while Ellis AI Studio builds its initial portfolio. Every project is scoped around your goals, so final pricing is confirmed before work begins.</p></div><div className="pricing-grid">{foundingPrices.map(([service, price, description]) => <article key={service}><p>{service}</p><strong>{price}</strong><span>{description}</span></article>)}</div><a className="button" href={bookingUrl} target="_blank" rel="noreferrer">Request a Business Assessment <span aria-hidden="true">→</span></a></div></section>;
 }
 
 export function StudioReviews() {

@@ -1,0 +1,19 @@
+.pricing-grid .price-original {
+  color: #7c8983;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: line-through;
+}
+
+.pricing-grid .price-discount {
+  width: max-content;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #d8eee4;
+  color: #176240;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
