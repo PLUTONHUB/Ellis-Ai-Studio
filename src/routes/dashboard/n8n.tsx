@@ -1,0 +1,6 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+
+const load = createServerFn({ method: "GET" }).handler(async () => (await import("~/lib/n8n.server")).n8nDashboard());
+export const Route = createFileRoute("/dashboard/n8n")({ loader: () => load(), component: N8n });
+function N8n() { const data = Route.useLoaderData(); return <main className="wrap" style={{ padding: "64px 28px" }}><p className="eyebrow">CONTENT OS / AUTOMATION</p><h1>n8n Workflows</h1><p>Connected to the Ellis AI Studio n8n workspace.</p><section style={{ display: "flex", gap: 14, margin: "28px 0" }}><article style={{ padding: 16, border: "1px solid #303139", borderRadius: 8 }}><b>{data.total}</b><span> workflows</span></article><article style={{ padding: 16, border: "1px solid #303139", borderRadius: 8 }}><b>{data.active}</b><span> active</span></article></section><section>{data.workflows.length ? data.workflows.map(workflow => <article key={workflow.id} style={{ padding: "15px 0", borderTop: "1px solid #303139" }}><b>{workflow.name}</b><span> · {workflow.active ? "Active" : "Inactive"}{workflow.updatedAt ? ` · Updated ${new Date(workflow.updatedAt).toLocaleString()}` : ""}</span></article>) : <p>No workflows are currently available through the Public API.</p>}</section></main>; }

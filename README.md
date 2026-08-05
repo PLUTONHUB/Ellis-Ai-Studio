@@ -16,6 +16,20 @@ npm run typecheck
 npm run build
 ```
 
+## Mission Control local server
+
+Mission Control is supervised as three coordinated local services: the HTTPS dashboard, the Pluto dispatcher, and the learning loop. After `SUPABASE_DATABASE_URL` and the local HTTPS certificate settings are configured in `.env` / `.env.local`, start all three together with:
+
+```bash
+npm run start:mission-control
+```
+
+Use `Ctrl+C` in that terminal to stop all three services cleanly. The dashboard is available at `https://127.0.0.1:3000/dashboard/mission-control`. Before the first start, run the non-destructive runtime verification:
+
+```bash
+npm run check:mission-control
+```
+
 The TanStack Start Vite plugin generates `src/routeTree.gen.ts` during development and production builds. The generated file is intentionally ignored by Git.
 
 ## Meta publishing

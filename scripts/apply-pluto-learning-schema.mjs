@@ -1,0 +1,2 @@
+import { Client } from 'pg'; import { readFile } from 'node:fs/promises';
+const env=Object.fromEntries((await readFile('.env','utf8')).split(/\r?\n/).flatMap(line=>{const m=line.match(/^([A-Z0-9_]+)=(.*)$/);return m?[[m[1],m[2]]]:[]})); const client=new Client({connectionString:env.SUPABASE_DATABASE_URL,ssl:{rejectUnauthorized:false}}); await client.connect(); try{await client.query(await readFile('supabase/migrations/20260727_pluto_learning_loop.sql','utf8'));console.log('learning schema applied')}finally{await client.end()}

@@ -1,0 +1,34 @@
+{
+  "kind": "calendar#event",
+  "etag": "\"3571559917017246\"",
+  "id": "7ddhd8e76oc2gf7b3nf6pm39t4",
+  "status": "confirmed",
+  "htmlLink": "https://www.google.com/calendar/event?eid=N2RkaGQ4ZTc2b2MyZ2Y3YjNuZjZwbTM5dDQgamFrZUBlbGxpc2Fpc3R1ZGlvLmNvbQ",
+  "created": "2026-08-03T17:59:18.000Z",
+  "updated": "2026-08-03T17:59:18.508Z",
+  "summary": "PRE-POST | LinkedIn Private Test 2",
+  "description": "CONTENT_ID: TEST-EAS-002\nPLATFORM: LINKEDIN\nTOPIC: Three repetitive tasks small businesses should automate\nAUDIENCE: Small-business owners\nGOAL: Educate and attract qualified leads\nCTA: Ask readers which repetitive task consumes the most time\nWEBSITE: https://ellisaistudio.com\nAPPROVAL_REQUIRED: YES\nSTATUS: READY",
+  "creator": {
+    "email": "jake@ellisaistudio.com",
+    "self": true
+  },
+  "organizer": {
+    "email": "jake@ellisaistudio.com",
+    "self": true
+  },
+  "start": {
+    "dateTime": "2026-08-03T11:07:18-07:00",
+    "timeZone": "America/Los_Angeles"
+  },
+  "end": {
+    "dateTime": "2026-08-03T11:22:18-07:00",
+    "timeZone": "America/Los_Angeles"
+  },
+  "visibility": "private",
+  "iCalUID": "7ddhd8e76oc2gf7b3nf6pm39t4@google.com",
+  "sequence": 0,
+  "reminders": {
+    "useDefault": true
+  },
+  "eventType": "default"
+}

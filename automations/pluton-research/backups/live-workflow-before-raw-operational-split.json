@@ -1,0 +1,2817 @@
+{
+  "updatedAt": "2026-08-03T00:43:48.244Z",
+  "createdAt": "2026-08-01T21:00:21.298Z",
+  "id": "tz4fJQSSvBk3zswH",
+  "name": "Pluton Research - Google Form Intake to Pre-Call Brief",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Google Sheets Trigger - New Form Response",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        180
+      ],
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "event": "rowAdded"
+      },
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "waxTw7DKUsNfb8RX",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "id": "normalize",
+      "name": "Normalize Form Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const row=$input.first().json;const aliases={businessName:['Business Name'],fullName:['Full Name'],jobTitle:['Job Title'],email:['Email'],phone:['Phone Number'],employeeCount:['Number of Employees'],annualRevenue:['Approximate Annual Revenue'],primaryDecisionMaker:['Who is the primary decision-maker for this project?'],additionalApprovers:['Besides yourself, who else will be involved in approving this project?'],website:['Business Profile URL','Website','Business Website','Website URL'],profileUrls:['Additional Business Profile URLs'],businessDescription:['Tell us about your business.'],personalDescription:['Tell us about yourself.'],improvementArea:['Which area of your business would benefit the most from improvement?'],challenge:['Please describe the challenge in detail.'],systems:['Which systems does your business currently use?'],software:['Which software do you currently use?'],successVision:['If we met again one year from today, what would success look like?'],success12Months:['What would a successful solution accomplish within the next 6-12 months?'],budgetRange:['What investment range have you allocated for solving this challenge?'],timeline:['When would you like to begin?'],automationWish:['If you could automate one thing in your business tomorrow, what would it be?']};const get=names=>names.map(name=>row[name]).find(value=>value!==undefined&&String(value).trim()!=='')??'';const url=value=>{const text=String(value||'').trim();if(!text)return '';try{const parsed=new URL(/^https?:\\/\\//i.test(text)?text:'https://'+text);return /^https?:$/.test(parsed.protocol)?parsed.toString():'';}catch{return '';}};const timestamp=String(row.Timestamp??row.timestamp??'').trim();const email=String(get(aliases.email)).trim();const businessName=String(get(aliases.businessName)).trim();const expectedSubmissionId=timestamp&&email&&businessName?[timestamp,email,businessName].join('|'):'';const storedSubmissionId=String(row['Pluton Submission ID']||'').trim();const submissionId=storedSubmissionId||expectedSubmissionId;const rowIdentityValid=Boolean(expectedSubmissionId&&(!storedSubmissionId||storedSubmissionId===expectedSubmissionId));const profileUrls=String(get(aliases.profileUrls)).split(/[\\n,]/).map(url).filter(Boolean);const website=url(get(aliases.website));console.log(JSON.stringify({event:'pluton.intake.normalized',hasSubmissionId:Boolean(submissionId),hasStoredSubmissionId:Boolean(storedSubmissionId),hasWebsite:Boolean(website),profileUrlCount:profileUrls.length,rowIdentityValid}));return[{json:{submissionId,expectedSubmissionId,rowIdentityValid,rawRow:row,intake:{businessName,fullName:String(get(aliases.fullName)).trim(),jobTitle:String(get(aliases.jobTitle)).trim(),email,phone:String(get(aliases.phone)).trim(),employeeCount:String(get(aliases.employeeCount)),annualRevenue:String(get(aliases.annualRevenue)),primaryDecisionMaker:String(get(aliases.primaryDecisionMaker)),additionalApprovers:String(get(aliases.additionalApprovers)),website,profileUrls,businessDescription:String(get(aliases.businessDescription)),personalDescription:String(get(aliases.personalDescription)),improvementArea:String(get(aliases.improvementArea)),challenge:String(get(aliases.challenge)),systems:String(get(aliases.systems)),software:String(get(aliases.software)),successVision:String(get(aliases.successVision)),success12Months:String(get(aliases.success12Months)),budgetRange:String(get(aliases.budgetRange)),timeline:String(get(aliases.timeline)),automationWish:String(get(aliases.automationWish))}},pairedItem:{item:0}}];"
+      }
+    },
+    {
+      "id": "derive-row-identity",
+      "name": "Derive Fresh Form Row Identity",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1160,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const item=$input.first().json;const stored=String(item.submissionId||'').trim();const expected=String(item.expectedSubmissionId||'').trim();const rowIdentityValid=Boolean(expected&&(!stored||stored===expected));console.log(JSON.stringify({event:'pluton.row_identity.derived',hasStoredId:Boolean(stored),rowIdentityValid}));return[{json:{...item,submissionId:stored||expected,rowIdentityValid},pairedItem:{item:0}}];"
+      }
+    },
+    {
+      "id": "validate",
+      "name": "Validate Required Business Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const item=$input.first().json;const errors=[];if(!item.rowIdentityValid||!item.submissionId)errors.push('Unable to derive a stable Pluton Submission ID for this trigger row.');if(!item.intake.businessName)errors.push('Business Name is required.');if(!item.intake.website&&item.intake.profileUrls.length===0)errors.push('Provide a valid Business Profile URL or additional profile URL.');const codes=errors.map(error=>error.startsWith('Unable')?'missing_row_identity':error.startsWith('Business')?'missing_business_name':'missing_valid_url');console.log(JSON.stringify({event:'pluton.intake.validated',hasSubmissionId:Boolean(item.submissionId),rowIdentityValid:item.rowIdentityValid,valid:errors.length===0,errorCodes:codes}));return[{json:{...item,valid:errors.length===0,validationErrors:errors},pairedItem:{item:0}}];"
+      }
+    },
+    {
+      "id": "valid",
+      "name": "Submission Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -820,
+        180
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "alreadyDelivered",
+      "name": "Already Delivered?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -820,
+        100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.rawRow['Pluton Status'] }}",
+              "rightValue": "Complete",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "stopDuplicate",
+      "name": "Stop Duplicate Delivery",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        -80
+      ],
+      "parameters": {
+        "jsCode": "const item=$input.first().json;console.log(JSON.stringify({event:'pluton.delivery.duplicate_suppressed',hasSubmissionId:Boolean(item.submissionId)}));return [];"
+      }
+    },
+    {
+      "id": "invalid",
+      "name": "Sheet - Mark Invalid",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -580,
+        40
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.rawRow.Timestamp }}",
+            "Email": "={{ $json.intake.email }}",
+            "Business Name": "={{ $json.intake.businessName }}",
+            "Pluton Submission ID": "={{ $json.submissionId }}",
+            "Pluton Status": "Invalid",
+            "Error Message": "={{ $json.validationErrors.join(' ') }}"
+          },
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "type": "string",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "type": "string",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Pluton Submission ID",
+              "displayName": "Pluton Submission ID",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Pluton Status",
+              "displayName": "Pluton Status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            }
+          ],
+          "matchingColumns": [
+            "Timestamp",
+            "Email",
+            "Business Name"
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vh53RGZncobL5DTh",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "rehydrate-after-capture",
+      "name": "Rehydrate Trigger Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -520,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const item=$('Derive Fresh Form Row Identity').first().json;console.log(JSON.stringify({event:'pluton.trigger_payload.rehydrated',hasSubmissionId:Boolean(item.submissionId)}));return[{json:item,pairedItem:{item:0}}];"
+      }
+    },
+    {
+      "id": "capture-submission-id",
+      "name": "Sheet - Capture Submission ID",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -700,
+        180
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.rawRow.Timestamp }}",
+            "Email": "={{ $json.intake.email }}",
+            "Business Name": "={{ $json.intake.businessName }}",
+            "Pluton Submission ID": "={{ $json.submissionId }}"
+          },
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "type": "string",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Business Name",
+              "displayName": "Business Name",
+              "type": "string",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Pluton Submission ID",
+              "displayName": "Pluton Submission ID",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            }
+          ],
+          "matchingColumns": [
+            "Timestamp",
+            "Email",
+            "Business Name"
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vh53RGZncobL5DTh",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "rehydrate-after-researching",
+      "name": "Rehydrate After Researching",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        280
+      ],
+      "parameters": {
+        "jsCode": "const item=$('Derive Fresh Form Row Identity').first().json;console.log(JSON.stringify({event:'pluton.researching_payload.rehydrated',hasSubmissionId:Boolean(item.submissionId)}));return[{json:item,pairedItem:{item:0}}];"
+      }
+    },
+    {
+      "id": "researching",
+      "name": "Sheet - Mark Researching",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -580,
+        280
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Pluton Submission ID": "={{ $json.submissionId }}",
+            "Pluton Status": "Researching",
+            "Research Started": "={{ $now.toISO() }}",
+            "Error Message": ""
+          },
+          "schema": [
+            {
+              "id": "Pluton Submission ID",
+              "displayName": "Pluton Submission ID",
+              "type": "string",
+              "required": false,
+              "defaultMatch": true,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Pluton Status",
+              "displayName": "Pluton Status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Research Started",
+              "displayName": "Research Started",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true
+            }
+          ],
+          "matchingColumns": [
+            "Pluton Submission ID"
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vh53RGZncobL5DTh",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "crawl",
+      "name": "Firecrawl - Start Website Crawl (20 pages)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -340,
+        280
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v2/crawl",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({url:$json.intake.website || $json.intake.profileUrls[0], limit:20, maxDiscoveryDepth:2, crawlEntireDomain:true, allowExternalLinks:false, allowSubdomains:false, sitemap:'skip', excludePaths:['/privacy*','/terms*','/login*','/cart*','/wp-admin*'], scrapeOptions:{formats:['markdown'],onlyMainContent:true,onlyCleanContent:true,removeBase64Images:true,blockAds:true}}) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "5eaT3wFTAUd9B0hY",
+          "name": "Firecrawl API Key (Pluton)"
+        }
+      }
+    },
+    {
+      "id": "wait",
+      "name": "Wait for Crawl",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        280
+      ],
+      "parameters": {
+        "amount": 15,
+        "unit": "seconds"
+      },
+      "webhookId": "162a94ce-6d81-4ed7-85d6-678c4f843356"
+    },
+    {
+      "id": "status",
+      "name": "Firecrawl - Get Crawl Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        120,
+        280
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.firecrawl.dev/v2/crawl/{{ $json.crawlId || $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": false,
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "id": "complete",
+      "name": "Crawl Complete?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        340,
+        280
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.crawlComplete }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "queries",
+      "name": "Build Public Research Queries",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        580,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const intake=$('Normalize Form Response').first().json.intake; const name=intake.businessName; const site=intake.website ? new URL(intake.website).hostname : ''; const terms=['reviews business profile','products services','competitors alternatives','customer complaints','hiring careers growth signals']; return terms.map(topic=>({json:{query:`${name} ${topic}${site?` ${site}`:''}`,intake}}));"
+      }
+    },
+    {
+      "id": "search",
+      "name": "Firecrawl - Search Public Signals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        180
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.firecrawl.dev/v2/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({query:$json.query,limit:5,sources:['web'],country:'US',timeout:60000,scrapeOptions:{formats:['markdown'],onlyMainContent:true}}) }}",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "id": "evidence",
+      "name": "Clean and Package Evidence",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const raw=$('Normalize Form Response').first().json.intake; const crawl=$('Firecrawl - Get Crawl Status').first().json; const publicResults=$input.all().flatMap(item=>item.json.data?.web||item.json.web||item.json.data||[]); const allowed=['businessName','website','profileUrls','businessDescription','businessArea','challenge','currentSystems','currentSoftware','oneYearSuccess','solutionOutcome','budgetRange','timeline','automationWish']; const intake=Object.fromEntries(allowed.filter(k=>raw[k]!==undefined&&raw[k]!==null&&String(raw[k]).trim()).map(k=>[k,Array.isArray(raw[k])?raw[k].join(', '):String(raw[k]).slice(0,1000)])); const candidates=[...(crawl.data||crawl.pages||[]).map(p=>({sourceType:'website',sourceUrl:p.url||p.metadata?.sourceURL||p.metadata?.url,title:p.metadata?.title||p.title||'',content:p.markdown||p.content||''})),...publicResults.map(p=>({sourceType:'public_search',sourceUrl:p.url||p.metadata?.sourceURL||p.metadata?.url,title:p.metadata?.title||p.title||'',content:p.markdown||p.description||p.content||''}))]; const lineCounts=new Map(); for(const s of candidates)for(const l of String(s.content||'').split('\\n')){const x=l.replace(/\\s+/g,' ').trim().toLowerCase();if(x.length>=12)lineCounts.set(x,(lineCounts.get(x)||0)+1);} const repeated=new Set([...lineCounts].filter(([,n])=>n>=3).map(([x])=>x)); const seenUrls=new Set();const sources=[];let remaining=45000; for(const s of candidates){let u;try{u=new URL(s.sourceUrl);if(!['http:','https:'].includes(u.protocol))continue;}catch{continue;}const url=u.toString();if(seenUrls.has(url)||sources.length>=25||remaining<=0)continue;const seenLines=new Set();const content=String(s.content||'').replace(/\\r/g,'').split('\\n').map(l=>l.replace(/\\s+/g,' ').trim()).filter(l=>{const k=l.toLowerCase();if(!l||repeated.has(k)||seenLines.has(k))return false;seenLines.add(k);return true;}).join('\\n').slice(0,3500,remaining);if(!content)continue;seenUrls.add(url);remaining-=content.length;sources.push({sourceType:s.sourceType,sourceUrl:url,title:String(s.title||'').slice(0,300),content});} console.log(JSON.stringify({event:'pluton.ai.evidence_packaged',sourceCount:sources.length,sourceCharacterCount:45000-remaining,hasBusinessName:Boolean(intake.businessName)}));return[{json:{intake,clientProvidedFacts:Object.entries(intake).map(([field,value])=>({field,value})),sources,sourceUrls:sources.map(s=>s.sourceUrl),researchMetadata:{websitePageLimit:20,publicSearchQueries:5,sourceCount:sources.length,sourceCharacterCount:45000-remaining,completedAt:new Date().toISOString()},aiAttempt:Number($json.aiAttempt||1)}}];"
+      }
+    },
+    {
+      "id": "analyzing",
+      "name": "Sheet - Mark Analyzing",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1280,
+        80
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Pluton Submission ID": "={{ $('Normalize Form Response').first().json.submissionId }}",
+            "Pluton Status": "Analyzing",
+            "Error Message": ""
+          },
+          "matchingColumns": [
+            "Pluton Submission ID"
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vh53RGZncobL5DTh",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "restoreEvidence",
+      "name": "Restore Evidence After Analyzing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        80
+      ],
+      "parameters": {
+        "jsCode": "return[{json:$('Clean and Package Evidence').first().json}];"
+      }
+    },
+    {
+      "id": "ai",
+      "name": "OpenAI - Analyze Evidence",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        180
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({model:'gpt-4.1-mini',temperature:0.2,text:{format:{type:'json_schema',name:'pluton_pre_call_briefing',strict:true,schema:{type:'object',additionalProperties:false,required:['prospectSummary','clientProvidedFacts','verifiedFindings','inferences','visibleInfrastructure','customerJourney','priorityOpportunities','missingInformation','discoveryCallQuestions','recommendedDemo','callStrategy'],properties:{prospectSummary:{type:'object',additionalProperties:false,required:['businessName','businessModel','targetCustomer','mainChallenge','budgetRange','timeline'],properties:{businessName:{type:'string'},businessModel:{type:'string'},targetCustomer:{type:'string'},mainChallenge:{type:'string'},budgetRange:{type:'string'},timeline:{type:'string'}}},clientProvidedFacts:{type:'array',items:{type:'string'}},verifiedFindings:{type:'array',items:{type:'object',additionalProperties:false,required:['finding','sourceUrl','confidence'],properties:{finding:{type:'string'},sourceUrl:{type:'string'},confidence:{type:'string',enum:['high','medium','low']}}}},inferences:{type:'array',items:{type:'object',additionalProperties:false,required:['inference','supportingEvidence','confidence'],properties:{inference:{type:'string'},supportingEvidence:{type:'array',items:{type:'string'}},confidence:{type:'string',enum:['high','medium','low']}}}},visibleInfrastructure:{type:'array',items:{type:'string'}},customerJourney:{type:'object',additionalProperties:false,required:['discovery','leadCapture','conversion','serviceDelivery','support'],properties:{discovery:{type:'string'},leadCapture:{type:'string'},conversion:{type:'string'},serviceDelivery:{type:'string'},support:{type:'string'}}},priorityOpportunities:{type:'array',maxItems:5,items:{type:'object',additionalProperties:false,required:['title','problem','recommendedSolution','expectedBusinessOutcome','impact','complexity','budgetFit','evidenceUrls'],properties:{title:{type:'string'},problem:{type:'string'},recommendedSolution:{type:'string'},expectedBusinessOutcome:{type:'string'},impact:{type:'string',enum:['high','medium','low']},complexity:{type:'string',enum:['high','medium','low']},budgetFit:{type:'string',enum:['good','possible','poor']},evidenceUrls:{type:'array',items:{type:'string'}}}}},missingInformation:{type:'array',items:{type:'string'}},discoveryCallQuestions:{type:'array',minItems:5,maxItems:10,items:{type:'string'}},recommendedDemo:{type:'object',additionalProperties:false,required:['name','reason'],properties:{name:{type:'string'},reason:{type:'string'}}},callStrategy:{type:'array',items:{type:'string'}}}}},input:[{role:'system',content:[{type:'input_text',text:'Return only one JSON object matching the Pluton report contract. Treat intake as client-provided only. Every verified finding and every evidenceUrls value must use an exact URL from sourceUrls. Never invent internal systems, finances, metrics, employees, compliance facts, performance data, ROI, or sensitive traits. Use unknown when insufficient evidence. Limit opportunities to five. Match recommendations to budgetRange and timeline. Generate 5-10 specific discovery questions and justify the recommended demo using evidence.'}]},{role:'user',content:[{type:'input_text',text:JSON.stringify($json)}]}]}) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "id": "validateReport",
+      "name": "Validate AI Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const response=$input.first().json;const source=$('Clean and Package Evidence').first().json;const text=response.output_text||response.output?.flatMap(x=>x.content||[]).map(x=>x.text).filter(Boolean).join('')||response.choices?.[0]?.message?.content;let report;const errors=[];try{report=JSON.parse(text);}catch{errors.push('AI did not return valid JSON.');}const required=['prospectSummary','clientProvidedFacts','verifiedFindings','inferences','visibleInfrastructure','customerJourney','priorityOpportunities','missingInformation','discoveryCallQuestions','recommendedDemo','callStrategy'];const confidence=new Set(['high','medium','low']);const allowed=new Set(source.sourceUrls||[]);if(report){if(Object.keys(report).some(k=>!required.includes(k)))errors.push('Report contains unsupported fields.');for(const k of required)if(!(k in report))errors.push(`Missing ${k}.`);if(!Array.isArray(report.priorityOpportunities)||report.priorityOpportunities.length>5)errors.push('Invalid opportunity count.');if(!Array.isArray(report.discoveryCallQuestions)||report.discoveryCallQuestions.length<5||report.discoveryCallQuestions.length>10)errors.push('Report must include 5-10 discovery questions.');for(const f of report.verifiedFindings||[])if(!f?.finding||!confidence.has(f?.confidence)||!allowed.has(f?.sourceUrl))errors.push('Verified finding lacks a preserved source URL or valid confidence.');for(const o of report.priorityOpportunities||[])if(!['high','medium','low'].includes(o?.impact)||!['high','medium','low'].includes(o?.complexity)||!['good','possible','poor'].includes(o?.budgetFit)||!Array.isArray(o?.evidenceUrls)||o.evidenceUrls.some(u=>!allowed.has(u)))errors.push('Opportunity enum or evidence URL is invalid.');}const valid=errors.length===0;console.log(JSON.stringify({event:'pluton.ai.validation',valid,attempt:source.aiAttempt||1,errorCount:errors.length,verifiedFindingCount:report?.verifiedFindings?.length||0}));return[{json:{...source,report:valid?report:null,reportValid:valid,validationErrors:errors,aiAttempt:Number(source.aiAttempt||1)}}];"
+      }
+    },
+    {
+      "id": "reportValid",
+      "name": "Report Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        180
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.reportValid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "prepareRetry",
+      "name": "Prepare AI Retry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const item=$input.first().json;const attempt=Number(item.aiAttempt||1);if(attempt>=3)throw new Error(`Pluton AI report validation failed after ${attempt} attempts: ${(item.validationErrors||[]).join(' ').slice(0,600)}`);console.log(JSON.stringify({event:'pluton.ai.retry',nextAttempt:attempt+1,errorCount:(item.validationErrors||[]).length}));return[{json:{intake:item.intake,clientProvidedFacts:item.clientProvidedFacts,sources:item.sources,sourceUrls:item.sourceUrls,researchMetadata:item.researchMetadata,aiAttempt:attempt+1}}];"
+      }
+    },
+    {
+      "id": "prepareReportFile",
+      "name": "Prepare Validated Report File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        100
+      ],
+      "parameters": {
+        "jsCode": "const source=$input.first().json;const report=source.report;const packageData={report,evidencePackage:{intake:source.intake,clientProvidedFacts:source.clientProvidedFacts,sources:source.sources,sourceUrls:source.sourceUrls,researchMetadata:source.researchMetadata},generatedAt:new Date().toISOString(),schemaVersion:'1.0'};const safeName=String(source.intake.businessName||'business').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase();const binary=await this.helpers.prepareBinaryData(Buffer.from(JSON.stringify(packageData,null,2)),`${safeName}-pluton-report.json`,'application/json');return[{json:{...source,primaryOpportunity:report.priorityOpportunities?.[0]?.title||'',recommendedDemo:report.recommendedDemo?.name||''},binary:{data:binary}}];"
+      }
+    },
+    {
+      "id": "delivering",
+      "name": "Sheet - Mark Delivering",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2160,
+        100
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Pluton Submission ID": "={{ $('Normalize Form Response').first().json.submissionId }}",
+            "Pluton Status": "Delivering",
+            "Error Message": ""
+          },
+          "matchingColumns": [
+            "Pluton Submission ID"
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vh53RGZncobL5DTh",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "restoreFile",
+      "name": "Restore File After Delivering",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        100
+      ],
+      "parameters": {
+        "jsCode": "const item=$('Prepare Validated Report File').first();return[{json:item.json,binary:item.binary}];"
+      }
+    },
+    {
+      "id": "drive",
+      "name": "Google Drive - Save Full Report",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2240,
+        180
+      ],
+      "parameters": {
+        "operation": "upload",
+        "binaryPropertyName": "data",
+        "parents": [
+          "1ydyJ-KUaQDAn3s_PJI1VypI5-y2XW4NM"
+        ],
+        "options": {}
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "5qJYhZ8iuNxmLLTv",
+          "name": "Google Drive account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "completeRow",
+      "name": "Sheet - Mark Complete",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2000,
+        180
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Pluton Submission ID": "={{ $('Normalize Form Response').first().json.submissionId }}",
+            "Pluton Status": "Complete",
+            "Research Completed": "={{ $now.toISO() }}",
+            "Primary Opportunity": "={{ $('Prepare Validated Report File').first().json.primaryOpportunity }}",
+            "Recommended Demo": "={{ $('Prepare Validated Report File').first().json.recommendedDemo }}",
+            "Report URL": "={{ $json.webViewLink || $json.webContentLink || ('https://drive.google.com/open?id=' + $json.id) }}",
+            "Error Message": ""
+          },
+          "matchingColumns": [
+            "Pluton Submission ID"
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vh53RGZncobL5DTh",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "email",
+      "name": "Gmail - Notify Ellis",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2240,
+        180
+      ],
+      "parameters": {
+        "sendTo": "jake@ellisaistudio.com",
+        "subject": "={{ 'Pluton Research complete: ' + $('Prepare Validated Report File').first().json.intake.businessName }}",
+        "message": "={{ 'Pluton Research is complete for ' + $('Prepare Validated Report File').first().json.intake.businessName + '.\\n\\nPrimary opportunity: ' + $('Prepare Validated Report File').first().json.primaryOpportunity + '\\nRecommended demo: ' + $('Prepare Validated Report File').first().json.recommendedDemo + '\\nReport: ' + ($('Google Drive - Save Full Report').first().json.webViewLink || $('Google Drive - Save Full Report').first().json.id) }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XghORmCvWNWS3X9d",
+          "name": "Gmail account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "532f472f-43b5-4088-a626-5f8aa5f8422b"
+    },
+    {
+      "id": "pollState",
+      "name": "Evaluate Crawl State",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        360
+      ],
+      "parameters": {
+        "jsCode": "const status=$input.first().json; const prior=$('Wait for Crawl').item.json; const pollAttempt=Number(prior.pollAttempt||0)+1; const state=String(status.status||status.data?.status||'').toLowerCase(); if(pollAttempt>12) throw new Error('Firecrawl crawl did not complete after 12 polling attempts.'); const crawlComplete=['completed','done'].includes(state); console.log(JSON.stringify({event:'pluton.firecrawl.poll',pollAttempt,state:state||'unknown',crawlComplete})); return [{json:{...status,crawlId:prior.crawlId||prior.id,pollAttempt,crawlComplete},pairedItem:{item:0}}];"
+      }
+    },
+    {
+      "id": "firecrawlDiag",
+      "name": "Firecrawl Request Diagnostic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -440,
+        280
+      ],
+      "parameters": {
+        "jsCode": "const item=$input.first().json; const key=item.submissionId||''; let hash=2166136261; for(const char of key){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);} console.log(JSON.stringify({event:'pluton.firecrawl.request',submissionFingerprint:(hash>>>0).toString(16),pageLimit:20,hasPrimaryUrl:Boolean(item.intake.website||item.intake.profileUrls[0])})); return [{json:item,pairedItem:{item:0}}];"
+      }
+    },
+    {
+      "id": "row-identity-check",
+      "name": "Exact Triggering Row Identified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        180
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": true,
+              "id": "row-identity-valid",
+              "leftValue": "={{ $json.rowIdentityValid }}"
+            }
+          ],
+          "options": {
+            "typeValidation": "strict",
+            "leftValue": "",
+            "caseSensitive": true
+          }
+        }
+      }
+    },
+    {
+      "id": "stop-unsafe-sheet-update",
+      "name": "Stop Unsafe Sheet Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -680,
+        400
+      ],
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconsole.log(JSON.stringify({\n  event: 'pluton.sheet.row_identity_missing',\n  hasExpectedIdentity: Boolean(item.expectedSubmissionId),\n}));\nthrow new Error('Pluton Submission ID did not match the trigger row. No Sheet update was attempted.');"
+      }
+    }
+  ],
+  "connections": {
+    "Google Sheets Trigger - New Form Response": {
+      "main": [
+        [
+          {
+            "node": "Normalize Form Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Form Response": {
+      "main": [
+        [
+          {
+            "node": "Derive Fresh Form Row Identity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Derive Fresh Form Row Identity": {
+      "main": [
+        [
+          {
+            "node": "Validate Required Business Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Required Business Data": {
+      "main": [
+        [
+          {
+            "node": "Exact Triggering Row Identified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submission Valid?": {
+      "main": [
+        [
+          {
+            "node": "Sheet - Capture Submission ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheet - Mark Invalid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Delivered?": {
+      "main": [
+        [
+          {
+            "node": "Stop Duplicate Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Submission Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet - Mark Researching": {
+      "main": [
+        [
+          {
+            "node": "Rehydrate After Researching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rehydrate After Researching": {
+      "main": [
+        [
+          {
+            "node": "Firecrawl Request Diagnostic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firecrawl - Start Website Crawl (20 pages)": {
+      "main": [
+        [
+          {
+            "node": "Wait for Crawl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Crawl": {
+      "main": [
+        [
+          {
+            "node": "Firecrawl - Get Crawl Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firecrawl - Get Crawl Status": {
+      "main": [
+        [
+          {
+            "node": "Evaluate Crawl State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crawl Complete?": {
+      "main": [
+        [
+          {
+            "node": "Build Public Research Queries",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Crawl",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Public Research Queries": {
+      "main": [
+        [
+          {
+            "node": "Firecrawl - Search Public Signals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firecrawl - Search Public Signals": {
+      "main": [
+        [
+          {
+            "node": "Clean and Package Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean and Package Evidence": {
+      "main": [
+        [
+          {
+            "node": "Sheet - Mark Analyzing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet - Mark Analyzing": {
+      "main": [
+        [
+          {
+            "node": "Restore Evidence After Analyzing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Evidence After Analyzing": {
+      "main": [
+        [
+          {
+            "node": "OpenAI - Analyze Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI - Analyze Evidence": {
+      "main": [
+        [
+          {
+            "node": "Validate AI Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate AI Report": {
+      "main": [
+        [
+          {
+            "node": "Report Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Report Valid?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Validated Report File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare AI Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare AI Retry": {
+      "main": [
+        [
+          {
+            "node": "OpenAI - Analyze Evidence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Validated Report File": {
+      "main": [
+        [
+          {
+            "node": "Sheet - Mark Delivering",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet - Mark Delivering": {
+      "main": [
+        [
+          {
+            "node": "Restore File After Delivering",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore File After Delivering": {
+      "main": [
+        [
+          {
+            "node": "Google Drive - Save Full Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive - Save Full Report": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Notify Ellis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet - Mark Complete": {
+      "main": [
+        []
+      ]
+    },
+    "Gmail - Notify Ellis": {
+      "main": [
+        [
+          {
+            "node": "Sheet - Mark Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firecrawl Request Diagnostic": {
+      "main": [
+        [
+          {
+            "node": "Firecrawl - Start Website Crawl (20 pages)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate Crawl State": {
+      "main": [
+        [
+          {
+            "node": "Crawl Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exact Triggering Row Identified?": {
+      "main": [
+        [
+          {
+            "node": "Already Delivered?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop Unsafe Sheet Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet - Capture Submission ID": {
+      "main": [
+        [
+          {
+            "node": "Rehydrate Trigger Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rehydrate Trigger Payload": {
+      "main": [
+        [
+          {
+            "node": "Sheet - Mark Researching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "CvkxxvM7cTy8YdI4",
+    "saveExecutionProgress": true
+  },
+  "staticData": {
+    "node:Google Sheets Trigger - New Form Response": {
+      "documentId": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+      "sheetId": 1750217732,
+      "lastIndexChecked": 107
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "4378e74a-13ca-47b0-a066-24ff73537dfc",
+  "activeVersionId": "4378e74a-13ca-47b0-a066-24ff73537dfc",
+  "versionCounter": 19,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-08-01T21:00:21.300Z",
+      "createdAt": "2026-08-01T21:00:21.300Z",
+      "role": "workflow:owner",
+      "workflowId": "tz4fJQSSvBk3zswH",
+      "projectId": "Lv5y0hqvJJhBhAk5",
+      "project": {
+        "updatedAt": "2026-07-16T18:46:57.508Z",
+        "createdAt": "2026-07-16T18:46:45.820Z",
+        "id": "Lv5y0hqvJJhBhAk5",
+        "name": "Jacob Ellis <jake@ellisaistudio.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "917eed17-d837-4143-9b8b-4ec606a17633"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-08-03T00:43:48.245Z",
+    "createdAt": "2026-08-03T00:43:48.245Z",
+    "versionId": "4378e74a-13ca-47b0-a066-24ff73537dfc",
+    "workflowId": "tz4fJQSSvBk3zswH",
+    "nodes": [
+      {
+        "id": "trigger",
+        "name": "Google Sheets Trigger - New Form Response",
+        "type": "n8n-nodes-base.googleSheetsTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1520,
+          180
+        ],
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Form Responses 1",
+            "mode": "name"
+          },
+          "event": "rowAdded"
+        },
+        "credentials": {
+          "googleSheetsTriggerOAuth2Api": {
+            "id": "waxTw7DKUsNfb8RX",
+            "name": "Google Sheets Trigger account"
+          }
+        }
+      },
+      {
+        "id": "normalize",
+        "name": "Normalize Form Response",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1280,
+          180
+        ],
+        "parameters": {
+          "jsCode": "const row=$input.first().json;const aliases={businessName:['Business Name'],fullName:['Full Name'],jobTitle:['Job Title'],email:['Email'],phone:['Phone Number'],employeeCount:['Number of Employees'],annualRevenue:['Approximate Annual Revenue'],primaryDecisionMaker:['Who is the primary decision-maker for this project?'],additionalApprovers:['Besides yourself, who else will be involved in approving this project?'],website:['Business Profile URL','Website','Business Website','Website URL'],profileUrls:['Additional Business Profile URLs'],businessDescription:['Tell us about your business.'],personalDescription:['Tell us about yourself.'],improvementArea:['Which area of your business would benefit the most from improvement?'],challenge:['Please describe the challenge in detail.'],systems:['Which systems does your business currently use?'],software:['Which software do you currently use?'],successVision:['If we met again one year from today, what would success look like?'],success12Months:['What would a successful solution accomplish within the next 6-12 months?'],budgetRange:['What investment range have you allocated for solving this challenge?'],timeline:['When would you like to begin?'],automationWish:['If you could automate one thing in your business tomorrow, what would it be?']};const get=names=>names.map(name=>row[name]).find(value=>value!==undefined&&String(value).trim()!=='')??'';const url=value=>{const text=String(value||'').trim();if(!text)return '';try{const parsed=new URL(/^https?:\\/\\//i.test(text)?text:'https://'+text);return /^https?:$/.test(parsed.protocol)?parsed.toString():'';}catch{return '';}};const timestamp=String(row.Timestamp??row.timestamp??'').trim();const email=String(get(aliases.email)).trim();const businessName=String(get(aliases.businessName)).trim();const expectedSubmissionId=timestamp&&email&&businessName?[timestamp,email,businessName].join('|'):'';const storedSubmissionId=String(row['Pluton Submission ID']||'').trim();const submissionId=storedSubmissionId||expectedSubmissionId;const rowIdentityValid=Boolean(expectedSubmissionId&&(!storedSubmissionId||storedSubmissionId===expectedSubmissionId));const profileUrls=String(get(aliases.profileUrls)).split(/[\\n,]/).map(url).filter(Boolean);const website=url(get(aliases.website));console.log(JSON.stringify({event:'pluton.intake.normalized',hasSubmissionId:Boolean(submissionId),hasStoredSubmissionId:Boolean(storedSubmissionId),hasWebsite:Boolean(website),profileUrlCount:profileUrls.length,rowIdentityValid}));return[{json:{submissionId,expectedSubmissionId,rowIdentityValid,rawRow:row,intake:{businessName,fullName:String(get(aliases.fullName)).trim(),jobTitle:String(get(aliases.jobTitle)).trim(),email,phone:String(get(aliases.phone)).trim(),employeeCount:String(get(aliases.employeeCount)),annualRevenue:String(get(aliases.annualRevenue)),primaryDecisionMaker:String(get(aliases.primaryDecisionMaker)),additionalApprovers:String(get(aliases.additionalApprovers)),website,profileUrls,businessDescription:String(get(aliases.businessDescription)),personalDescription:String(get(aliases.personalDescription)),improvementArea:String(get(aliases.improvementArea)),challenge:String(get(aliases.challenge)),systems:String(get(aliases.systems)),software:String(get(aliases.software)),successVision:String(get(aliases.successVision)),success12Months:String(get(aliases.success12Months)),budgetRange:String(get(aliases.budgetRange)),timeline:String(get(aliases.timeline)),automationWish:String(get(aliases.automationWish))}},pairedItem:{item:0}}];"
+        }
+      },
+      {
+        "id": "derive-row-identity",
+        "name": "Derive Fresh Form Row Identity",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1160,
+          180
+        ],
+        "parameters": {
+          "jsCode": "const item=$input.first().json;const stored=String(item.submissionId||'').trim();const expected=String(item.expectedSubmissionId||'').trim();const rowIdentityValid=Boolean(expected&&(!stored||stored===expected));console.log(JSON.stringify({event:'pluton.row_identity.derived',hasStoredId:Boolean(stored),rowIdentityValid}));return[{json:{...item,submissionId:stored||expected,rowIdentityValid},pairedItem:{item:0}}];"
+        }
+      },
+      {
+        "id": "validate",
+        "name": "Validate Required Business Data",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1040,
+          180
+        ],
+        "parameters": {
+          "jsCode": "const item=$input.first().json;const errors=[];if(!item.rowIdentityValid||!item.submissionId)errors.push('Unable to derive a stable Pluton Submission ID for this trigger row.');if(!item.intake.businessName)errors.push('Business Name is required.');if(!item.intake.website&&item.intake.profileUrls.length===0)errors.push('Provide a valid Business Profile URL or additional profile URL.');const codes=errors.map(error=>error.startsWith('Unable')?'missing_row_identity':error.startsWith('Business')?'missing_business_name':'missing_valid_url');console.log(JSON.stringify({event:'pluton.intake.validated',hasSubmissionId:Boolean(item.submissionId),rowIdentityValid:item.rowIdentityValid,valid:errors.length===0,errorCodes:codes}));return[{json:{...item,valid:errors.length===0,validationErrors:errors},pairedItem:{item:0}}];"
+        }
+      },
+      {
+        "id": "valid",
+        "name": "Submission Valid?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -820,
+          180
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.valid }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "alreadyDelivered",
+        "name": "Already Delivered?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -820,
+          100
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.rawRow['Pluton Status'] }}",
+                "rightValue": "Complete",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "stopDuplicate",
+        "name": "Stop Duplicate Delivery",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -580,
+          -80
+        ],
+        "parameters": {
+          "jsCode": "const item=$input.first().json;console.log(JSON.stringify({event:'pluton.delivery.duplicate_suppressed',hasSubmissionId:Boolean(item.submissionId)}));return [];"
+        }
+      },
+      {
+        "id": "invalid",
+        "name": "Sheet - Mark Invalid",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          -580,
+          40
+        ],
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Form Responses 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Timestamp": "={{ $json.rawRow.Timestamp }}",
+              "Email": "={{ $json.intake.email }}",
+              "Business Name": "={{ $json.intake.businessName }}",
+              "Pluton Submission ID": "={{ $json.submissionId }}",
+              "Pluton Status": "Invalid",
+              "Error Message": "={{ $json.validationErrors.join(' ') }}"
+            },
+            "schema": [
+              {
+                "id": "Timestamp",
+                "displayName": "Timestamp",
+                "type": "string",
+                "required": false,
+                "defaultMatch": true,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Email",
+                "displayName": "Email",
+                "type": "string",
+                "required": false,
+                "defaultMatch": true,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Business Name",
+                "displayName": "Business Name",
+                "type": "string",
+                "required": false,
+                "defaultMatch": true,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Pluton Submission ID",
+                "displayName": "Pluton Submission ID",
+                "type": "string",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Pluton Status",
+                "displayName": "Pluton Status",
+                "type": "string",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Error Message",
+                "displayName": "Error Message",
+                "type": "string",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true
+              }
+            ],
+            "matchingColumns": [
+              "Timestamp",
+              "Email",
+              "Business Name"
+            ]
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Vh53RGZncobL5DTh",
+            "name": "Google Sheets account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "id": "rehydrate-after-capture",
+        "name": "Rehydrate Trigger Payload",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -520,
+          180
+        ],
+        "parameters": {
+          "jsCode": "const item=$('Derive Fresh Form Row Identity').first().json;console.log(JSON.stringify({event:'pluton.trigger_payload.rehydrated',hasSubmissionId:Boolean(item.submissionId)}));return[{json:item,pairedItem:{item:0}}];"
+        }
+      },
+      {
+        "id": "capture-submission-id",
+        "name": "Sheet - Capture Submission ID",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          -700,
+          180
+        ],
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Form Responses 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Timestamp": "={{ $json.rawRow.Timestamp }}",
+              "Email": "={{ $json.intake.email }}",
+              "Business Name": "={{ $json.intake.businessName }}",
+              "Pluton Submission ID": "={{ $json.submissionId }}"
+            },
+            "schema": [
+              {
+                "id": "Timestamp",
+                "displayName": "Timestamp",
+                "type": "string",
+                "required": false,
+                "defaultMatch": true,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Email",
+                "displayName": "Email",
+                "type": "string",
+                "required": false,
+                "defaultMatch": true,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Business Name",
+                "displayName": "Business Name",
+                "type": "string",
+                "required": false,
+                "defaultMatch": true,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Pluton Submission ID",
+                "displayName": "Pluton Submission ID",
+                "type": "string",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true
+              }
+            ],
+            "matchingColumns": [
+              "Timestamp",
+              "Email",
+              "Business Name"
+            ]
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Vh53RGZncobL5DTh",
+            "name": "Google Sheets account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "id": "rehydrate-after-researching",
+        "name": "Rehydrate After Researching",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -340,
+          280
+        ],
+        "parameters": {
+          "jsCode": "const item=$('Derive Fresh Form Row Identity').first().json;console.log(JSON.stringify({event:'pluton.researching_payload.rehydrated',hasSubmissionId:Boolean(item.submissionId)}));return[{json:item,pairedItem:{item:0}}];"
+        }
+      },
+      {
+        "id": "researching",
+        "name": "Sheet - Mark Researching",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          -580,
+          280
+        ],
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Form Responses 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Pluton Submission ID": "={{ $json.submissionId }}",
+              "Pluton Status": "Researching",
+              "Research Started": "={{ $now.toISO() }}",
+              "Error Message": ""
+            },
+            "schema": [
+              {
+                "id": "Pluton Submission ID",
+                "displayName": "Pluton Submission ID",
+                "type": "string",
+                "required": false,
+                "defaultMatch": true,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Pluton Status",
+                "displayName": "Pluton Status",
+                "type": "string",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Research Started",
+                "displayName": "Research Started",
+                "type": "string",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true
+              },
+              {
+                "id": "Error Message",
+                "displayName": "Error Message",
+                "type": "string",
+                "required": false,
+                "defaultMatch": false,
+                "canBeUsedToMatch": true,
+                "display": true
+              }
+            ],
+            "matchingColumns": [
+              "Pluton Submission ID"
+            ]
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Vh53RGZncobL5DTh",
+            "name": "Google Sheets account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "id": "crawl",
+        "name": "Firecrawl - Start Website Crawl (20 pages)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -340,
+          280
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.firecrawl.dev/v2/crawl",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({url:$json.intake.website || $json.intake.profileUrls[0], limit:20, maxDiscoveryDepth:2, crawlEntireDomain:true, allowExternalLinks:false, allowSubdomains:false, sitemap:'skip', excludePaths:['/privacy*','/terms*','/login*','/cart*','/wp-admin*'], scrapeOptions:{formats:['markdown'],onlyMainContent:true,onlyCleanContent:true,removeBase64Images:true,blockAds:true}}) }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "5eaT3wFTAUd9B0hY",
+            "name": "Firecrawl API Key (Pluton)"
+          }
+        }
+      },
+      {
+        "id": "wait",
+        "name": "Wait for Crawl",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -100,
+          280
+        ],
+        "parameters": {
+          "amount": 15,
+          "unit": "seconds"
+        },
+        "webhookId": "162a94ce-6d81-4ed7-85d6-678c4f843356"
+      },
+      {
+        "id": "status",
+        "name": "Firecrawl - Get Crawl Status",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          120,
+          280
+        ],
+        "parameters": {
+          "method": "GET",
+          "url": "=https://api.firecrawl.dev/v2/crawl/{{ $json.crawlId || $json.id }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": false,
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "complete",
+        "name": "Crawl Complete?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          340,
+          280
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.crawlComplete }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "queries",
+        "name": "Build Public Research Queries",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          580,
+          180
+        ],
+        "parameters": {
+          "jsCode": "const intake=$('Normalize Form Response').first().json.intake; const name=intake.businessName; const site=intake.website ? new URL(intake.website).hostname : ''; const terms=['reviews business profile','products services','competitors alternatives','customer complaints','hiring careers growth signals']; return terms.map(topic=>({json:{query:`${name} ${topic}${site?` ${site}`:''}`,intake}}));"
+        }
+      },
+      {
+        "id": "search",
+        "name": "Firecrawl - Search Public Signals",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          800,
+          180
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.firecrawl.dev/v2/search",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({query:$json.query,limit:5,sources:['web'],country:'US',timeout:60000,scrapeOptions:{formats:['markdown'],onlyMainContent:true}}) }}",
+          "options": {
+            "timeout": 90000
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "evidence",
+        "name": "Clean and Package Evidence",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1040,
+          180
+        ],
+        "parameters": {
+          "jsCode": "const raw=$('Normalize Form Response').first().json.intake; const crawl=$('Firecrawl - Get Crawl Status').first().json; const publicResults=$input.all().flatMap(item=>item.json.data?.web||item.json.web||item.json.data||[]); const allowed=['businessName','website','profileUrls','businessDescription','businessArea','challenge','currentSystems','currentSoftware','oneYearSuccess','solutionOutcome','budgetRange','timeline','automationWish']; const intake=Object.fromEntries(allowed.filter(k=>raw[k]!==undefined&&raw[k]!==null&&String(raw[k]).trim()).map(k=>[k,Array.isArray(raw[k])?raw[k].join(', '):String(raw[k]).slice(0,1000)])); const candidates=[...(crawl.data||crawl.pages||[]).map(p=>({sourceType:'website',sourceUrl:p.url||p.metadata?.sourceURL||p.metadata?.url,title:p.metadata?.title||p.title||'',content:p.markdown||p.content||''})),...publicResults.map(p=>({sourceType:'public_search',sourceUrl:p.url||p.metadata?.sourceURL||p.metadata?.url,title:p.metadata?.title||p.title||'',content:p.markdown||p.description||p.content||''}))]; const lineCounts=new Map(); for(const s of candidates)for(const l of String(s.content||'').split('\\n')){const x=l.replace(/\\s+/g,' ').trim().toLowerCase();if(x.length>=12)lineCounts.set(x,(lineCounts.get(x)||0)+1);} const repeated=new Set([...lineCounts].filter(([,n])=>n>=3).map(([x])=>x)); const seenUrls=new Set();const sources=[];let remaining=45000; for(const s of candidates){let u;try{u=new URL(s.sourceUrl);if(!['http:','https:'].includes(u.protocol))continue;}catch{continue;}const url=u.toString();if(seenUrls.has(url)||sources.length>=25||remaining<=0)continue;const seenLines=new Set();const content=String(s.content||'').replace(/\\r/g,'').split('\\n').map(l=>l.replace(/\\s+/g,' ').trim()).filter(l=>{const k=l.toLowerCase();if(!l||repeated.has(k)||seenLines.has(k))return false;seenLines.add(k);return true;}).join('\\n').slice(0,3500,remaining);if(!content)continue;seenUrls.add(url);remaining-=content.length;sources.push({sourceType:s.sourceType,sourceUrl:url,title:String(s.title||'').slice(0,300),content});} console.log(JSON.stringify({event:'pluton.ai.evidence_packaged',sourceCount:sources.length,sourceCharacterCount:45000-remaining,hasBusinessName:Boolean(intake.businessName)}));return[{json:{intake,clientProvidedFacts:Object.entries(intake).map(([field,value])=>({field,value})),sources,sourceUrls:sources.map(s=>s.sourceUrl),researchMetadata:{websitePageLimit:20,publicSearchQueries:5,sourceCount:sources.length,sourceCharacterCount:45000-remaining,completedAt:new Date().toISOString()},aiAttempt:Number($json.aiAttempt||1)}}];"
+        }
+      },
+      {
+        "id": "analyzing",
+        "name": "Sheet - Mark Analyzing",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          1280,
+          80
+        ],
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Form Responses 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Pluton Submission ID": "={{ $('Normalize Form Response').first().json.submissionId }}",
+              "Pluton Status": "Analyzing",
+              "Error Message": ""
+            },
+            "matchingColumns": [
+              "Pluton Submission ID"
+            ]
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Vh53RGZncobL5DTh",
+            "name": "Google Sheets account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "id": "restoreEvidence",
+        "name": "Restore Evidence After Analyzing",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1440,
+          80
+        ],
+        "parameters": {
+          "jsCode": "return[{json:$('Clean and Package Evidence').first().json}];"
+        }
+      },
+      {
+        "id": "ai",
+        "name": "OpenAI - Analyze Evidence",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1280,
+          180
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.openai.com/v1/responses",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "application/json",
+          "body": "={{ JSON.stringify({model:'gpt-4.1-mini',temperature:0.2,text:{format:{type:'json_schema',name:'pluton_pre_call_briefing',strict:true,schema:{type:'object',additionalProperties:false,required:['prospectSummary','clientProvidedFacts','verifiedFindings','inferences','visibleInfrastructure','customerJourney','priorityOpportunities','missingInformation','discoveryCallQuestions','recommendedDemo','callStrategy'],properties:{prospectSummary:{type:'object',additionalProperties:false,required:['businessName','businessModel','targetCustomer','mainChallenge','budgetRange','timeline'],properties:{businessName:{type:'string'},businessModel:{type:'string'},targetCustomer:{type:'string'},mainChallenge:{type:'string'},budgetRange:{type:'string'},timeline:{type:'string'}}},clientProvidedFacts:{type:'array',items:{type:'string'}},verifiedFindings:{type:'array',items:{type:'object',additionalProperties:false,required:['finding','sourceUrl','confidence'],properties:{finding:{type:'string'},sourceUrl:{type:'string'},confidence:{type:'string',enum:['high','medium','low']}}}},inferences:{type:'array',items:{type:'object',additionalProperties:false,required:['inference','supportingEvidence','confidence'],properties:{inference:{type:'string'},supportingEvidence:{type:'array',items:{type:'string'}},confidence:{type:'string',enum:['high','medium','low']}}}},visibleInfrastructure:{type:'array',items:{type:'string'}},customerJourney:{type:'object',additionalProperties:false,required:['discovery','leadCapture','conversion','serviceDelivery','support'],properties:{discovery:{type:'string'},leadCapture:{type:'string'},conversion:{type:'string'},serviceDelivery:{type:'string'},support:{type:'string'}}},priorityOpportunities:{type:'array',maxItems:5,items:{type:'object',additionalProperties:false,required:['title','problem','recommendedSolution','expectedBusinessOutcome','impact','complexity','budgetFit','evidenceUrls'],properties:{title:{type:'string'},problem:{type:'string'},recommendedSolution:{type:'string'},expectedBusinessOutcome:{type:'string'},impact:{type:'string',enum:['high','medium','low']},complexity:{type:'string',enum:['high','medium','low']},budgetFit:{type:'string',enum:['good','possible','poor']},evidenceUrls:{type:'array',items:{type:'string'}}}}},missingInformation:{type:'array',items:{type:'string'}},discoveryCallQuestions:{type:'array',minItems:5,maxItems:10,items:{type:'string'}},recommendedDemo:{type:'object',additionalProperties:false,required:['name','reason'],properties:{name:{type:'string'},reason:{type:'string'}}},callStrategy:{type:'array',items:{type:'string'}}}}},input:[{role:'system',content:[{type:'input_text',text:'Return only one JSON object matching the Pluton report contract. Treat intake as client-provided only. Every verified finding and every evidenceUrls value must use an exact URL from sourceUrls. Never invent internal systems, finances, metrics, employees, compliance facts, performance data, ROI, or sensitive traits. Use unknown when insufficient evidence. Limit opportunities to five. Match recommendations to budgetRange and timeline. Generate 5-10 specific discovery questions and justify the recommended demo using evidence.'}]},{role:'user',content:[{type:'input_text',text:JSON.stringify($json)}]}]}) }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "validateReport",
+        "name": "Validate AI Report",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1520,
+          180
+        ],
+        "parameters": {
+          "jsCode": "const response=$input.first().json;const source=$('Clean and Package Evidence').first().json;const text=response.output_text||response.output?.flatMap(x=>x.content||[]).map(x=>x.text).filter(Boolean).join('')||response.choices?.[0]?.message?.content;let report;const errors=[];try{report=JSON.parse(text);}catch{errors.push('AI did not return valid JSON.');}const required=['prospectSummary','clientProvidedFacts','verifiedFindings','inferences','visibleInfrastructure','customerJourney','priorityOpportunities','missingInformation','discoveryCallQuestions','recommendedDemo','callStrategy'];const confidence=new Set(['high','medium','low']);const allowed=new Set(source.sourceUrls||[]);if(report){if(Object.keys(report).some(k=>!required.includes(k)))errors.push('Report contains unsupported fields.');for(const k of required)if(!(k in report))errors.push(`Missing ${k}.`);if(!Array.isArray(report.priorityOpportunities)||report.priorityOpportunities.length>5)errors.push('Invalid opportunity count.');if(!Array.isArray(report.discoveryCallQuestions)||report.discoveryCallQuestions.length<5||report.discoveryCallQuestions.length>10)errors.push('Report must include 5-10 discovery questions.');for(const f of report.verifiedFindings||[])if(!f?.finding||!confidence.has(f?.confidence)||!allowed.has(f?.sourceUrl))errors.push('Verified finding lacks a preserved source URL or valid confidence.');for(const o of report.priorityOpportunities||[])if(!['high','medium','low'].includes(o?.impact)||!['high','medium','low'].includes(o?.complexity)||!['good','possible','poor'].includes(o?.budgetFit)||!Array.isArray(o?.evidenceUrls)||o.evidenceUrls.some(u=>!allowed.has(u)))errors.push('Opportunity enum or evidence URL is invalid.');}const valid=errors.length===0;console.log(JSON.stringify({event:'pluton.ai.validation',valid,attempt:source.aiAttempt||1,errorCount:errors.length,verifiedFindingCount:report?.verifiedFindings?.length||0}));return[{json:{...source,report:valid?report:null,reportValid:valid,validationErrors:errors,aiAttempt:Number(source.aiAttempt||1)}}];"
+        }
+      },
+      {
+        "id": "reportValid",
+        "name": "Report Valid?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1760,
+          180
+        ],
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.reportValid }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "prepareRetry",
+        "name": "Prepare AI Retry",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const item=$input.first().json;const attempt=Number(item.aiAttempt||1);if(attempt>=3)throw new Error(`Pluton AI report validation failed after ${attempt} attempts: ${(item.validationErrors||[]).join(' ').slice(0,600)}`);console.log(JSON.stringify({event:'pluton.ai.retry',nextAttempt:attempt+1,errorCount:(item.validationErrors||[]).length}));return[{json:{intake:item.intake,clientProvidedFacts:item.clientProvidedFacts,sources:item.sources,sourceUrls:item.sourceUrls,researchMetadata:item.researchMetadata,aiAttempt:attempt+1}}];"
+        }
+      },
+      {
+        "id": "prepareReportFile",
+        "name": "Prepare Validated Report File",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          100
+        ],
+        "parameters": {
+          "jsCode": "const source=$input.first().json;const report=source.report;const packageData={report,evidencePackage:{intake:source.intake,clientProvidedFacts:source.clientProvidedFacts,sources:source.sources,sourceUrls:source.sourceUrls,researchMetadata:source.researchMetadata},generatedAt:new Date().toISOString(),schemaVersion:'1.0'};const safeName=String(source.intake.businessName||'business').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase();const binary=await this.helpers.prepareBinaryData(Buffer.from(JSON.stringify(packageData,null,2)),`${safeName}-pluton-report.json`,'application/json');return[{json:{...source,primaryOpportunity:report.priorityOpportunities?.[0]?.title||'',recommendedDemo:report.recommendedDemo?.name||''},binary:{data:binary}}];"
+        }
+      },
+      {
+        "id": "delivering",
+        "name": "Sheet - Mark Delivering",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          2160,
+          100
+        ],
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Form Responses 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Pluton Submission ID": "={{ $('Normalize Form Response').first().json.submissionId }}",
+              "Pluton Status": "Delivering",
+              "Error Message": ""
+            },
+            "matchingColumns": [
+              "Pluton Submission ID"
+            ]
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Vh53RGZncobL5DTh",
+            "name": "Google Sheets account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "id": "restoreFile",
+        "name": "Restore File After Delivering",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2320,
+          100
+        ],
+        "parameters": {
+          "jsCode": "const item=$('Prepare Validated Report File').first();return[{json:item.json,binary:item.binary}];"
+        }
+      },
+      {
+        "id": "drive",
+        "name": "Google Drive - Save Full Report",
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          2240,
+          180
+        ],
+        "parameters": {
+          "operation": "upload",
+          "binaryPropertyName": "data",
+          "parents": [
+            "1ydyJ-KUaQDAn3s_PJI1VypI5-y2XW4NM"
+          ],
+          "options": {}
+        },
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "5qJYhZ8iuNxmLLTv",
+            "name": "Google Drive account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "id": "completeRow",
+        "name": "Sheet - Mark Complete",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          2000,
+          180
+        ],
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Form Responses 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Pluton Submission ID": "={{ $('Normalize Form Response').first().json.submissionId }}",
+              "Pluton Status": "Complete",
+              "Research Completed": "={{ $now.toISO() }}",
+              "Primary Opportunity": "={{ $('Prepare Validated Report File').first().json.primaryOpportunity }}",
+              "Recommended Demo": "={{ $('Prepare Validated Report File').first().json.recommendedDemo }}",
+              "Report URL": "={{ $json.webViewLink || $json.webContentLink || ('https://drive.google.com/open?id=' + $json.id) }}",
+              "Error Message": ""
+            },
+            "matchingColumns": [
+              "Pluton Submission ID"
+            ]
+          }
+        },
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "Vh53RGZncobL5DTh",
+            "name": "Google Sheets account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000
+      },
+      {
+        "id": "email",
+        "name": "Gmail - Notify Ellis",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          2240,
+          180
+        ],
+        "parameters": {
+          "sendTo": "jake@ellisaistudio.com",
+          "subject": "={{ 'Pluton Research complete: ' + $('Prepare Validated Report File').first().json.intake.businessName }}",
+          "message": "={{ 'Pluton Research is complete for ' + $('Prepare Validated Report File').first().json.intake.businessName + '.\\n\\nPrimary opportunity: ' + $('Prepare Validated Report File').first().json.primaryOpportunity + '\\nRecommended demo: ' + $('Prepare Validated Report File').first().json.recommendedDemo + '\\nReport: ' + ($('Google Drive - Save Full Report').first().json.webViewLink || $('Google Drive - Save Full Report').first().json.id) }}",
+          "options": {}
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "XghORmCvWNWS3X9d",
+            "name": "Gmail account"
+          }
+        },
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 2000,
+        "webhookId": "532f472f-43b5-4088-a626-5f8aa5f8422b"
+      },
+      {
+        "id": "pollState",
+        "name": "Evaluate Crawl State",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          280,
+          360
+        ],
+        "parameters": {
+          "jsCode": "const status=$input.first().json; const prior=$('Wait for Crawl').item.json; const pollAttempt=Number(prior.pollAttempt||0)+1; const state=String(status.status||status.data?.status||'').toLowerCase(); if(pollAttempt>12) throw new Error('Firecrawl crawl did not complete after 12 polling attempts.'); const crawlComplete=['completed','done'].includes(state); console.log(JSON.stringify({event:'pluton.firecrawl.poll',pollAttempt,state:state||'unknown',crawlComplete})); return [{json:{...status,crawlId:prior.crawlId||prior.id,pollAttempt,crawlComplete},pairedItem:{item:0}}];"
+        }
+      },
+      {
+        "id": "firecrawlDiag",
+        "name": "Firecrawl Request Diagnostic",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -440,
+          280
+        ],
+        "parameters": {
+          "jsCode": "const item=$input.first().json; const key=item.submissionId||''; let hash=2166136261; for(const char of key){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);} console.log(JSON.stringify({event:'pluton.firecrawl.request',submissionFingerprint:(hash>>>0).toString(16),pageLimit:20,hasPrimaryUrl:Boolean(item.intake.website||item.intake.profileUrls[0])})); return [{json:item,pairedItem:{item:0}}];"
+        }
+      },
+      {
+        "id": "row-identity-check",
+        "name": "Exact Triggering Row Identified?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -900,
+          180
+        ],
+        "parameters": {
+          "conditions": {
+            "conditions": [
+              {
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": true,
+                "id": "row-identity-valid",
+                "leftValue": "={{ $json.rowIdentityValid }}"
+              }
+            ],
+            "options": {
+              "typeValidation": "strict",
+              "leftValue": "",
+              "caseSensitive": true
+            }
+          }
+        }
+      },
+      {
+        "id": "stop-unsafe-sheet-update",
+        "name": "Stop Unsafe Sheet Update",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -680,
+          400
+        ],
+        "parameters": {
+          "jsCode": "const item = $input.first().json;\nconsole.log(JSON.stringify({\n  event: 'pluton.sheet.row_identity_missing',\n  hasExpectedIdentity: Boolean(item.expectedSubmissionId),\n}));\nthrow new Error('Pluton Submission ID did not match the trigger row. No Sheet update was attempted.');"
+        }
+      }
+    ],
+    "connections": {
+      "Google Sheets Trigger - New Form Response": {
+        "main": [
+          [
+            {
+              "node": "Normalize Form Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Form Response": {
+        "main": [
+          [
+            {
+              "node": "Derive Fresh Form Row Identity",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Derive Fresh Form Row Identity": {
+        "main": [
+          [
+            {
+              "node": "Validate Required Business Data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Required Business Data": {
+        "main": [
+          [
+            {
+              "node": "Exact Triggering Row Identified?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Submission Valid?": {
+        "main": [
+          [
+            {
+              "node": "Sheet - Capture Submission ID",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Sheet - Mark Invalid",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Already Delivered?": {
+        "main": [
+          [
+            {
+              "node": "Stop Duplicate Delivery",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Submission Valid?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheet - Mark Researching": {
+        "main": [
+          [
+            {
+              "node": "Rehydrate After Researching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rehydrate After Researching": {
+        "main": [
+          [
+            {
+              "node": "Firecrawl Request Diagnostic",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Firecrawl - Start Website Crawl (20 pages)": {
+        "main": [
+          [
+            {
+              "node": "Wait for Crawl",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait for Crawl": {
+        "main": [
+          [
+            {
+              "node": "Firecrawl - Get Crawl Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Firecrawl - Get Crawl Status": {
+        "main": [
+          [
+            {
+              "node": "Evaluate Crawl State",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Crawl Complete?": {
+        "main": [
+          [
+            {
+              "node": "Build Public Research Queries",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait for Crawl",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Public Research Queries": {
+        "main": [
+          [
+            {
+              "node": "Firecrawl - Search Public Signals",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Firecrawl - Search Public Signals": {
+        "main": [
+          [
+            {
+              "node": "Clean and Package Evidence",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean and Package Evidence": {
+        "main": [
+          [
+            {
+              "node": "Sheet - Mark Analyzing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheet - Mark Analyzing": {
+        "main": [
+          [
+            {
+              "node": "Restore Evidence After Analyzing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Restore Evidence After Analyzing": {
+        "main": [
+          [
+            {
+              "node": "OpenAI - Analyze Evidence",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI - Analyze Evidence": {
+        "main": [
+          [
+            {
+              "node": "Validate AI Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate AI Report": {
+        "main": [
+          [
+            {
+              "node": "Report Valid?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Report Valid?": {
+        "main": [
+          [
+            {
+              "node": "Prepare Validated Report File",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Prepare AI Retry",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare AI Retry": {
+        "main": [
+          [
+            {
+              "node": "OpenAI - Analyze Evidence",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare Validated Report File": {
+        "main": [
+          [
+            {
+              "node": "Sheet - Mark Delivering",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheet - Mark Delivering": {
+        "main": [
+          [
+            {
+              "node": "Restore File After Delivering",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Restore File After Delivering": {
+        "main": [
+          [
+            {
+              "node": "Google Drive - Save Full Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Drive - Save Full Report": {
+        "main": [
+          [
+            {
+              "node": "Gmail - Notify Ellis",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheet - Mark Complete": {
+        "main": [
+          []
+        ]
+      },
+      "Gmail - Notify Ellis": {
+        "main": [
+          [
+            {
+              "node": "Sheet - Mark Complete",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Firecrawl Request Diagnostic": {
+        "main": [
+          [
+            {
+              "node": "Firecrawl - Start Website Crawl (20 pages)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Evaluate Crawl State": {
+        "main": [
+          [
+            {
+              "node": "Crawl Complete?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Exact Triggering Row Identified?": {
+        "main": [
+          [
+            {
+              "node": "Already Delivered?",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Stop Unsafe Sheet Update",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheet - Capture Submission ID": {
+        "main": [
+          [
+            {
+              "node": "Rehydrate Trigger Payload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rehydrate Trigger Payload": {
+        "main": [
+          [
+            {
+              "node": "Sheet - Mark Researching",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Jacob Ellis",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-08-03T00:43:49.702Z",
+        "id": 25,
+        "workflowId": "tz4fJQSSvBk3zswH",
+        "versionId": "4378e74a-13ca-47b0-a066-24ff73537dfc",
+        "event": "activated",
+        "userId": "917eed17-d837-4143-9b8b-4ec606a17633"
+      },
+      {
+        "createdAt": "2026-08-03T00:43:48.408Z",
+        "id": 24,
+        "workflowId": "tz4fJQSSvBk3zswH",
+        "versionId": "4378e74a-13ca-47b0-a066-24ff73537dfc",
+        "event": "deactivated",
+        "userId": "917eed17-d837-4143-9b8b-4ec606a17633"
+      }
+    ]
+  }
+}

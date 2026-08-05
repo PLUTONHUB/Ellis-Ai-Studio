@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import appCss from "~/styles/app.css?url";
 import a11yCss from "~/styles/a11y.css?url";
 import { jsonLd, organizationSchema, siteUrl } from "~/lib/seo";
+import { ContentOSNav } from "~/components/content-os-nav";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -24,12 +25,14 @@ export const Route = createRootRoute({
     scripts: jsonLd(organizationSchema),
   }),
   notFoundComponent: () => <main className="wrap" style={{ padding: "120px 0" }}><p className="eyebrow">Page not found</p><h1>Let’s get you back to Ellis AI Studio.</h1><a className="button" href="/">Go to Home</a></main>,
-  component: () => <RootDocument><Outlet /></RootDocument>,
+  component: () => <RootDocument><DashboardShell><Outlet /></DashboardShell></RootDocument>,
 });
 
 function CanonicalUrl() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return <link rel="canonical" href={`${siteUrl}${pathname === "/" ? "/" : pathname.replace(/\/$/, "")}`} />;
 }
+
+function DashboardShell({ children }: { children: ReactNode }) { const pathname = useRouterState({ select: state => state.location.pathname }); const integrationPage = pathname.startsWith("/dashboard/") && !pathname.includes("callback") && pathname !== "/dashboard/content-studio"; return integrationPage ? <div className="content-os-surface"><ContentOSNav />{children}</div> : <>{children}</>; }
 
 function RootDocument({ children }: { children: ReactNode }) { return <html lang="en"><head><HeadContent /><CanonicalUrl /></head><body className="antialiased min-h-screen">{children}<Scripts /></body></html>; }

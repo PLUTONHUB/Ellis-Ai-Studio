@@ -1,0 +1,7 @@
+import { loadLocalEnvironment } from "~/lib/local-env.server";
+
+loadLocalEnvironment();
+type N8nWorkflow = { id: string; name: string; active?: boolean; updatedAt?: string };
+function config() { const baseUrl = process.env.N8N_BASE_URL?.replace(/\/$/, ""); const apiKey = process.env.N8N_API_KEY; if (!baseUrl || !apiKey) throw new Error("n8n is not configured. Add N8N_BASE_URL and N8N_API_KEY."); return { baseUrl, apiKey }; }
+async function request<T>(path: string) { const { baseUrl, apiKey } = config(); const response = await fetch(`${baseUrl}/api/v1${path}`, { headers: { "X-N8N-API-KEY": apiKey, Accept: "application/json" }, signal: AbortSignal.timeout(20_000) }); const raw = await response.text(); let body: T & { message?: string }; try { body = JSON.parse(raw) as T & { message?: string }; } catch { throw new Error(`n8n returned an unexpected response (HTTP ${response.status}).`); } if (!response.ok) throw new Error(body.message ?? `n8n request failed (HTTP ${response.status}).`); return body; }
+export async function n8nDashboard() { const result = await request<{ data?: N8nWorkflow[] }>("/workflows?limit=100"); const workflows = result.data ?? []; return { connected: true, total: workflows.length, active: workflows.filter(workflow => workflow.active).length, workflows: workflows.map(({ id, name, active, updatedAt }) => ({ id, name, active: Boolean(active), updatedAt })) }; }

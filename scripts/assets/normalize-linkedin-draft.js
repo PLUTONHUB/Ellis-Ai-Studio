@@ -1,0 +1,11 @@
+const item = $input.first().json;
+const response = item.openaiResponse ?? item;
+let draft = '';
+if (typeof response.output_text === 'string' && response.output_text.trim()) draft = response.output_text.trim();
+if (!draft && Array.isArray(response.output)) draft = response.output.flatMap(output => Array.isArray(output.content) ? output.content : []).filter(content => content?.type === 'output_text').map(content => typeof content.text === 'string' ? content.text : '').filter(Boolean).join('\n').trim();
+if (!draft) throw new Error('OpenAI response contained no output_text content');
+const wordCount=draft.split(/\s+/).filter(Boolean).length;
+const hashtagCount=(draft.match(/(^|\s)#[A-Za-z0-9_]+/g)||[]).length;
+if(wordCount<120||wordCount>220)throw new Error(`LinkedIn draft word count ${wordCount} is outside the allowed 120–220 range`);
+if(hashtagCount>4)throw new Error(`LinkedIn draft contains ${hashtagCount} hashtags; maximum allowed is 4`);
+return [{json:{...item,linkedinDraft:draft,linkedinDraftWordCount:wordCount,linkedinDraftHashtagCount:hashtagCount,openaiModelUsed:response.model||item.openaiModelUsed||'gpt-5-mini-2025-08-07'}}];

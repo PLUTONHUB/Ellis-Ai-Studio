@@ -17,7 +17,11 @@
     "cf-typegen": "wrangler types",
     "publish": "bash ./publish.sh",
     "typecheck": "tsc --noEmit --pretty false",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --test tests/*.test.ts",
+    "run:pluto-dispatcher": "node scripts/run-pluto-dispatcher.mjs",
+    "run:pluto-learning-loop": "node scripts/run-pluto-learning-loop.mjs",
+    "check:mission-control": "node scripts/run-mission-control-system-check.mjs",
+    "start:mission-control": "node scripts/run-mission-control.mjs"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.158.1",

@@ -1,0 +1,34 @@
+{
+  "kind": "calendar#event",
+  "etag": "\"3571634320965950\"",
+  "id": "jkmt83f4ldu8j9q5t955d9ar10",
+  "status": "confirmed",
+  "htmlLink": "https://www.google.com/calendar/event?eid=amttdDgzZjRsZHU4ajlxNXQ5NTVkOWFyMTAgamFrZUBlbGxpc2Fpc3R1ZGlvLmNvbQ",
+  "created": "2026-08-04T04:19:20.000Z",
+  "updated": "2026-08-04T04:19:20.482Z",
+  "summary": "PRE-POST | n8n Workflow Development",
+  "description": "CONTENT_ID: TEST-N8N-WORKFLOW-001\nPLATFORM: LINKEDIN\nTOPIC: How n8n workflow development turns repetitive operations into reliable systems\nAUDIENCE: Small-business owners\nGOAL: Educate and attract qualified leads\nCTA: Ask readers which workflow they would automate first\nWEBSITE: https://ellisaistudio.com\nAPPROVAL_REQUIRED: YES\nSTATUS: READY",
+  "creator": {
+    "email": "jake@ellisaistudio.com",
+    "self": true
+  },
+  "organizer": {
+    "email": "jake@ellisaistudio.com",
+    "self": true
+  },
+  "start": {
+    "dateTime": "2026-08-03T21:27:20-07:00",
+    "timeZone": "America/Los_Angeles"
+  },
+  "end": {
+    "dateTime": "2026-08-03T21:42:20-07:00",
+    "timeZone": "America/Los_Angeles"
+  },
+  "visibility": "private",
+  "iCalUID": "jkmt83f4ldu8j9q5t955d9ar10@google.com",
+  "sequence": 0,
+  "reminders": {
+    "useDefault": true
+  },
+  "eventType": "default"
+}

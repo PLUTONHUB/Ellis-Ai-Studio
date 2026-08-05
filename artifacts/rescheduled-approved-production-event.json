@@ -1,0 +1,34 @@
+{
+  "kind": "calendar#event",
+  "etag": "\"3571937959723230\"",
+  "id": "mrk5u15ht15604fomlhofrbvtg",
+  "status": "confirmed",
+  "htmlLink": "https://www.google.com/calendar/event?eid=bXJrNXUxNWh0MTU2MDRmb21saG9mcmJ2dGcgamFrZUBlbGxpc2Fpc3R1ZGlvLmNvbQ",
+  "created": "2026-08-05T21:37:14.000Z",
+  "updated": "2026-08-05T22:29:39.861Z",
+  "summary": "PRE-POST | LinkedIn Production Test",
+  "description": "CONTENT_ID: EAS-LI-1785965834609\nPLATFORM: LINKEDIN\nTOPIC: 3 repetitive tasks every small business should automate today\nAUDIENCE: Small-business owners\nGOAL: Educate and attract qualified leads\nCTA: Ask readers which repetitive task consumes the most time\nWEBSITE: https://ellisaistudio.com\nAPPROVAL_REQUIRED: NO\nSTATUS: READY\nAUTO_PUBLISH: YES\nFINAL_CAPTION: If your team is constantly chasing invoices, answering the same questions, and coordinating appointments, growth gets pushed to the side.\n\nThree repetitive tasks worth automating today:\n\n1. Invoice follow-up — send reminders and surface overdue payments without manual chasing.\n2. Customer inquiry triage — respond to common questions quickly and route complex requests to the right person.\n3. Scheduling and follow-up — reduce back-and-forth, confirm appointments, and keep leads from going cold.\n\nThe point is not to remove the human side of your business. It’s to give your team more time for the work that needs judgment, relationships, and attention.\n\nEllis AI Studio identifies operational bottlenecks and builds AI-powered solutions that help businesses save time, reduce costs, and create room to grow.\n\nWhich repetitive task consumes the most time in your business?\n\n#SmallBusiness #BusinessAutomation #AI #Growth",
+  "creator": {
+    "email": "jake@ellisaistudio.com",
+    "self": true
+  },
+  "organizer": {
+    "email": "jake@ellisaistudio.com",
+    "self": true
+  },
+  "start": {
+    "dateTime": "2026-08-05T15:29:09-07:00",
+    "timeZone": "America/Los_Angeles"
+  },
+  "end": {
+    "dateTime": "2026-08-05T15:44:09-07:00",
+    "timeZone": "America/Los_Angeles"
+  },
+  "visibility": "private",
+  "iCalUID": "mrk5u15ht15604fomlhofrbvtg@google.com",
+  "sequence": 3,
+  "reminders": {
+    "useDefault": true
+  },
+  "eventType": "default"
+}

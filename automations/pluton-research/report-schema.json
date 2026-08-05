@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["prospectSummary", "clientProvidedFacts", "verifiedFindings", "inferences", "visibleInfrastructure", "customerJourney", "priorityOpportunities", "missingInformation", "discoveryCallQuestions", "recommendedDemo", "callStrategy"],
+  "properties": {
+    "prospectSummary": { "type": "object", "additionalProperties": false, "required": ["businessName", "businessModel", "targetCustomer", "mainChallenge", "budgetRange", "timeline"], "properties": { "businessName": {"type":"string"}, "businessModel": {"type":"string"}, "targetCustomer": {"type":"string"}, "mainChallenge": {"type":"string"}, "budgetRange": {"type":"string"}, "timeline": {"type":"string"} } },
+    "clientProvidedFacts": { "type": "array", "items": {"type":"string"} },
+    "verifiedFindings": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["finding", "sourceUrl", "confidence"], "properties": { "finding": {"type":"string"}, "sourceUrl": {"type":"string"}, "confidence": {"enum":["high","medium","low"]} } } },
+    "inferences": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["inference", "supportingEvidence", "confidence"], "properties": { "inference": {"type":"string"}, "supportingEvidence": {"type":"array", "items":{"type":"string"}}, "confidence": {"enum":["high","medium","low"]} } } },
+    "visibleInfrastructure": { "type": "array", "items": {"type":"string"} },
+    "customerJourney": { "type": "object", "additionalProperties": false, "required": ["discovery", "leadCapture", "conversion", "serviceDelivery", "support"], "properties": { "discovery": {"type":"string"}, "leadCapture": {"type":"string"}, "conversion": {"type":"string"}, "serviceDelivery": {"type":"string"}, "support": {"type":"string"} } },
+    "priorityOpportunities": { "type": "array", "maxItems": 5, "items": { "type": "object", "additionalProperties": false, "required": ["title", "problem", "recommendedSolution", "expectedBusinessOutcome", "impact", "complexity", "budgetFit", "evidenceUrls"], "properties": { "title": {"type":"string"}, "problem": {"type":"string"}, "recommendedSolution": {"type":"string"}, "expectedBusinessOutcome": {"type":"string"}, "impact": {"enum":["high","medium","low"]}, "complexity": {"enum":["high","medium","low"]}, "budgetFit": {"enum":["good","possible","poor"]}, "evidenceUrls": {"type":"array", "items":{"type":"string"}} } } },
+    "missingInformation": { "type": "array", "items": {"type":"string"} },
+    "discoveryCallQuestions": { "type": "array", "minItems": 5, "maxItems": 10, "items": {"type":"string"} },
+    "recommendedDemo": { "type": "object", "additionalProperties": false, "required": ["name", "reason"], "properties": { "name": {"type":"string"}, "reason": {"type":"string"} } },
+    "callStrategy": { "type": "array", "items": {"type":"string"} }
+  }
+}

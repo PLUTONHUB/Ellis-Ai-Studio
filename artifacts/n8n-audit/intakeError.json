@@ -1,0 +1,221 @@
+{
+  "updatedAt": "2026-08-01T22:59:24.911Z",
+  "createdAt": "2026-08-01T20:59:59.427Z",
+  "id": "CvkxxvM7cTy8YdI4",
+  "name": "Pluton Research - Error Handler",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "error",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        180
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "format",
+      "name": "Format Failure Notice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        180
+      ],
+      "parameters": {
+        "jsCode": "const event = $input.first().json;\nconst execution = event.execution || {};\nconst workflow = event.workflow || {};\nconst message = String(execution.error?.message || event.error?.message || 'Unknown Pluton Research failure.');\nconst runs = execution.data?.resultData?.runData || {};\nconst normalized = runs['Normalize Form Response']?.[0]?.data?.main?.[0]?.[0]?.json || {};\nconst safeMessage = message\n  .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/gi, '[email]')\n  .replace(/https?:\\/\\/[^\\s]+/gi, '[url]')\n  .slice(0, 1800);\nconst category = /firecrawl/i.test(message) ? 'firecrawl' : /google/i.test(message) ? 'google' : /openai|ai analysis/i.test(message) ? 'ai' : 'workflow';\nconsole.log(JSON.stringify({\n  event: 'pluton.research.failure',\n  category,\n  hasSubmissionId: Boolean(normalized.submissionId),\n}));\nreturn [{\n  json: {\n    workflowName: workflow.name || '',\n    executionId: execution.id || '',\n    submissionId: normalized.submissionId || '',\n    errorMessage: safeMessage,\n    occurredAt: new Date().toISOString(),\n  },\n}];"
+      }
+    },
+    {
+      "id": "sheet",
+      "name": "Sheet - Mark Research Error",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        120,
+        60
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1fsyUX_ytXfsr7yGAkc0QkHWzi6iqcbXePaydkrF2ouo",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Form Responses 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Pluton Submission ID": "={{ $json.submissionId }}",
+            "Pluton Status": "Error",
+            "Error Message": "={{ $json.errorMessage }}"
+          },
+          "matchingColumns": [
+            "Pluton Submission ID"
+          ]
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Vh53RGZncobL5DTh",
+          "name": "Google Sheets account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "email",
+      "name": "Gmail - Notify Research Failure",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        380,
+        180
+      ],
+      "parameters": {
+        "sendTo": "jake@ellisaistudio.com",
+        "subject": "={{ 'Pluton Research failed: ' + $json.workflowName }}",
+        "message": "={{ 'A Pluton Research execution needs review.\\nExecution: ' + $json.executionId + '\\nTime: ' + $json.occurredAt + '\\nError: ' + $json.errorMessage + '\\n\\nOpen n8n Executions, correct the issue, then retry from the failed execution.' }}"
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XghORmCvWNWS3X9d",
+          "name": "Gmail account"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "6be5aba7-ff80-4db3-9aef-81659b7ab049"
+    },
+    {
+      "id": "error-submission-id-check",
+      "name": "Submission ID Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        80,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": true,
+              "id": "error-id-present",
+              "leftValue": "={{ Boolean($json.submissionId) }}"
+            }
+          ],
+          "options": {
+            "typeValidation": "strict",
+            "leftValue": "",
+            "caseSensitive": true
+          }
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Format Failure Notice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Failure Notice": {
+      "main": [
+        [
+          {
+            "node": "Submission ID Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheet - Mark Research Error": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Notify Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submission ID Available?": {
+      "main": [
+        [
+          {
+            "node": "Sheet - Mark Research Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail - Notify Research Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "759df9f9-2710-49c0-bb92-8afa8bcccc52",
+  "activeVersionId": null,
+  "versionCounter": 4,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-08-01T20:59:59.432Z",
+      "createdAt": "2026-08-01T20:59:59.432Z",
+      "role": "workflow:owner",
+      "workflowId": "CvkxxvM7cTy8YdI4",
+      "projectId": "Lv5y0hqvJJhBhAk5",
+      "project": {
+        "updatedAt": "2026-07-16T18:46:57.508Z",
+        "createdAt": "2026-07-16T18:46:45.820Z",
+        "id": "Lv5y0hqvJJhBhAk5",
+        "name": "Jacob Ellis <jake@ellisaistudio.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "917eed17-d837-4143-9b8b-4ec606a17633"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

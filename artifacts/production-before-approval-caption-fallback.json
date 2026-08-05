@@ -1,0 +1,1161 @@
+{
+  "updatedAt": "2026-08-05T22:13:20.065Z",
+  "createdAt": "2026-08-03T05:03:03.005Z",
+  "id": "XtVdc34ZPuHrt3Tb",
+  "name": "Ellis AI Studio — Calendar Content Automation",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "every-5-minutes",
+      "name": "Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1040,
+        120
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "get-scheduled-calendar-events",
+      "name": "Get Scheduled Calendar Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -820,
+        120
+      ],
+      "parameters": {
+        "resource": "event",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list",
+          "cachedResultName": "primary"
+        },
+        "returnAll": true,
+        "options": {},
+        "timeMin": "={{ $now.minus({ minutes: 10 }) }}",
+        "timeMax": "={{ $now }}"
+      },
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "mRYiam909f3MrrXv",
+          "name": "Ellis Google Calendar (managed)"
+        }
+      }
+    },
+    {
+      "id": "parse-and-guard-content",
+      "name": "Parse and Guard Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        120
+      ],
+      "parameters": {
+        "jsCode": "const event=$input.first().json; const description=String(event.description||''); const pairs=Object.fromEntries([...description.matchAll(/^\\s*([A-Z_]+)\\s*:\\s*(.*?)\\s*$/gm)].map((m)=>[m[1],m[2]])); const contentId=pairs.CONTENT_ID; const start=event.start?.dateTime||event.start?.date; if(!String(event.summary||'').startsWith('PRE-POST |')||pairs.STATUS!=='READY'||!contentId||!start||new Date(start)>new Date()) return []; const store=$getWorkflowStaticData('global'); store.content=store.content||{}; const prior=store.content[contentId]; if(prior?.status==='published'||prior?.status==='awaiting_approval'||prior?.status==='approved') return []; const required=['PLATFORM','TOPIC','AUDIENCE','GOAL','CTA','WEBSITE','APPROVAL_REQUIRED','STATUS']; const missing=required.filter((key)=>!pairs[key]); if(missing.length) throw new Error('Calendar event '+(event.id||'unknown')+' is missing: '+missing.join(', ')); store.content[contentId]={status:'generating',eventId:event.id,startedAt:new Date().toISOString(),retries:(prior?.retries||0)}; return [{json:{contentId,eventId:event.id,start,platform:pairs.PLATFORM.toLowerCase(),topic:pairs.TOPIC,audience:pairs.AUDIENCE,goal:pairs.GOAL,cta:pairs.CTA,website:pairs.WEBSITE,approvalRequired:pairs.APPROVAL_REQUIRED,sourceDescription:description}}];"
+      }
+    },
+    {
+      "id": "generate-linkedin-draft",
+      "name": "Generate LinkedIn Draft",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -380,
+        120
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/responses",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.openaiRequestBody }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "gslpO0BCkZbl6txI",
+          "name": "OpenAI API Key (Pluton)"
+        }
+      }
+    },
+    {
+      "id": "normalize-linkedin-draft",
+      "name": "Normalize LinkedIn Draft",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        120
+      ],
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst response = item.openaiResponse ?? item;\nlet draft = '';\nif (typeof response.output_text === 'string' && response.output_text.trim()) draft = response.output_text.trim();\nif (!draft && Array.isArray(response.output)) draft = response.output.flatMap(output => Array.isArray(output.content) ? output.content : []).filter(content => content?.type === 'output_text').map(content => typeof content.text === 'string' ? content.text : '').filter(Boolean).join('\\n').trim();\nif (!draft) throw new Error('OpenAI response contained no output_text content');\nconst wordCount=draft.split(/\\s+/).filter(Boolean).length;\nconst hashtagCount=(draft.match(/(^|\\s)#[A-Za-z0-9_]+/g)||[]).length;\nif(wordCount<120||wordCount>220)throw new Error(`LinkedIn draft word count ${wordCount} is outside the allowed 120–220 range`);\nif(hashtagCount>4)throw new Error(`LinkedIn draft contains ${hashtagCount} hashtags; maximum allowed is 4`);\nreturn [{json:{...item,linkedinDraft:draft,linkedinDraftWordCount:wordCount,linkedinDraftHashtagCount:hashtagCount,openaiModelUsed:response.model||item.openaiModelUsed||'gpt-5-mini-2025-08-07'}}];\n"
+      }
+    },
+    {
+      "id": "create-secure-approval",
+      "name": "Create Secure Approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        120
+      ],
+      "parameters": {
+        "jsCode": "function randomToken(length = 64) {\n  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';\n  let token = '';\n  for (let i = 0; i < length; i += 1) token += alphabet[Math.floor(Math.random() * alphabet.length)];\n  return token;\n}\nconst item = $input.first().json;\nconst issuedAt = Date.now();\nconst expiresAt = issuedAt + 7 * 24 * 60 * 60 * 1000;\nconst approvalToken = randomToken();\nconst store = $getWorkflowStaticData('global');\nstore.approvals = store.approvals || {};\nstore.content = store.content || {};\nstore.approvals[approvalToken] = { contentId:item.contentId, caption:item.linkedinDraft, issuedAt, expiresAt, status:'pending', used:false };\nstore.content[item.contentId] = { ...(store.content[item.contentId] || {}), status:'awaiting_approval', finalCaption:item.linkedinDraft };\nconst base = 'https://ellisaistudio.app.n8n.cloud';\nreturn [{ json:{ ...item, approvalTokenIssuedAt:issuedAt, approvalTokenExpiresAt:expiresAt, approvalTokenUsed:false, approveUrl:base+'/webhook/ellis-content-approve?token='+encodeURIComponent(approvalToken), rejectUrl:base+'/webhook/ellis-content-reject?token='+encodeURIComponent(approvalToken), revisionUrl:base+'/webhook/ellis-content-revision?token='+encodeURIComponent(approvalToken) } }];\n"
+      }
+    },
+    {
+      "id": "email-linkedin-approval",
+      "name": "Email LinkedIn Approval",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        340,
+        120
+      ],
+      "parameters": {
+        "sendTo": "jake@ellisaistudio.com",
+        "subject": "={{ 'Approval required: LinkedIn draft ' + $json.contentId }}",
+        "message": "={{ 'Content ID: '+$json.contentId+'\\n\\n'+$json.caption+'\\n\\nApprove: '+$json.approveUrl+'\\nReject: '+$json.rejectUrl+'\\nRequest revision: '+$json.revisionUrl+'\\n\\nLinks expire in seven days.' }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XghORmCvWNWS3X9d",
+          "name": "Gmail account"
+        }
+      },
+      "webhookId": "3f10e39e-c93c-4373-b290-8f78be232913"
+    },
+    {
+      "id": "approve-webhook",
+      "name": "Approve Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        420
+      ],
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "ellis-content-approve",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "webhookId": "03f6620b-a9f2-47aa-b2e9-7948e94c0e7b"
+    },
+    {
+      "id": "approve-approval",
+      "name": "Approve Approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        420
+      ],
+      "parameters": {
+        "jsCode": "const token = $input.first().json.query?.token;\nconst store = $getWorkflowStaticData('global');\nconst record = store.approvals?.[token];\nif (!record || record.expiresAt < Date.now() || record.status !== 'pending') {\n  throw new Error('This approval link is invalid, expired, or already used.');\n}\nif (!record.contentId || !record.caption) throw new Error('Approval record is missing content required for publishing.');\nrecord.status = 'approved';\nrecord.used = true;\nrecord.usedAt = new Date().toISOString();\nstore.content[record.contentId] = { ...(store.content[record.contentId] || {}), status: 'publishing', updatedAt: record.usedAt };\nconst linkedinRequestBody = {\n  author: 'urn:li:person:FH-4k7y7li',\n  lifecycleState: 'PUBLISHED',\n  specificContent: {\n    'com.linkedin.ugc.ShareContent': {\n      shareCommentary: { text: record.caption },\n      shareMediaCategory: 'NONE',\n    },\n  },\n  visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' },\n};\nreturn [{ json: { contentId: record.contentId, status: 'approved', caption: record.caption, linkedinRequestBody } }];"
+      }
+    },
+    {
+      "id": "approve-confirmation",
+      "name": "Approve Confirmation",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -140,
+        420
+      ],
+      "parameters": {
+        "sendTo": "jake@ellisaistudio.com",
+        "subject": "={{ 'Ellis content '+$json.status+': '+$json.contentId }}",
+        "message": "={{ 'Content '+$json.contentId+' is now '+$json.status+'. Public publishing remains disabled until LinkedIn authorization and the private test are complete.' }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XghORmCvWNWS3X9d",
+          "name": "Gmail account"
+        }
+      },
+      "webhookId": "0fc13b70-854e-40d8-9632-fe5187c0ca64"
+    },
+    {
+      "id": "reject-webhook",
+      "name": "Reject Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        600
+      ],
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "ellis-content-reject",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "webhookId": "5535ca64-47ba-495f-bd9e-31f44f25aae4"
+    },
+    {
+      "id": "reject-approval",
+      "name": "Reject Approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        600
+      ],
+      "parameters": {
+        "jsCode": "const token=$input.first().json.query?.token; const store=$getWorkflowStaticData('global'); const record=store.approvals?.[token]; if(!record||record.expiresAt<Date.now()||record.status!=='pending') throw new Error('This approval link is invalid, expired, or already used.'); record.status='rejected'; store.content[record.contentId]={...(store.content[record.contentId]||{}),status:'rejected',updatedAt:new Date().toISOString()}; return [{json:{contentId:record.contentId,status:'rejected'}}];"
+      }
+    },
+    {
+      "id": "reject-confirmation",
+      "name": "Reject Confirmation",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -140,
+        600
+      ],
+      "parameters": {
+        "sendTo": "jake@ellisaistudio.com",
+        "subject": "={{ 'Ellis content '+$json.status+': '+$json.contentId }}",
+        "message": "={{ 'Content '+$json.contentId+' is now '+$json.status+'. Public publishing remains disabled until LinkedIn authorization and the private test are complete.' }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XghORmCvWNWS3X9d",
+          "name": "Gmail account"
+        }
+      },
+      "webhookId": "538c9378-5908-4ca5-9226-64c933272b28"
+    },
+    {
+      "id": "revision-webhook",
+      "name": "Revision Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -600,
+        780
+      ],
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "ellis-content-revision",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "webhookId": "272faabc-da9b-47d9-8cd5-5f0fbb1e6d5d"
+    },
+    {
+      "id": "revision-approval",
+      "name": "Revision Approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        780
+      ],
+      "parameters": {
+        "jsCode": "const token=$input.first().json.query?.token; const store=$getWorkflowStaticData('global'); const record=store.approvals?.[token]; if(!record||record.expiresAt<Date.now()||record.status!=='pending') throw new Error('This approval link is invalid, expired, or already used.'); record.status='revision_requested'; store.content[record.contentId]={...(store.content[record.contentId]||{}),status:'revision_requested',updatedAt:new Date().toISOString()}; return [{json:{contentId:record.contentId,status:'revision_requested'}}];"
+      }
+    },
+    {
+      "id": "revision-confirmation",
+      "name": "Revision Confirmation",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -140,
+        780
+      ],
+      "parameters": {
+        "sendTo": "jake@ellisaistudio.com",
+        "subject": "={{ 'Ellis content '+$json.status+': '+$json.contentId }}",
+        "message": "={{ 'Content '+$json.contentId+' is now '+$json.status+'. Public publishing remains disabled until LinkedIn authorization and the private test are complete.' }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XghORmCvWNWS3X9d",
+          "name": "Gmail account"
+        }
+      },
+      "webhookId": "c657b26d-68fb-49f3-8c0c-da7bfa397a17"
+    },
+    {
+      "id": "publish-linkedin-after-approval",
+      "name": "Publish LinkedIn After Approval",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -120,
+        420
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linkedin.com/v2/ugcPosts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Restli-Protocol-Version",
+              "value": "2.0.0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "options": {
+          "timeout": 30000
+        },
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.linkedinRequestBody }}"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "UFbc9CztOrBglVKN",
+          "name": "Ellis LinkedIn publishing token (managed)"
+        }
+      }
+    },
+    {
+      "id": "prepare-openai-json-request",
+      "name": "Prepare OpenAI JSON Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        120
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const item = $input.first().json;\n\nconst prompt = [\n  'Create a LinkedIn post for Ellis AI Studio.',\n  '',\n  'Business positioning:',\n  'Ellis AI Studio identifies business problems and builds AI-powered',\n  'solutions that save time, reduce costs, and help businesses grow.',\n  '',\n  `Topic: ${item.topic}`,\n  `Audience: ${item.audience}`,\n  `Goal: ${item.goal}`,\n  `Call to action: ${item.cta}`,\n  `Website: ${item.website}`,\n  '',\n  'Requirements:',\n  '- Start with a strong business-problem hook.',\n  '- Use clear, confident language.',\n  '- Keep the post between 120 and 220 words.',\n  '- Focus on business outcomes, not proprietary workflow details.',\n  '- Do not invent statistics, customers, testimonials, or results.',\n  '- Use short readable paragraphs.',\n  '- Include no more than four relevant hashtags.',\n  '- End with the requested call to action.',\n  '- Return only the finished LinkedIn post.'\n].join('\\n');\n\nreturn [{\n  json: {\n    ...item,\n    openaiRequestBody: {\n      model: item.openaiModel || 'gpt-5-mini',\n      input: [{ role: 'user', content: [{ type: 'input_text', text: prompt }] }]\n    }\n  }\n}];\n"
+      }
+    }
+  ],
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Scheduled Calendar Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Scheduled Calendar Events": {
+      "main": [
+        [
+          {
+            "node": "Parse and Guard Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse and Guard Content": {
+      "main": [
+        [
+          {
+            "node": "Prepare OpenAI JSON Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate LinkedIn Draft": {
+      "main": [
+        [
+          {
+            "node": "Normalize LinkedIn Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize LinkedIn Draft": {
+      "main": [
+        [
+          {
+            "node": "Create Secure Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Secure Approval": {
+      "main": [
+        [
+          {
+            "node": "Email LinkedIn Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve Webhook": {
+      "main": [
+        [
+          {
+            "node": "Approve Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve Approval": {
+      "main": [
+        [
+          {
+            "node": "Publish LinkedIn After Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject Webhook": {
+      "main": [
+        [
+          {
+            "node": "Reject Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reject Approval": {
+      "main": [
+        [
+          {
+            "node": "Reject Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revision Webhook": {
+      "main": [
+        [
+          {
+            "node": "Revision Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revision Approval": {
+      "main": [
+        [
+          {
+            "node": "Revision Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publish LinkedIn After Approval": {
+      "main": [
+        [
+          {
+            "node": "Approve Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare OpenAI JSON Request": {
+      "main": [
+        [
+          {
+            "node": "Generate LinkedIn Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "u1NHNnFpPoP93f9S",
+    "saveExecutionProgress": true
+  },
+  "staticData": {
+    "node:Every 5 Minutes": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    },
+    "global": {
+      "content": {
+        "EAS-LI-1785965834609": {
+          "status": "generating",
+          "eventId": "mrk5u15ht15604fomlhofrbvtg",
+          "startedAt": "2026-08-05T22:25:16.268Z",
+          "retries": 0
+        },
+        "undefined": {
+          "status": "awaiting_approval",
+          "finalCaption": "Repeating the same admin tasks every day is quietly draining your time, cash, and growth potential.\n\nAutomate these three repetitive tasks today and free up your team to focus on revenue-generating work.\n\nInvoicing and payment follow-ups — automated invoices and reminders speed collections, improve cash flow, and cut chase time.\nCustomer messages and FAQs — AI triage handles common questions, routes high-value issues to humans, and keeps response times fast.\nScheduling and confirmations — self-service booking and automated reminders reduce no-shows and eliminate back-and-forth.\n\nThese automations reduce manual errors, lower operating costs, and give customers a faster, more consistent experience—without replacing your people.\n\nIf you want help identifying which tasks to automate first and building a solution that delivers measurable business results, we can help. Learn more: https://ellisaistudio.com\n\n#SmallBusiness #Automation #AI #Efficiency\n\nWhich repetitive task consumes the most time for you?",
+          "updatedAt": "2026-08-05T22:10:49.892Z"
+        }
+      },
+      "approvals": {
+        "D-HPvvDccA2T4zdKlUZ1cJopNN_J7tp2JESSVdgdEYUKPy0bb8qhnchAlOMYWa-q": {
+          "caption": "Wasting staff hours on repetitive tasks erodes margin and stalls growth. Small businesses that automate the right processes free time, cut costs, and scale faster.\n\n1) Customer inquiries and lead qualification — automate first responses and triage so high-intent leads get handled immediately and your team focuses on deals that matter.\n\n2) Invoicing and payment reminders — automated billing reduces late payments, lowers administrative overhead, and improves cash flow predictability.\n\n3) Data entry and regular reporting — eliminating manual data work reduces errors and delivers timely insights that drive better decisions.\n\nAt Ellis AI Studio we identify where automation delivers the biggest business impact, then build AI-powered solutions that save time, reduce costs, and help your business grow. Learn more: https://ellisaistudio.com\n\nWhich repetitive task consumes the most time in your business?\n\n#SmallBusiness #Automation #AI #Productivity",
+          "issuedAt": 1785967827910,
+          "expiresAt": 1786572627910,
+          "status": "approved",
+          "used": false
+        },
+        "9YZe8YBfjtni7KBixOsWrh5Ux--oLCr0eqOjB07kLq8F-LuJQCBxISpLCimt_3Oy": {
+          "caption": "Repeating the same admin tasks every day is quietly draining your time, cash, and growth potential.\n\nAutomate these three repetitive tasks today and free up your team to focus on revenue-generating work.\n\nInvoicing and payment follow-ups — automated invoices and reminders speed collections, improve cash flow, and cut chase time.\nCustomer messages and FAQs — AI triage handles common questions, routes high-value issues to humans, and keeps response times fast.\nScheduling and confirmations — self-service booking and automated reminders reduce no-shows and eliminate back-and-forth.\n\nThese automations reduce manual errors, lower operating costs, and give customers a faster, more consistent experience—without replacing your people.\n\nIf you want help identifying which tasks to automate first and building a solution that delivers measurable business results, we can help. Learn more: https://ellisaistudio.com\n\n#SmallBusiness #Automation #AI #Efficiency\n\nWhich repetitive task consumes the most time for you?",
+          "issuedAt": 1785968743671,
+          "expiresAt": 1786573543671,
+          "status": "pending",
+          "used": false
+        }
+      }
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "1385b97b-4c97-4a75-abf4-ef5f113240b5",
+  "activeVersionId": "1385b97b-4c97-4a75-abf4-ef5f113240b5",
+  "versionCounter": 5,
+  "triggerCount": 4,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-08-03T05:03:03.007Z",
+      "createdAt": "2026-08-03T05:03:03.007Z",
+      "role": "workflow:owner",
+      "workflowId": "XtVdc34ZPuHrt3Tb",
+      "projectId": "Lv5y0hqvJJhBhAk5",
+      "project": {
+        "updatedAt": "2026-07-16T18:46:57.508Z",
+        "createdAt": "2026-07-16T18:46:45.820Z",
+        "id": "Lv5y0hqvJJhBhAk5",
+        "name": "Jacob Ellis <jake@ellisaistudio.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "917eed17-d837-4143-9b8b-4ec606a17633"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-08-05T22:13:20.066Z",
+    "createdAt": "2026-08-05T22:13:20.066Z",
+    "versionId": "1385b97b-4c97-4a75-abf4-ef5f113240b5",
+    "workflowId": "XtVdc34ZPuHrt3Tb",
+    "nodes": [
+      {
+        "id": "every-5-minutes",
+        "name": "Every 5 Minutes",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -1040,
+          120
+        ],
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 5
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "get-scheduled-calendar-events",
+        "name": "Get Scheduled Calendar Events",
+        "type": "n8n-nodes-base.googleCalendar",
+        "typeVersion": 1.3,
+        "position": [
+          -820,
+          120
+        ],
+        "parameters": {
+          "resource": "event",
+          "operation": "getAll",
+          "calendar": {
+            "__rl": true,
+            "value": "primary",
+            "mode": "list",
+            "cachedResultName": "primary"
+          },
+          "returnAll": true,
+          "options": {},
+          "timeMin": "={{ $now.minus({ minutes: 10 }) }}",
+          "timeMax": "={{ $now }}"
+        },
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "mRYiam909f3MrrXv",
+            "name": "Ellis Google Calendar (managed)"
+          }
+        }
+      },
+      {
+        "id": "parse-and-guard-content",
+        "name": "Parse and Guard Content",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -600,
+          120
+        ],
+        "parameters": {
+          "jsCode": "const event=$input.first().json; const description=String(event.description||''); const pairs=Object.fromEntries([...description.matchAll(/^\\s*([A-Z_]+)\\s*:\\s*(.*?)\\s*$/gm)].map((m)=>[m[1],m[2]])); const contentId=pairs.CONTENT_ID; const start=event.start?.dateTime||event.start?.date; if(!String(event.summary||'').startsWith('PRE-POST |')||pairs.STATUS!=='READY'||!contentId||!start||new Date(start)>new Date()) return []; const store=$getWorkflowStaticData('global'); store.content=store.content||{}; const prior=store.content[contentId]; if(prior?.status==='published'||prior?.status==='awaiting_approval'||prior?.status==='approved') return []; const required=['PLATFORM','TOPIC','AUDIENCE','GOAL','CTA','WEBSITE','APPROVAL_REQUIRED','STATUS']; const missing=required.filter((key)=>!pairs[key]); if(missing.length) throw new Error('Calendar event '+(event.id||'unknown')+' is missing: '+missing.join(', ')); store.content[contentId]={status:'generating',eventId:event.id,startedAt:new Date().toISOString(),retries:(prior?.retries||0)}; return [{json:{contentId,eventId:event.id,start,platform:pairs.PLATFORM.toLowerCase(),topic:pairs.TOPIC,audience:pairs.AUDIENCE,goal:pairs.GOAL,cta:pairs.CTA,website:pairs.WEBSITE,approvalRequired:pairs.APPROVAL_REQUIRED,sourceDescription:description}}];"
+        }
+      },
+      {
+        "id": "generate-linkedin-draft",
+        "name": "Generate LinkedIn Draft",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -380,
+          120
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.openai.com/v1/responses",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "json",
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.openaiRequestBody }}",
+          "options": {
+            "timeout": 120000
+          }
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "gslpO0BCkZbl6txI",
+            "name": "OpenAI API Key (Pluton)"
+          }
+        }
+      },
+      {
+        "id": "normalize-linkedin-draft",
+        "name": "Normalize LinkedIn Draft",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -140,
+          120
+        ],
+        "parameters": {
+          "jsCode": "const item = $input.first().json;\nconst response = item.openaiResponse ?? item;\nlet draft = '';\nif (typeof response.output_text === 'string' && response.output_text.trim()) draft = response.output_text.trim();\nif (!draft && Array.isArray(response.output)) draft = response.output.flatMap(output => Array.isArray(output.content) ? output.content : []).filter(content => content?.type === 'output_text').map(content => typeof content.text === 'string' ? content.text : '').filter(Boolean).join('\\n').trim();\nif (!draft) throw new Error('OpenAI response contained no output_text content');\nconst wordCount=draft.split(/\\s+/).filter(Boolean).length;\nconst hashtagCount=(draft.match(/(^|\\s)#[A-Za-z0-9_]+/g)||[]).length;\nif(wordCount<120||wordCount>220)throw new Error(`LinkedIn draft word count ${wordCount} is outside the allowed 120–220 range`);\nif(hashtagCount>4)throw new Error(`LinkedIn draft contains ${hashtagCount} hashtags; maximum allowed is 4`);\nreturn [{json:{...item,linkedinDraft:draft,linkedinDraftWordCount:wordCount,linkedinDraftHashtagCount:hashtagCount,openaiModelUsed:response.model||item.openaiModelUsed||'gpt-5-mini-2025-08-07'}}];\n"
+        }
+      },
+      {
+        "id": "create-secure-approval",
+        "name": "Create Secure Approval",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          100,
+          120
+        ],
+        "parameters": {
+          "jsCode": "function randomToken(length = 64) {\n  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';\n  let token = '';\n  for (let i = 0; i < length; i += 1) token += alphabet[Math.floor(Math.random() * alphabet.length)];\n  return token;\n}\nconst item = $input.first().json;\nconst issuedAt = Date.now();\nconst expiresAt = issuedAt + 7 * 24 * 60 * 60 * 1000;\nconst approvalToken = randomToken();\nconst store = $getWorkflowStaticData('global');\nstore.approvals = store.approvals || {};\nstore.content = store.content || {};\nstore.approvals[approvalToken] = { contentId:item.contentId, caption:item.linkedinDraft, issuedAt, expiresAt, status:'pending', used:false };\nstore.content[item.contentId] = { ...(store.content[item.contentId] || {}), status:'awaiting_approval', finalCaption:item.linkedinDraft };\nconst base = 'https://ellisaistudio.app.n8n.cloud';\nreturn [{ json:{ ...item, approvalTokenIssuedAt:issuedAt, approvalTokenExpiresAt:expiresAt, approvalTokenUsed:false, approveUrl:base+'/webhook/ellis-content-approve?token='+encodeURIComponent(approvalToken), rejectUrl:base+'/webhook/ellis-content-reject?token='+encodeURIComponent(approvalToken), revisionUrl:base+'/webhook/ellis-content-revision?token='+encodeURIComponent(approvalToken) } }];\n"
+        }
+      },
+      {
+        "id": "email-linkedin-approval",
+        "name": "Email LinkedIn Approval",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          340,
+          120
+        ],
+        "parameters": {
+          "sendTo": "jake@ellisaistudio.com",
+          "subject": "={{ 'Approval required: LinkedIn draft ' + $json.contentId }}",
+          "message": "={{ 'Content ID: '+$json.contentId+'\\n\\n'+$json.caption+'\\n\\nApprove: '+$json.approveUrl+'\\nReject: '+$json.rejectUrl+'\\nRequest revision: '+$json.revisionUrl+'\\n\\nLinks expire in seven days.' }}",
+          "options": {}
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "XghORmCvWNWS3X9d",
+            "name": "Gmail account"
+          }
+        },
+        "webhookId": "3f10e39e-c93c-4373-b290-8f78be232913"
+      },
+      {
+        "id": "approve-webhook",
+        "name": "Approve Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -600,
+          420
+        ],
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "ellis-content-approve",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "webhookId": "03f6620b-a9f2-47aa-b2e9-7948e94c0e7b"
+      },
+      {
+        "id": "approve-approval",
+        "name": "Approve Approval",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -380,
+          420
+        ],
+        "parameters": {
+          "jsCode": "const token = $input.first().json.query?.token;\nconst store = $getWorkflowStaticData('global');\nconst record = store.approvals?.[token];\nif (!record || record.expiresAt < Date.now() || record.status !== 'pending') {\n  throw new Error('This approval link is invalid, expired, or already used.');\n}\nif (!record.contentId || !record.caption) throw new Error('Approval record is missing content required for publishing.');\nrecord.status = 'approved';\nrecord.used = true;\nrecord.usedAt = new Date().toISOString();\nstore.content[record.contentId] = { ...(store.content[record.contentId] || {}), status: 'publishing', updatedAt: record.usedAt };\nconst linkedinRequestBody = {\n  author: 'urn:li:person:FH-4k7y7li',\n  lifecycleState: 'PUBLISHED',\n  specificContent: {\n    'com.linkedin.ugc.ShareContent': {\n      shareCommentary: { text: record.caption },\n      shareMediaCategory: 'NONE',\n    },\n  },\n  visibility: { 'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC' },\n};\nreturn [{ json: { contentId: record.contentId, status: 'approved', caption: record.caption, linkedinRequestBody } }];"
+        }
+      },
+      {
+        "id": "approve-confirmation",
+        "name": "Approve Confirmation",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          -140,
+          420
+        ],
+        "parameters": {
+          "sendTo": "jake@ellisaistudio.com",
+          "subject": "={{ 'Ellis content '+$json.status+': '+$json.contentId }}",
+          "message": "={{ 'Content '+$json.contentId+' is now '+$json.status+'. Public publishing remains disabled until LinkedIn authorization and the private test are complete.' }}",
+          "options": {}
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "XghORmCvWNWS3X9d",
+            "name": "Gmail account"
+          }
+        },
+        "webhookId": "0fc13b70-854e-40d8-9632-fe5187c0ca64"
+      },
+      {
+        "id": "reject-webhook",
+        "name": "Reject Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -600,
+          600
+        ],
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "ellis-content-reject",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "webhookId": "5535ca64-47ba-495f-bd9e-31f44f25aae4"
+      },
+      {
+        "id": "reject-approval",
+        "name": "Reject Approval",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -380,
+          600
+        ],
+        "parameters": {
+          "jsCode": "const token=$input.first().json.query?.token; const store=$getWorkflowStaticData('global'); const record=store.approvals?.[token]; if(!record||record.expiresAt<Date.now()||record.status!=='pending') throw new Error('This approval link is invalid, expired, or already used.'); record.status='rejected'; store.content[record.contentId]={...(store.content[record.contentId]||{}),status:'rejected',updatedAt:new Date().toISOString()}; return [{json:{contentId:record.contentId,status:'rejected'}}];"
+        }
+      },
+      {
+        "id": "reject-confirmation",
+        "name": "Reject Confirmation",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          -140,
+          600
+        ],
+        "parameters": {
+          "sendTo": "jake@ellisaistudio.com",
+          "subject": "={{ 'Ellis content '+$json.status+': '+$json.contentId }}",
+          "message": "={{ 'Content '+$json.contentId+' is now '+$json.status+'. Public publishing remains disabled until LinkedIn authorization and the private test are complete.' }}",
+          "options": {}
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "XghORmCvWNWS3X9d",
+            "name": "Gmail account"
+          }
+        },
+        "webhookId": "538c9378-5908-4ca5-9226-64c933272b28"
+      },
+      {
+        "id": "revision-webhook",
+        "name": "Revision Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -600,
+          780
+        ],
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "ellis-content-revision",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "webhookId": "272faabc-da9b-47d9-8cd5-5f0fbb1e6d5d"
+      },
+      {
+        "id": "revision-approval",
+        "name": "Revision Approval",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -380,
+          780
+        ],
+        "parameters": {
+          "jsCode": "const token=$input.first().json.query?.token; const store=$getWorkflowStaticData('global'); const record=store.approvals?.[token]; if(!record||record.expiresAt<Date.now()||record.status!=='pending') throw new Error('This approval link is invalid, expired, or already used.'); record.status='revision_requested'; store.content[record.contentId]={...(store.content[record.contentId]||{}),status:'revision_requested',updatedAt:new Date().toISOString()}; return [{json:{contentId:record.contentId,status:'revision_requested'}}];"
+        }
+      },
+      {
+        "id": "revision-confirmation",
+        "name": "Revision Confirmation",
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.1,
+        "position": [
+          -140,
+          780
+        ],
+        "parameters": {
+          "sendTo": "jake@ellisaistudio.com",
+          "subject": "={{ 'Ellis content '+$json.status+': '+$json.contentId }}",
+          "message": "={{ 'Content '+$json.contentId+' is now '+$json.status+'. Public publishing remains disabled until LinkedIn authorization and the private test are complete.' }}",
+          "options": {}
+        },
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "XghORmCvWNWS3X9d",
+            "name": "Gmail account"
+          }
+        },
+        "webhookId": "c657b26d-68fb-49f3-8c0c-da7bfa397a17"
+      },
+      {
+        "id": "publish-linkedin-after-approval",
+        "name": "Publish LinkedIn After Approval",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -120,
+          420
+        ],
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.linkedin.com/v2/ugcPosts",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Restli-Protocol-Version",
+                "value": "2.0.0"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "json",
+          "options": {
+            "timeout": 30000
+          },
+          "specifyBody": "json",
+          "jsonBody": "={{ $json.linkedinRequestBody }}"
+        },
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "UFbc9CztOrBglVKN",
+            "name": "Ellis LinkedIn publishing token (managed)"
+          }
+        }
+      },
+      {
+        "id": "prepare-openai-json-request",
+        "name": "Prepare OpenAI JSON Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -560,
+          120
+        ],
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const item = $input.first().json;\n\nconst prompt = [\n  'Create a LinkedIn post for Ellis AI Studio.',\n  '',\n  'Business positioning:',\n  'Ellis AI Studio identifies business problems and builds AI-powered',\n  'solutions that save time, reduce costs, and help businesses grow.',\n  '',\n  `Topic: ${item.topic}`,\n  `Audience: ${item.audience}`,\n  `Goal: ${item.goal}`,\n  `Call to action: ${item.cta}`,\n  `Website: ${item.website}`,\n  '',\n  'Requirements:',\n  '- Start with a strong business-problem hook.',\n  '- Use clear, confident language.',\n  '- Keep the post between 120 and 220 words.',\n  '- Focus on business outcomes, not proprietary workflow details.',\n  '- Do not invent statistics, customers, testimonials, or results.',\n  '- Use short readable paragraphs.',\n  '- Include no more than four relevant hashtags.',\n  '- End with the requested call to action.',\n  '- Return only the finished LinkedIn post.'\n].join('\\n');\n\nreturn [{\n  json: {\n    ...item,\n    openaiRequestBody: {\n      model: item.openaiModel || 'gpt-5-mini',\n      input: [{ role: 'user', content: [{ type: 'input_text', text: prompt }] }]\n    }\n  }\n}];\n"
+        }
+      }
+    ],
+    "connections": {
+      "Every 5 Minutes": {
+        "main": [
+          [
+            {
+              "node": "Get Scheduled Calendar Events",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Scheduled Calendar Events": {
+        "main": [
+          [
+            {
+              "node": "Parse and Guard Content",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse and Guard Content": {
+        "main": [
+          [
+            {
+              "node": "Prepare OpenAI JSON Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate LinkedIn Draft": {
+        "main": [
+          [
+            {
+              "node": "Normalize LinkedIn Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize LinkedIn Draft": {
+        "main": [
+          [
+            {
+              "node": "Create Secure Approval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Secure Approval": {
+        "main": [
+          [
+            {
+              "node": "Email LinkedIn Approval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Approve Webhook": {
+        "main": [
+          [
+            {
+              "node": "Approve Approval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Approve Approval": {
+        "main": [
+          [
+            {
+              "node": "Publish LinkedIn After Approval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reject Webhook": {
+        "main": [
+          [
+            {
+              "node": "Reject Approval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Reject Approval": {
+        "main": [
+          [
+            {
+              "node": "Reject Confirmation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Revision Webhook": {
+        "main": [
+          [
+            {
+              "node": "Revision Approval",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Revision Approval": {
+        "main": [
+          [
+            {
+              "node": "Revision Confirmation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Publish LinkedIn After Approval": {
+        "main": [
+          [
+            {
+              "node": "Approve Confirmation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Prepare OpenAI JSON Request": {
+        "main": [
+          [
+            {
+              "node": "Generate LinkedIn Draft",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Jacob Ellis",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-08-05T22:13:20.246Z",
+        "id": 47,
+        "workflowId": "XtVdc34ZPuHrt3Tb",
+        "versionId": "1385b97b-4c97-4a75-abf4-ef5f113240b5",
+        "event": "activated",
+        "userId": "917eed17-d837-4143-9b8b-4ec606a17633"
+      },
+      {
+        "createdAt": "2026-08-05T22:13:20.240Z",
+        "id": 46,
+        "workflowId": "XtVdc34ZPuHrt3Tb",
+        "versionId": "1385b97b-4c97-4a75-abf4-ef5f113240b5",
+        "event": "deactivated",
+        "userId": "917eed17-d837-4143-9b8b-4ec606a17633"
+      }
+    ]
+  }
+}

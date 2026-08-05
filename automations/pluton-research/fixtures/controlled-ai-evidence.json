@@ -1,0 +1,32 @@
+{
+  "intake": {
+    "businessName": "Northstar HVAC",
+    "website": "https://northstar.example",
+    "businessDescription": "Residential HVAC repair and maintenance.",
+    "challenge": "After-hours inquiries are not consistently captured or followed up.",
+    "currentSystems": ["Website", "Scheduling", "Accounting"],
+    "budgetRange": "$5,000-$10,000",
+    "timeline": "Within 30 Days",
+    "automationWish": "After-hours lead capture and follow-up."
+  },
+  "crawlPages": [
+    {
+      "url": "https://northstar.example/",
+      "metadata": { "title": "Northstar HVAC | Home" },
+      "markdown": "Northstar HVAC provides residential repair and maintenance. Call us to schedule service.\nHome | Services | Contact\nHome | Services | Contact"
+    },
+    {
+      "url": "https://northstar.example/services",
+      "metadata": { "title": "HVAC Services" },
+      "markdown": "Residential repair, seasonal maintenance, and replacement consultations.\nHome | Services | Contact"
+    }
+  ],
+  "publicResults": [
+    {
+      "url": "https://reviews.example/northstar-hvac",
+      "title": "Northstar HVAC reviews",
+      "description": "Public reviews mention residential repair appointments and maintenance service."
+    }
+  ],
+  "researchMetadata": { "testFixture": true, "publicSearchQueries": 5 }
+}

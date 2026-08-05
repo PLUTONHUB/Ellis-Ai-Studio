@@ -1,0 +1,630 @@
+{
+  "generatedAt": "2026-08-04T16:35:09.422Z",
+  "nodeVersions": {
+    "scheduleTrigger": 1.2,
+    "googleCalendar": 1.3,
+    "code": 2,
+    "gmail": 2.1,
+    "webhook": 2,
+    "httpRequest": 4.2,
+    "googleSheets": 4.6,
+    "googleDrive": 3
+  },
+  "runtimeRestrictions": [
+    "No global crypto or crypto.randomUUID in Code nodes",
+    "No $env in expressions",
+    "Do not JSON.parse plain Responses API text",
+    "Polling must no-op with zero inputs"
+  ],
+  "workflows": {
+    "contentProduction": {
+      "id": "XtVdc34ZPuHrt3Tb",
+      "name": "Ellis AI Studio — Calendar Content Automation",
+      "active": false,
+      "nodes": [
+        {
+          "id": "every-5-minutes",
+          "name": "Every 5 Minutes",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "get-scheduled-calendar-events",
+          "name": "Get Scheduled Calendar Events",
+          "type": "n8n-nodes-base.googleCalendar",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "googleCalendarOAuth2Api"
+          ]
+        },
+        {
+          "id": "parse-and-guard-content",
+          "name": "Parse and Guard Content",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "generate-linkedin-draft",
+          "name": "Generate LinkedIn Draft",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "httpHeaderAuth"
+          ]
+        },
+        {
+          "id": "normalize-linkedin-draft",
+          "name": "Normalize LinkedIn Draft",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "create-secure-approval",
+          "name": "Create Secure Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "email-linkedin-approval",
+          "name": "Email LinkedIn Approval",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "approve-webhook",
+          "name": "Approve Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "approve-approval",
+          "name": "Approve Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "approve-confirmation",
+          "name": "Approve Confirmation",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "reject-webhook",
+          "name": "Reject Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "reject-approval",
+          "name": "Reject Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "reject-confirmation",
+          "name": "Reject Confirmation",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "revision-webhook",
+          "name": "Revision Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "revision-approval",
+          "name": "Revision Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 4.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "revision-confirmation",
+          "name": "Revision Confirmation",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "publish-linkedin-after-approval",
+          "name": "Publish LinkedIn After Approval",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "httpHeaderAuth"
+          ]
+        }
+      ]
+    },
+    "contentTest": {
+      "id": "7SdaEBilKG5ufROO",
+      "name": "Ellis AI Studio — Calendar Content Automation — PRIVATE TEST",
+      "active": true,
+      "nodes": [
+        {
+          "id": "every-5-minutes",
+          "name": "Every 5 Minutes",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "get-scheduled-calendar-events",
+          "name": "Get Scheduled Calendar Events",
+          "type": "n8n-nodes-base.googleCalendar",
+          "typeVersion": 1.3,
+          "credentialTypes": [
+            "googleCalendarOAuth2Api"
+          ]
+        },
+        {
+          "id": "parse-and-guard-content",
+          "name": "Parse and Guard Content",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "generate-linkedin-draft",
+          "name": "Generate LinkedIn Draft",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "httpHeaderAuth"
+          ]
+        },
+        {
+          "id": "normalize-linkedin-draft",
+          "name": "Normalize LinkedIn Draft",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "create-secure-approval",
+          "name": "Create Secure Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "email-linkedin-approval",
+          "name": "Email LinkedIn Approval",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "approve-webhook",
+          "name": "Approve Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "approve-approval",
+          "name": "Approve Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "approve-confirmation",
+          "name": "Approve Confirmation",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "reject-webhook",
+          "name": "Reject Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "reject-approval",
+          "name": "Reject Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "reject-confirmation",
+          "name": "Reject Confirmation",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "revision-webhook",
+          "name": "Revision Webhook",
+          "type": "n8n-nodes-base.webhook",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "revision-approval",
+          "name": "Revision Approval",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "revision-confirmation",
+          "name": "Revision Confirmation",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "test-log",
+          "name": "Test Approval Log",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "prepare-openai-json-request",
+          "name": "Prepare OpenAI JSON Request",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        }
+      ]
+    },
+    "intakeProduction": {
+      "id": "tz4fJQSSvBk3zswH",
+      "name": "Pluton Research - Google Form Intake to Pre-Call Brief",
+      "active": true,
+      "nodes": [
+        {
+          "id": "trigger",
+          "name": "Google Sheets Trigger - New Form Response",
+          "type": "n8n-nodes-base.googleSheetsTrigger",
+          "typeVersion": 1,
+          "credentialTypes": [
+            "googleSheetsTriggerOAuth2Api"
+          ]
+        },
+        {
+          "id": "normalize",
+          "name": "Normalize Form Response",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "derive-row-identity",
+          "name": "Derive Fresh Form Row Identity",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "validate",
+          "name": "Validate Required Business Data",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "valid",
+          "name": "Submission Valid?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "alreadyDelivered",
+          "name": "Already Delivered?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "stopDuplicate",
+          "name": "Stop Duplicate Delivery",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "invalid",
+          "name": "Sheet - Mark Invalid",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 4.6,
+          "credentialTypes": [
+            "googleSheetsOAuth2Api"
+          ]
+        },
+        {
+          "id": "rehydrate-after-capture",
+          "name": "Rehydrate Trigger Payload",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "capture-submission-id",
+          "name": "Sheet - Capture Submission ID",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 4.6,
+          "credentialTypes": [
+            "googleSheetsOAuth2Api"
+          ]
+        },
+        {
+          "id": "rehydrate-after-researching",
+          "name": "Rehydrate After Researching",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "researching",
+          "name": "Sheet - Mark Researching",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 4.6,
+          "credentialTypes": [
+            "googleSheetsOAuth2Api"
+          ]
+        },
+        {
+          "id": "crawl",
+          "name": "Firecrawl - Start Website Crawl (20 pages)",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "httpHeaderAuth"
+          ]
+        },
+        {
+          "id": "wait",
+          "name": "Wait for Crawl",
+          "type": "n8n-nodes-base.wait",
+          "typeVersion": 1.1,
+          "credentialTypes": []
+        },
+        {
+          "id": "status",
+          "name": "Firecrawl - Get Crawl Status",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "httpHeaderAuth"
+          ]
+        },
+        {
+          "id": "complete",
+          "name": "Crawl Complete?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "queries",
+          "name": "Build Public Research Queries",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "search",
+          "name": "Firecrawl - Search Public Signals",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "httpHeaderAuth"
+          ]
+        },
+        {
+          "id": "evidence",
+          "name": "Clean and Package Evidence",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "analyzing",
+          "name": "Sheet - Mark Analyzing",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 4.6,
+          "credentialTypes": [
+            "googleSheetsOAuth2Api"
+          ]
+        },
+        {
+          "id": "restoreEvidence",
+          "name": "Restore Evidence After Analyzing",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "ai",
+          "name": "OpenAI - Analyze Evidence",
+          "type": "n8n-nodes-base.httpRequest",
+          "typeVersion": 4.2,
+          "credentialTypes": [
+            "httpHeaderAuth"
+          ]
+        },
+        {
+          "id": "validateReport",
+          "name": "Validate AI Report",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "reportValid",
+          "name": "Report Valid?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2.2,
+          "credentialTypes": []
+        },
+        {
+          "id": "prepareRetry",
+          "name": "Prepare AI Retry",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "prepareReportFile",
+          "name": "Prepare Validated Report File",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "delivering",
+          "name": "Sheet - Mark Delivering",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 4.6,
+          "credentialTypes": [
+            "googleSheetsOAuth2Api"
+          ]
+        },
+        {
+          "id": "restoreFile",
+          "name": "Restore File After Delivering",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "drive",
+          "name": "Google Drive - Save Full Report",
+          "type": "n8n-nodes-base.googleDrive",
+          "typeVersion": 3,
+          "credentialTypes": [
+            "googleDriveOAuth2Api"
+          ]
+        },
+        {
+          "id": "completeRow",
+          "name": "Sheet - Mark Complete",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 4.6,
+          "credentialTypes": [
+            "googleSheetsOAuth2Api"
+          ]
+        },
+        {
+          "id": "email",
+          "name": "Gmail - Notify Ellis",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "pollState",
+          "name": "Evaluate Crawl State",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "firecrawlDiag",
+          "name": "Firecrawl Request Diagnostic",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "row-identity-check",
+          "name": "Exact Triggering Row Identified?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "stop-unsafe-sheet-update",
+          "name": "Stop Unsafe Sheet Update",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        }
+      ]
+    },
+    "intakeError": {
+      "id": "CvkxxvM7cTy8YdI4",
+      "name": "Pluton Research - Error Handler",
+      "active": false,
+      "nodes": [
+        {
+          "id": "error",
+          "name": "Error Trigger",
+          "type": "n8n-nodes-base.errorTrigger",
+          "typeVersion": 1,
+          "credentialTypes": []
+        },
+        {
+          "id": "format",
+          "name": "Format Failure Notice",
+          "type": "n8n-nodes-base.code",
+          "typeVersion": 2,
+          "credentialTypes": []
+        },
+        {
+          "id": "sheet",
+          "name": "Sheet - Mark Research Error",
+          "type": "n8n-nodes-base.googleSheets",
+          "typeVersion": 4.5,
+          "credentialTypes": [
+            "googleSheetsOAuth2Api"
+          ]
+        },
+        {
+          "id": "email",
+          "name": "Gmail - Notify Research Failure",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "credentialTypes": [
+            "gmailOAuth2"
+          ]
+        },
+        {
+          "id": "error-submission-id-check",
+          "name": "Submission ID Available?",
+          "type": "n8n-nodes-base.if",
+          "typeVersion": 2,
+          "credentialTypes": []
+        }
+      ]
+    }
+  }
+}
