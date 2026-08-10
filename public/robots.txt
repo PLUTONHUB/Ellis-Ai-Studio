@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ellisaistudio.com/sitemap.xml
