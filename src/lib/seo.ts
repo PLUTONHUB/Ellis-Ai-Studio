@@ -9,4 +9,9 @@ export function pageHead({ title, description, path, type = "website" }: PageSeo
 
 export function jsonLd(data: Record<string, unknown>) { return [{ type: "application/ld+json", children: JSON.stringify(data) }]; }
 
-export const organizationSchema = { "@context": "https://schema.org", "@graph": [{ "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Ellis AI Studio", url: siteUrl, logo: `${siteUrl}/logo/ellis-logo-icon.png`, description: "Business systems consulting and implementation across customer experience, operations automation, integrations, and practical AI." }, { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl, name: "Ellis AI Studio", publisher: { "@id": `${siteUrl}/#organization` } }] };
+// Both founders are listed as peers. `founder` is an array so neither is
+// modelled as the organisation's sole principal.
+const jacobEllis = { "@type": "Person", "@id": `${siteUrl}/founders/jacob-ellis#person`, name: "Jacob Ellis", jobTitle: "Co-Founder", url: `${siteUrl}/founders/jacob-ellis`, email: "jake@ellisaistudio.com" };
+const amberDowling = { "@type": "Person", "@id": `${siteUrl}/founders/amber-dowling#person`, name: "Amber Dowling", jobTitle: "Co-Founder", url: `${siteUrl}/founders/amber-dowling`, email: "amberd@ellisaistudio.com" };
+
+export const organizationSchema = { "@context": "https://schema.org", "@graph": [{ "@type": "Organization", "@id": `${siteUrl}/#organization`, name: "Ellis AI Studio", url: siteUrl, logo: `${siteUrl}/logo/ellis-logo-icon.png`, description: "A founder-led venture studio building AI systems, automation, operational infrastructure and digital products — for clients and as its own ventures.", founder: [{ "@id": jacobEllis["@id"] }, { "@id": amberDowling["@id"] }] }, jacobEllis, amberDowling, { "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl, name: "Ellis AI Studio", publisher: { "@id": `${siteUrl}/#organization` } }] };

@@ -1,2 +1,3 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-export const Route = createFileRoute("/services")({ beforeLoad: () => { throw redirect({ to: "/systems" }); } });
+// Legacy route. Points straight at /solutions rather than chaining through /systems.
+export const Route = createFileRoute("/services")({ beforeLoad: () => { throw redirect({ to: "/solutions" }); } });

@@ -11,8 +11,8 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#070707" }, { name: "application-name", content: "Ellis AI Studio" }, { name: "robots", content: "index, follow" },
-      { title: "Business Systems & Automation | Ellis AI Studio" },
-      { name: "description", content: "Ellis AI Studio identifies business bottlenecks and builds connected systems that help businesses operate better." },
+      { title: "Ellis AI Studio | Founder-Led Venture Studio" },
+      { name: "description", content: "Ellis AI Studio builds systems, products, brands and digital ventures around real problems — and builds AI systems, automation and business infrastructure for companies that need the same." },
       { property: "og:type", content: "website" }, { property: "og:locale", content: "en_US" }, { property: "og:site_name", content: "Ellis AI Studio" },
       { property: "og:title", content: "Business Systems & Automation | Ellis AI Studio" },
       { property: "og:description", content: "Find what is slowing your business down. Then build the connected system that fixes it." }, { property: "og:image", content: "https://ellisaistudio.com/logo/ellis-og-acquisition.png" }, { name: "twitter:card", content: "summary_large_image" }, { name: "twitter:image", content: "https://ellisaistudio.com/logo/ellis-og-acquisition.png" },

@@ -12,3 +12,11 @@
 .acq-nav,.founding-min-nav{isolation:isolate;overflow:hidden;background:linear-gradient(90deg,rgba(8,8,8,.93),rgba(8,8,8,.68),rgba(8,8,8,.93)),url('/logo/ellis-logo-v2.jpg') center 51% / cover no-repeat}.acq-nav:before,.founding-min-nav:before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(199,157,98,.08),transparent 38%,rgba(199,157,98,.06));pointer-events:none}.acq-nav .acq-brand>img{visibility:hidden}.acq-nav .acq-brand{width:150px;height:1px}.founding-min-nav .acq-brand>img{visibility:hidden}.founding-min-nav .acq-brand{width:150px;height:1px}.founder-story{display:grid;grid-template-columns:minmax(280px,.72fr) minmax(0,1fr);align-items:start;gap:clamp(38px,7vw,92px)}.founder-portrait{position:relative;margin:0;border:1px solid rgba(199,157,98,.38);background:#0c0b09;box-shadow:0 24px 70px rgba(0,0,0,.26)}.founder-portrait:after{content:"";position:absolute;inset:0;border:1px solid rgba(255,255,255,.12);transform:translate(8px,8px);pointer-events:none}.founder-portrait img{display:block;width:100%;aspect-ratio:4 / 5;object-fit:cover;object-position:center top}.founder-story .story{max-width:680px}
 .acq-nav{overflow:visible}.founding-min-nav{overflow:hidden}
 @media(max-width:820px){.acq-nav .acq-brand{width:1px}.founding-min-nav .acq-brand{width:1px}.founder-story{grid-template-columns:1fr;gap:45px}.founder-portrait{width:min(100%,430px)}.founder-portrait:after{transform:translate(6px,6px)}}
+
+/* Venture-studio navigation and footer: four columns, plus a rule separating
+   primary from secondary links in the mobile menu. */
+.acq-footer-wide>.acq-wrap{grid-template-columns:1.5fr 1fr 1fr 1.1fr}
+.acq-menu-divider{display:block;height:1px;margin:6px 0;background:var(--line)}
+@media(max-width:900px){.acq-footer-wide>.acq-wrap{grid-template-columns:1fr 1fr}.acq-footer-wide>.acq-wrap>div:first-child{grid-column:1/-1}}
+@media(max-width:520px){.acq-footer-wide>.acq-wrap{grid-template-columns:1fr}.acq-footer-wide>.acq-wrap>div:first-child{grid-column:auto}}
+@media(hover:none),(max-width:820px){.acq-footer a:not(.acq-brand),.acq-text-link{display:inline-flex;align-items:center;min-height:44px}.acq-footer>div>div:not(:first-child){gap:0}}
