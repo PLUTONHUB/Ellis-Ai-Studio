@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JAK3FFECT — Jacob Ellis | UGC Creator</title>
+<meta name="description" content="Cinematic UGC and lifestyle content for fitness, wellness, tech, travel and lifestyle brands.">
+
+<!-- Favicon: inline SVG mark, no external file needed -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230B0D0C'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-style='italic' fill='%23A9BB94' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E">
+
+<!--
+  PRODUCTION DOMAIN — https://jak3ffect.com
+  Link-preview crawlers (iMessage, Slack, Discord, X, LinkedIn,
+  Facebook) read canonical/og:url/og:image as static HTML — they do
+  not run JavaScript — so these are real, absolute, hardcoded URLs
+  rather than anything assembled at runtime. If the production
+  domain ever changes, update all four in one pass (canonical,
+  og:url, og:image, twitter:image) — og:image and twitter:image
+  must stay absolute; a relative path silently breaks previews.
+  This directory is the deploy root, so /assets/... resolves to
+  ugc/assets/... in the repo.
+-->
+<link rel="canonical" href="https://jak3ffect.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="JAK3FFECT">
+<meta property="og:title" content="JAK3FFECT — Jacob Ellis | UGC Creator">
+<meta property="og:description" content="Fitness • Wellness • Tech • Travel • Lifestyle">
+<meta property="og:image" content="https://jak3ffect.com/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="JAK3FFECT — Jacob Ellis, UGC creator">
+<meta property="og:url" content="https://jak3ffect.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="JAK3FFECT — Jacob Ellis | UGC Creator">
+<meta name="twitter:description" content="Fitness • Wellness • Tech • Travel • Lifestyle">
+<meta name="twitter:image" content="https://jak3ffect.com/assets/og-image.jpg">
+<meta name="twitter:image:alt" content="JAK3FFECT — Jacob Ellis, UGC creator">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0D0C;
+  --bg-elev:#12140F;
+  --surface:#171A15;
+  --surface-2:#1D211B;
+  --line:rgba(243,241,236,0.10);
+  --line-strong:rgba(243,241,236,0.22);
+  --text:#F3F1EC;
+  --text-soft:#C9C7BF;
+  --text-mute:#8A8D84;
+  --sage:#8A9A79;
+  --sage-bright:#A9BB94;
+  --amber:#D3924F;
+  --amber-bright:#E8AA6C;
+  --stone:#6E7269;
+  --max:1180px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-weight:400;
+  line-height:1.5;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body.scroll-locked{overflow:hidden;}
+h1,h2,h3,h4{
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:500;
+  line-height:1.08;
+  letter-spacing:-0.01em;
+}
+a{color:inherit;text-decoration:none;}
+img{display:block;max-width:100%;}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px;}
+.eyebrow{
+  font-size:12px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--sage-bright);
+  font-weight:600;
+  display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:'';width:22px;height:1px;background:var(--sage-bright);display:inline-block;}
+section{position:relative;scroll-margin-top:84px;}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease);}
+.reveal.in{opacity:1;transform:translateY(0);}
+.reveal-stagger > *{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+.reveal-stagger.in > *{opacity:1;transform:translateY(0);}
+.reveal-stagger.in > *:nth-child(1){transition-delay:.03s}
+.reveal-stagger.in > *:nth-child(2){transition-delay:.11s}
+.reveal-stagger.in > *:nth-child(3){transition-delay:.19s}
+.reveal-stagger.in > *:nth-child(4){transition-delay:.27s}
+.reveal-stagger.in > *:nth-child(5){transition-delay:.35s}
+.reveal-stagger.in > *:nth-child(6){transition-delay:.43s}
+.reveal-stagger.in > *:nth-child(7){transition-delay:.51s}
+.reveal-stagger.in > *:nth-child(8){transition-delay:.59s}
+
+/* NAV */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 24px;
+  background:linear-gradient(to bottom, rgba(8,9,8,0.75), rgba(8,9,8,0));
+  transition:background .4s ease, backdrop-filter .4s ease, border-color .4s ease;
+  border-bottom:1px solid transparent;
+}
+.nav.scrolled{
+  background:rgba(11,13,12,0.86);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav-mark{
+  font-family:'Fraunces',serif;
+  font-size:17px;letter-spacing:0.06em;font-weight:600;
+  display:flex;align-items:baseline;gap:8px;
+}
+.nav-mark span{font-family:'Inter';font-size:9px;letter-spacing:0.14em;color:var(--text-mute);text-transform:uppercase;font-weight:600;}
+.nav-cta{
+  font-size:13px;font-weight:600;letter-spacing:0.02em;
+  border:1px solid var(--line-strong);
+  padding:9px 18px;border-radius:2px;
+  transition:border-color .25s ease, background .25s ease;
+}
+.nav-cta:hover{border-color:var(--sage-bright);background:rgba(169,187,148,0.08);}
+.nav-right{display:flex;align-items:center;gap:14px;}
+.nav-links{display:flex;gap:30px;}
+.nav-links a{font-size:13px;color:var(--text-soft);letter-spacing:0.02em;transition:color .2s ease;position:relative;}
+.nav-links a:hover{color:var(--text);}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:1px;background:var(--sage-bright);transition:width .25s ease;}
+.nav-links a:hover::after{width:100%;}
+.nav-burger{display:none;flex-direction:column;justify-content:center;gap:5px;width:34px;height:34px;background:transparent;border:1px solid var(--line-strong);border-radius:2px;cursor:pointer;padding:0;}
+.nav-burger span{display:block;width:14px;height:1px;background:var(--text);margin:0 auto;transition:transform .25s ease,opacity .25s ease;}
+.nav-burger.open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.nav-burger.open span:nth-child(2){opacity:0;}
+.nav-burger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+.nav-mobile{
+  position:fixed;top:0;right:0;height:100svh;width:min(78vw,320px);z-index:99;
+  background:var(--bg-elev);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;gap:2px;padding:88px 28px 28px;
+  transform:translateX(100%);transition:transform .4s var(--ease);
+}
+.nav-mobile.open{transform:translateX(0);}
+.nav-mobile a{font-family:'Fraunces';font-size:22px;color:var(--text);padding:14px 0;border-bottom:1px solid var(--line);}
+@media (max-width:860px){
+  .nav-links{display:none;}
+  .nav-burger{display:flex;}
+  .nav-cta{display:none;}
+}
+:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px;}
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{outline:2px solid var(--sage-bright);outline-offset:3px;}
+.skip-link{
+  position:absolute;left:16px;top:-60px;background:var(--sage-bright);color:var(--bg);
+  padding:10px 16px;font-size:13px;font-weight:700;z-index:200;transition:top .2s ease;border-radius:2px;
+}
+.skip-link:focus{top:16px;}
+.pending-link{color:var(--text-mute);border-bottom:1px dashed var(--text-mute);cursor:default;}
+.pending-link:hover{color:var(--text-mute);}
+.pending-tag{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber-bright);background:rgba(211,146,79,0.12);border:1px solid rgba(211,146,79,0.35);padding:2px 6px;border-radius:2px;margin-left:8px;vertical-align:middle;}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:14px;font-weight:600;letter-spacing:0.02em;
+  padding:15px 28px;border-radius:2px;
+  transition:transform .3s var(--ease), background .3s ease, border-color .3s ease, color .3s ease;
+  cursor:pointer;border:1px solid transparent;
+}
+.btn-primary{background:var(--text);color:var(--bg);}
+.btn-primary:hover{background:var(--sage-bright);transform:translateY(-2px);}
+.btn-ghost{border:1px solid var(--line-strong);color:var(--text);}
+.btn-ghost:hover{border-color:var(--text);background:rgba(255,255,255,0.04);transform:translateY(-2px);}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;}
+
+/* HERO */
+.hero{
+  height:100svh;min-height:640px;
+  position:relative;display:flex;flex-direction:column;justify-content:flex-end;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background-image:url('assets/hero-marina.jpg');
+  background-size:cover;background-position:60% 40%;
+  transform:scale(1.08);
+  animation:heroin 2.4s var(--ease) forwards;
+}
+@keyframes heroin{to{transform:scale(1);}}
+.hero-scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(8,9,8,0.96) 0%, rgba(8,9,8,0.55) 38%, rgba(8,9,8,0.15) 62%, rgba(8,9,8,0.45) 100%);
+}
+.hero-inner{position:relative;z-index:2;padding:0 24px 64px;width:100%;}
+.hero-eyebrow{
+  font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:var(--sage-bright);
+  font-weight:600;margin-bottom:18px;opacity:0;animation:fadeup .9s var(--ease) .5s forwards;
+}
+.hero h1{
+  font-size:clamp(42px,8.4vw,96px);
+  color:var(--text);
+  opacity:0;animation:fadeup 1s var(--ease) .65s forwards;
+}
+.hero h1 em{
+  font-style:italic;font-weight:300;color:var(--sage-bright);
+}
+.hero-sub{
+  margin-top:20px;font-size:clamp(15px,2vw,19px);color:var(--text-soft);
+  max-width:560px;font-family:'Inter';font-weight:400;line-height:1.55;
+  opacity:0;animation:fadeup 1s var(--ease) .8s forwards;
+}
+.hero-tags{
+  margin-top:16px;font-size:13px;color:var(--text-mute);letter-spacing:0.04em;
+  opacity:0;animation:fadeup 1s var(--ease) .9s forwards;
+}
+.hero .btn-row{margin-top:36px;opacity:0;animation:fadeup 1s var(--ease) 1.05s forwards;}
+@keyframes fadeup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.scroll-cue{
+  position:absolute;bottom:24px;right:24px;z-index:2;
+  writing-mode:vertical-rl;font-size:11px;letter-spacing:0.2em;color:var(--text-mute);
+  display:flex;align-items:center;gap:10px;opacity:0;animation:fadeup 1s ease 1.3s forwards;
+}
+.scroll-cue::after{content:'';width:1px;height:34px;background:var(--text-mute);display:block;}
+@media (max-width:520px){.scroll-cue{display:none;}}
+
+/* SECTION HEADS */
+.sec-head{max-width:640px;margin-bottom:52px;}
+.sec-head h2{font-size:clamp(28px,4vw,44px);margin-top:14px;}
+.sec-head p{color:var(--text-soft);margin-top:16px;font-size:16px;max-width:540px;}
+.section-pad{padding:110px 0;}
+@media (max-width:720px){.section-pad{padding:76px 0;}}
+
+/* INTRO */
+.intro{background:var(--bg);}
+.intro-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:64px;align-items:center;}
+.intro-copy p{color:var(--text-soft);font-size:17px;line-height:1.75;margin-bottom:18px;}
+.brand-statement{font-family:'Fraunces';font-style:italic;font-weight:400;color:var(--sage-bright) !important;font-size:19px !important;margin-bottom:22px;}
+.intro-copy p:first-of-type{color:var(--text);font-size:19px;}
+.intro-media{position:relative;border-radius:2px;overflow:hidden;aspect-ratio:4/5;}
+.intro-media img{width:100%;height:100%;object-fit:cover;}
+.intro-media-tag{
+  position:absolute;bottom:16px;left:16px;background:rgba(11,13,12,0.72);backdrop-filter:blur(6px);
+  padding:8px 12px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-soft);border:1px solid var(--line);
+}
+@media (max-width:860px){.intro-grid{grid-template-columns:1fr;gap:40px;}.intro-media{order:-1;aspect-ratio:16/10;}}
+
+/* WORK */
+.work{background:var(--bg-elev);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.work-filter{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;}
+.chip{
+  font-size:12px;letter-spacing:0.06em;text-transform:uppercase;font-weight:600;
+  padding:9px 16px;border:1px solid var(--line-strong);border-radius:2px;color:var(--text-soft);
+  cursor:pointer;transition:all .25s ease;background:transparent;
+}
+.chip:hover{border-color:var(--sage-bright);color:var(--text);}
+.chip.active{background:var(--text);color:var(--bg);border-color:var(--text);}
+.work-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media (max-width:920px){.work-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:620px){.work-grid{grid-template-columns:1fr;}}
+.card{
+  position:relative;border-radius:2px;overflow:hidden;background:var(--surface);
+  border:1px solid var(--line);aspect-ratio:9/13;cursor:pointer;
+}
+.card.wide{aspect-ratio:16/11;}
+.card video, .card img.card-media{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .8s var(--ease);
+}
+.card:hover video, .card:hover img.card-media{transform:scale(1.06);}
+.card-scrim{position:absolute;inset:0;background:linear-gradient(to top, rgba(8,9,8,0.92) 0%, rgba(8,9,8,0.05) 45%);}
+.card-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;z-index:2;}
+.card-cat{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage-bright);font-weight:700;background:rgba(11,13,12,0.55);padding:5px 9px;border-radius:2px;}
+.card-spec{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#0B0D0C;font-weight:700;background:var(--amber-bright);padding:5px 9px;border-radius:2px;}
+.card-bottom{position:absolute;bottom:16px;left:16px;right:16px;z-index:2;}
+.card-bottom h4{font-size:17px;color:var(--text);font-weight:500;}
+.card-bottom p{font-size:12.5px;color:var(--text-soft);margin-top:4px;}
+.card-play{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:52px;height:52px;border-radius:50%;border:1px solid rgba(243,241,236,0.5);
+  display:flex;align-items:center;justify-content:center;z-index:3;
+  background:rgba(11,13,12,0.35);
+  opacity:0.9;transition:opacity .3s ease, transform .3s ease;
+  padding:0;cursor:pointer;
+}
+.video-card:hover .card-play{opacity:0.55;}
+.video-card.is-playing .card-play{opacity:0;}
+.video-card.is-playing:hover .card-play{opacity:0.55;transform:translate(-50%,-50%) scale(0.9);}
+.card-play svg{width:16px;height:16px;fill:var(--text);position:absolute;}
+.card-play .icon-play{margin-left:2px;}
+.card-play .icon-pause{opacity:0;}
+.video-card.is-playing .card-play .icon-play{opacity:0;}
+.video-card.is-playing .card-play .icon-pause{opacity:1;}
+.card-mute{
+  position:absolute;top:14px;right:14px;z-index:3;
+  width:30px;height:30px;border-radius:50%;border:1px solid rgba(243,241,236,0.35);
+  background:rgba(11,13,12,0.5);display:none;align-items:center;justify-content:center;
+  padding:0;cursor:pointer;
+}
+.video-card.is-playing .card-mute{display:flex;}
+.card-mute svg{width:14px;height:14px;fill:var(--text-soft);position:absolute;}
+.card-mute .icon-unmuted{opacity:0;}
+.card-mute[aria-pressed="true"] .icon-muted{opacity:0;}
+.card-mute[aria-pressed="true"] .icon-unmuted{opacity:1;}
+.work-note{margin-top:30px;font-size:13px;color:var(--text-mute);max-width:640px;line-height:1.65;}
+.work-note b{color:var(--text-soft);}
+.placeholder-card{background:repeating-linear-gradient(135deg, var(--surface) 0 12px, var(--surface-2) 12px 24px);border-style:dashed;display:flex;flex-direction:column;justify-content:space-between;}
+.placeholder-tag{background:transparent;border:1px solid var(--amber-bright);color:var(--amber-bright);}
+.placeholder-icon{flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-mute);position:relative;z-index:2;}
+.teaser-card{
+  aspect-ratio:auto;align-self:start;cursor:default;
+  border-style:dashed;background:var(--surface);
+  display:flex;align-items:center;gap:12px;padding:16px;
+}
+.teaser-icon{flex:none;width:34px;height:34px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-mute);}
+.teaser-text{flex:1;min-width:0;}
+.teaser-text h4{font-size:14.5px;font-weight:500;font-family:'Inter';color:var(--text-soft);}
+.teaser-text p{font-size:12px;color:var(--text-mute);margin-top:2px;}
+.teaser-tag{flex:none;}
+.card-format{font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);margin-top:6px;display:block;}
+.owned-tag{background:transparent;border:1px solid var(--sage-bright);color:var(--sage-bright);}
+.card-sub{font-size:11.5px;color:var(--text-mute);margin-top:5px;line-height:1.5;}
+.card-workflow{aspect-ratio:auto;display:flex;flex-direction:column;cursor:default;}
+.card-workflow:hover video, .card-workflow:hover img.card-media{transform:none;}
+.workflow-frame{position:relative;background:#EDEBE4;padding:14px;}
+.workflow-img{width:100%;display:block;border-radius:1px;transition:transform .8s var(--ease);}
+.card-workflow:hover .workflow-img{transform:scale(1.015);}
+.workflow-frame .card-top{position:absolute;top:14px;left:14px;right:14px;}
+.workflow-frame .card-cat{background:rgba(11,13,12,0.82);color:var(--text-soft);}
+.workflow-expand{display:block;width:100%;padding:0;border:none;background:none;cursor:pointer;position:relative;}
+.workflow-expand-hint{
+  position:absolute;bottom:10px;right:10px;display:flex;align-items:center;gap:6px;
+  background:rgba(11,13,12,0.75);color:var(--text-soft);font-size:10px;letter-spacing:0.04em;
+  padding:6px 10px;border-radius:2px;opacity:0;transition:opacity .25s ease;
+}
+.workflow-expand:hover .workflow-expand-hint,.workflow-expand:focus-visible .workflow-expand-hint{opacity:1;}
+.lightbox{
+  position:fixed;inset:0;z-index:300;background:rgba(8,9,8,0.94);
+  display:flex;align-items:center;justify-content:center;padding:40px 20px;
+  animation:fadeInLb .25s ease;
+}
+@keyframes fadeInLb{from{opacity:0;}to{opacity:1;}}
+.lightbox[hidden]{display:none;}
+.lightbox-img{max-width:min(1100px,92vw);max-height:88vh;object-fit:contain;border-radius:2px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.lightbox-close{
+  position:absolute;top:20px;right:20px;width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--line-strong);background:rgba(23,26,21,0.8);color:var(--text);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.lightbox-close svg{fill:var(--text);}
+.card-bottom-static{padding:18px 18px 20px;background:var(--surface);flex:1;}
+.card-bottom-static h4{font-size:17px;color:var(--text);font-weight:500;font-family:'Fraunces';}
+.card-bottom-static p{font-size:12.5px;color:var(--text-soft);margin-top:6px;}
+.card-bottom-static .card-sub{margin-top:8px;}
+.card-bottom-static .card-format{margin-top:10px;}
+
+/* CAPABILITIES */
+.cap-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.cap-item{background:var(--bg);padding:26px 22px;transition:background .3s ease;}
+.cap-item:hover{background:var(--surface);}
+.cap-item h5{font-size:14.5px;font-weight:500;color:var(--text);font-family:'Inter';letter-spacing:0.01em;}
+.cap-item span{display:block;font-size:11px;color:var(--text-mute);margin-top:4px;}
+@media (max-width:920px){.cap-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:520px){.cap-grid{grid-template-columns:1fr;}}
+.cap-groups{display:flex;flex-direction:column;gap:44px;}
+.cap-group-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+.cap-group-head h3{font-size:17px;font-weight:500;font-family:'Inter';color:var(--sage-bright);}
+.cap-group-head p{font-size:13px;color:var(--text-mute);}
+
+/* CREATIVE STYLE - pinned flow */
+.style-sec{background:var(--bg-elev);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.flow{display:flex;flex-direction:column;}
+.flow-row{
+  display:grid;grid-template-columns:64px 1fr;gap:24px;
+  padding:30px 0;border-top:1px solid var(--line);
+  align-items:center;
+}
+.flow-row:last-child{border-bottom:1px solid var(--line);}
+.flow-num{font-family:'Fraunces';font-size:15px;color:var(--sage-bright);}
+.flow-text h4{font-size:20px;font-weight:500;font-family:'Inter';margin-bottom:4px;}
+.flow-text p{font-size:14.5px;color:var(--text-mute);max-width:560px;}
+.style-quote{
+  margin-top:56px;padding-top:44px;border-top:1px solid var(--line);
+  font-family:'Fraunces';font-style:italic;font-weight:300;
+  font-size:clamp(22px,3.4vw,34px);color:var(--text-soft);max-width:760px;line-height:1.35;
+}
+.style-media-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:52px;}
+.style-media-row img{aspect-ratio:3/4;object-fit:cover;border-radius:2px;filter:grayscale(15%);transition:filter .4s ease;}
+.style-media-row img:hover{filter:grayscale(0%);}
+@media (max-width:760px){.style-media-row{grid-template-columns:repeat(2,1fr);}}
+
+/* INDUSTRIES */
+.ind-wrap{display:flex;flex-wrap:wrap;gap:14px;}
+.ind-pill{
+  padding:16px 26px;border:1px solid var(--line-strong);border-radius:2px;
+  font-size:15px;font-weight:500;font-family:'Fraunces';color:var(--text-soft);
+  transition:all .3s ease;
+}
+.ind-pill:hover{border-color:var(--sage-bright);color:var(--text);background:rgba(138,154,121,0.06);}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:8px;}
+.why-item{background:var(--bg);padding:30px 28px;}
+.why-item h5{font-size:16px;font-weight:500;font-family:'Inter';margin-bottom:8px;display:flex;gap:12px;align-items:baseline;}
+.why-item h5::before{content:'';width:6px;height:6px;background:var(--sage-bright);border-radius:50%;flex:none;}
+.why-item p{font-size:14px;color:var(--text-mute);line-height:1.6;padding-left:18px;}
+@media (max-width:760px){.why-grid{grid-template-columns:1fr;}}
+
+/* SERVICES */
+.services{border-top:1px solid var(--line);}
+.svc-list{border-top:1px solid var(--line);}
+.svc-row{
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+  padding:24px 0;border-bottom:1px solid var(--line);transition:padding-left .3s ease;
+}
+.svc-row:hover{padding-left:10px;background:linear-gradient(to right, rgba(138,154,121,0.05), transparent);}
+.svc-row h5{font-size:18px;font-weight:500;font-family:'Fraunces';}
+.svc-row p{font-size:13.5px;color:var(--text-mute);margin-top:4px;}
+.svc-tag{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mute);white-space:nowrap;}
+@media (max-width:520px){
+  .svc-row{grid-template-columns:1fr;gap:8px;}
+  .svc-tag{white-space:normal;}
+}
+.svc-note{margin-top:26px;font-size:13px;color:var(--text-mute);}
+.svc-cta{margin-top:28px;}
+
+/* WORLD */
+.world{background:var(--bg-elev);border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
+.world-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:120px;gap:10px;margin-top:20px;
+}
+.world-grid > div{position:relative;overflow:hidden;border-radius:2px;}
+.world-grid img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease);}
+.world-grid > div:hover img{transform:scale(1.08);}
+.wg-1{grid-column:1/4;grid-row:1/4;}
+.wg-2{grid-column:4/7;grid-row:1/3;}
+.wg-3{grid-column:4/6;grid-row:3/6;}
+.wg-4{grid-column:6/7;grid-row:3/6;}
+.wg-5{grid-column:1/3;grid-row:4/6;}
+.wg-6{grid-column:3/4;grid-row:4/6;}
+@media (max-width:820px){
+  .world-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px;}
+  .wg-1,.wg-2,.wg-3,.wg-4,.wg-5,.wg-6{grid-column:auto;grid-row:auto;}
+}
+.world-label{position:absolute;bottom:10px;left:10px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);background:rgba(11,13,12,0.6);padding:4px 8px;z-index:2;}
+
+/* CONTACT */
+.contact{padding-top:110px;padding-bottom:90px;}
+.contact-head{max-width:720px;}
+.contact-head h2{font-size:clamp(34px,5.4vw,58px);}
+.contact-head p{margin-top:18px;color:var(--text-soft);font-size:17px;max-width:520px;}
+.contact-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:70px;margin-top:60px;}
+@media (max-width:900px){.contact-grid{grid-template-columns:1fr;gap:44px;}}
+.contact-info h6{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage-bright);margin-bottom:10px;font-weight:700;}
+.contact-info a.email{font-family:'Fraunces';font-size:22px;color:var(--text);border-bottom:1px solid var(--line-strong);padding-bottom:6px;display:inline-block;}
+.contact-info a.email:hover{border-color:var(--sage-bright);color:var(--sage-bright);}
+.contact-social{margin-top:36px;display:flex;flex-direction:column;gap:10px;}
+.prefer-email{margin-top:14px;font-size:13px;color:var(--text-mute);}
+.prefer-email a{color:var(--sage-bright);border-bottom:1px solid var(--sage-bright);}
+.prefer-email a:hover{color:var(--sage);}
+.contact-social a{font-size:14px;color:var(--text-soft);}
+.contact-social a:hover{color:var(--text);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.form-grid .full{grid-column:1/-1;}
+.field label{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);display:block;margin-bottom:8px;}
+.field input,.field select,.field textarea{
+  width:100%;background:transparent;border:none;border-bottom:1px solid var(--line-strong);
+  color:var(--text);font-family:'Inter';font-size:15px;padding:10px 2px;outline:none;
+  transition:border-color .3s ease;
+}
+.field select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%238A8D84'/></svg>");background-repeat:no-repeat;background-position:right 4px center;}
+.field select option{background:var(--bg-elev);color:var(--text);}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--sage-bright);}
+.field textarea{resize:vertical;min-height:90px;}
+.field.has-error input,.field.has-error textarea{border-color:#D3694F;}
+.field-error{display:block;font-size:11.5px;color:#E0876B;margin-top:6px;min-height:14px;}
+.form-submit{margin-top:32px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.btn[disabled]{opacity:0.6;cursor:not-allowed;}
+.btn.is-loading .btn-label{visibility:hidden;position:relative;}
+.btn.is-loading{position:relative;}
+.btn.is-loading::after{
+  content:'';position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;
+  border:2px solid rgba(11,13,12,0.3);border-top-color:var(--bg);border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.form-status{font-size:13px;margin:0;}
+.form-status.success{color:var(--sage-bright);}
+.form-status.error{color:#E0876B;}
+.form-status.notice{color:var(--text);}
+.email-pending{color:var(--text-mute);font-family:'Fraunces';font-size:20px;}
+.email-pending .pending-tag{font-family:'Inter';}
+@media (max-width:560px){.form-grid{grid-template-columns:1fr;}}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:34px 0;}
+.foot-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.foot-row p{font-size:12.5px;color:var(--text-mute);}
+.foot-mark{font-family:'Fraunces';font-size:14px;color:var(--text-soft);}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}
+  .reveal,.reveal-stagger>*{opacity:1 !important;transform:none !important;}
+}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav class="nav" id="nav">
+  <div class="nav-mark">JAK3FFECT <span>Jacob Ellis</span></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a href="#contact" class="nav-cta">Work With Me</a>
+    <button class="nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false" aria-controls="navMobile">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile" id="navMobile">
+  <a href="#work">Work</a>
+  <a href="#about">About</a>
+  <a href="#capabilities">Capabilities</a>
+  <a href="#services">Services</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="main">
+  <div class="hero-bg"></div>
+  <div class="hero-scrim"></div>
+  <div class="hero-inner wrap">
+    <div class="hero-eyebrow">UGC Creator — Fitness · Wellness · Tech · Travel · Lifestyle</div>
+    <h1>Jacob Ellis<br><em>JAK3FFECT</em></h1>
+    <p class="hero-sub">Cinematic, authentic short-form content built around movement, real-life experience and products people can actually see themselves using.</p>
+    <div class="btn-row">
+      <a href="#contact" class="btn btn-primary">Work With Me</a>
+      <a href="#work" class="btn btn-ghost">View My Work</a>
+    </div>
+  </div>
+  <div class="scroll-cue">SCROLL</div>
+</section>
+
+<!-- INTRO -->
+<section class="intro section-pad" id="about">
+  <div class="wrap intro-grid">
+    <div class="intro-copy reveal">
+      <div class="eyebrow">About</div>
+      <h2 style="font-size:clamp(26px,3.4vw,36px);margin-top:14px;margin-bottom:14px;">Content that feels lived, not staged.</h2>
+      <p class="brand-statement">Building mind, body &amp; freedom.</p>
+      <p>Jacob Ellis creates cinematic, short-form content for brands across fitness, wellness, tech, travel and lifestyle — shot the way he actually lives: early trail runs, outdoor training, waterfront cities, and the quiet in-between moments.</p>
+      <p>Every piece blends storytelling, authentic experience and clean product demonstration — content that reads as a real moment first, and an ad second. Jake can deliver both organic-feeling creator content and performance-oriented advertising creative, built to be edited, remixed and run as paid social.</p>
+      <p>He's also the founder of <span style="color:var(--sage-bright);">Ellis AI Studio</span>, which shapes how he approaches tech and productivity content — he understands the product, the market, and the pitch, not just the camera.</p>
+    </div>
+    <div class="intro-media reveal">
+      <img src="assets/silhouette.jpg" alt="Jacob Ellis, cinematic mirror silhouette">
+      <div class="intro-media-tag">JAK3FFECT</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED WORK -->
+<section class="work section-pad" id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Featured Work</div>
+      <h2>UGC portfolio</h2>
+      <p>A working sample of formats and categories. Brand deliverables replace these slots directly — the structure is built for fast turnover.</p>
+    </div>
+
+    <div class="work-filter reveal">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="fitness">Fitness</button>
+      <button class="chip" data-filter="wellness">Wellness</button>
+      <button class="chip" data-filter="tech">Tech / SaaS</button>
+      <button class="chip" data-filter="travel">Travel / Outdoor</button>
+      <button class="chip" data-filter="lifestyle">Lifestyle</button>
+    </div>
+
+    <div class="work-grid reveal-stagger" id="workGrid">
+
+      <div class="card video-card" data-cat="fitness">
+        <video class="card-video" muted loop playsinline preload="metadata" poster="assets/dips-concept-poster.jpg" aria-label="Outdoor Discipline — self-directed fitness clip, vertical format">
+          <source src="assets/dips-concept.mp4" type="video/mp4">
+          Your browser doesn't support inline video. <a href="assets/dips-concept.mp4">Download the clip</a> to view it.
+        </video>
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Fitness</span>
+          <span class="card-spec">Spec UGC</span>
+        </div>
+        <button class="card-play" type="button" aria-label="Play video">
+          <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <button class="card-mute" type="button" aria-label="Unmute video" aria-pressed="false">
+          <svg class="icon-muted" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+          <svg class="icon-unmuted" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </button>
+        <div class="card-bottom">
+          <h4>Outdoor Discipline</h4>
+          <p>Talking-motion hook · vertical · self-directed concept</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card wide video-card" data-cat="fitness">
+        <video class="card-video" muted loop playsinline preload="metadata" poster="assets/pullups-poster.jpg" aria-label="Calisthenics B-Roll — outdoor gym movement footage, landscape format">
+          <source src="assets/pullups.mp4" type="video/mp4">
+          Your browser doesn't support inline video. <a href="assets/pullups.mp4">Download the clip</a> to view it.
+        </video>
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Fitness</span>
+          <span class="card-spec">Spec UGC</span>
+        </div>
+        <button class="card-play" type="button" aria-label="Play video">
+          <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+        </button>
+        <button class="card-mute" type="button" aria-label="Unmute video" aria-pressed="false">
+          <svg class="icon-muted" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+          <svg class="icon-unmuted" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </button>
+        <div class="card-bottom">
+          <h4>Calisthenics B-Roll</h4>
+          <p>Raw movement footage · landscape · outdoor gym park</p><span class="card-format">Landscape · 16:9</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="fitness">
+        <img class="card-media" src="assets/mirror-flex.jpg" alt="Training progress, mirror shot">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Fitness</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Training Log</h4>
+          <p>Progress / physique documentation format</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="wellness lifestyle" data-cat-multi="wellness,lifestyle">
+        <img class="card-media" src="assets/driftwood.jpg" alt="Hotel interior, evening routine">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Wellness</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Evening Reset</h4>
+          <p>Hotel / recovery environment · grooming &amp; routine format</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card wide" data-cat="travel">
+        <img class="card-media" src="assets/ferris-wheel.jpg" alt="Seattle waterfront at sunrise">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Travel / Outdoor</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Waterfront Mornings</h4>
+          <p>Pacific Northwest exploration · local experience format</p><span class="card-format">Landscape · 16:9</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="travel">
+        <img class="card-media" src="assets/forest-trail.jpg" alt="Forest trail run">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Travel / Outdoor</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Trailhead</h4>
+          <p>Outdoor gear &amp; fitness-while-traveling format</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="tech lifestyle" data-cat-multi="tech,lifestyle">
+        <img class="card-media" src="assets/car-footwell.jpg" alt="On the go, work from anywhere">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Tech / SaaS</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Work From Anywhere</h4>
+          <p>Founder / productivity-on-the-go format</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="lifestyle travel" data-cat-multi="lifestyle,travel">
+        <img class="card-media" src="assets/pier-pov.jpg" alt="POV, pier over the water">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Lifestyle</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Point of View</h4>
+          <p>POV storytelling · footwear / EDC format</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card wide" data-cat="tech lifestyle" data-cat-multi="tech,lifestyle">
+        <img class="card-media" src="assets/city-dusk.jpg" alt="Seattle city, blue hour">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Tech / SaaS</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>City After Hours</h4>
+          <p>Founder / business app, city environment format</p><span class="card-format">Landscape · 16:9</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="fitness">
+        <img class="card-media" src="assets/track-shadow.jpg" alt="Shadow selfie on running track">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Fitness</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Track Days</h4>
+          <p>Footwear / running app format · high-contrast graphic style</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="travel">
+        <img class="card-media" src="assets/tree-climb.jpg" alt="Climbing in the forest canopy">
+        <div class="card-scrim"></div>
+        <div class="card-top">
+          <span class="card-cat">Travel / Outdoor</span>
+          <span class="card-spec">Concept Work</span>
+        </div>
+        <div class="card-bottom">
+          <h4>Canopy</h4>
+          <p>Outdoor gear / adventure format · unscripted movement</p><span class="card-format">Vertical · 9:16</span>
+        </div>
+      </div>
+
+      <div class="card teaser-card" data-cat="tech">
+        <div class="teaser-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M4 5h16v11H4V5zm0 13h16v1H4v-1zM9 8h6v1H9V8zm0 3h6v1H9v-1z"/></svg>
+        </div>
+        <div class="teaser-text">
+          <h4>App Walkthrough</h4>
+          <p>Product demo coming soon.</p>
+        </div>
+        <span class="card-spec placeholder-tag teaser-tag">Reserved</span>
+      </div>
+
+      <div class="card card-workflow" data-cat="tech">
+        <div class="workflow-frame">
+          <button class="workflow-expand" type="button" aria-label="View Pluton workflow diagram larger" data-lightbox-src="assets/pluton-workflow.jpg" data-lightbox-alt="Pluton — n8n automation workflow diagram showing Google Form intake, validation, web research crawl, AI analysis and client report generation stages">
+            <img class="workflow-img" src="assets/pluton-workflow.jpg" alt="Pluton — n8n automation workflow diagram showing Google Form intake, validation, web research crawl, AI analysis and client report generation stages" loading="lazy" decoding="async">
+            <span class="workflow-expand-hint">
+              <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+              Tap to expand
+            </span>
+          </button>
+          <div class="card-top">
+            <span class="card-cat">Tech / SaaS</span>
+            <span class="card-spec owned-tag">Owned Project</span>
+          </div>
+        </div>
+        <div class="card-bottom-static">
+          <h4>Founder Workflow</h4>
+          <p>AI-powered intake → research → analysis → client brief system</p>
+          <p class="card-sub">Built as part of Ellis AI Studio, this workflow automates intake, research, AI analysis, validation and client-ready reporting.</p>
+          <span class="card-format">Workflow / Automation System · Ellis AI Studio</span>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="work-note reveal"><b>Note:</b> pieces marked <b>Spec UGC</b> or <b>Concept Work</b> are self-directed and not sponsored — they demonstrate format, pacing and visual style. No brand partnership is implied. <b>Owned Project</b> is real work Jake built himself, not a brand collaboration.</p>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="section-pad" id="capabilities">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Capabilities</div>
+      <h2>What Jake can produce</h2>
+      <p>Organic-feeling creator content and performance-oriented advertising creative — built from the same shoot.</p>
+    </div>
+    <div class="cap-groups reveal">
+      <div class="cap-group">
+        <div class="cap-group-head"><h3>Organic Creator Content</h3><p>Reads as a real post first — content people watch because it feels lived-in.</p></div>
+        <div class="cap-grid">
+          <div class="cap-item"><h5>Talking-head UGC</h5><span>To-camera</span></div>
+          <div class="cap-item"><h5>Cinematic lifestyle UGC</h5><span>Visual-led</span></div>
+          <div class="cap-item"><h5>Testimonials</h5><span>Authentic tone</span></div>
+          <div class="cap-item"><h5>Day-in-the-life</h5><span>Narrative</span></div>
+          <div class="cap-item"><h5>Tutorials</h5><span>Step-by-step</span></div>
+          <div class="cap-item"><h5>Reviews</h5><span>Honest take</span></div>
+          <div class="cap-item"><h5>Fitness content</h5><span>Training &amp; recovery</span></div>
+          <div class="cap-item"><h5>Travel content</h5><span>On-location</span></div>
+        </div>
+      </div>
+      <div class="cap-group">
+        <div class="cap-group-head"><h3>Performance / Ad Creative</h3><p>Structured to run as paid social — clean hooks, clear CTAs, built to test.</p></div>
+        <div class="cap-grid">
+          <div class="cap-item"><h5>Product demonstrations</h5><span>In-use</span></div>
+          <div class="cap-item"><h5>Problem → Solution ads</h5><span>Direct response</span></div>
+          <div class="cap-item"><h5>Hook-driven short-form</h5><span>Scroll-stopping</span></div>
+          <div class="cap-item"><h5>Hook variations</h5><span>Testable openers</span></div>
+          <div class="cap-item"><h5>CTA variations</h5><span>Testable closers</span></div>
+          <div class="cap-item"><h5>Scriptwriting</h5><span>On-brand tone</span></div>
+          <div class="cap-item"><h5>Voiceover</h5><span>Scripted VO</span></div>
+          <div class="cap-item"><h5>Product photography</h5><span>Stills</span></div>
+          <div class="cap-item"><h5>Raw footage</h5><span>Editable source</span></div>
+          <div class="cap-item"><h5>B-roll packages</h5><span>Supplemental</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREATIVE STYLE -->
+<section class="style-sec section-pad" id="style">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Creative Style</div>
+      <h2>Content that feels lived, not staged.</h2>
+      <p>Every piece follows the same underlying system, whether it's a 9-second hook or a full day-in-the-life edit.</p>
+    </div>
+
+    <div class="flow reveal">
+      <div class="flow-row">
+        <div class="flow-num">01</div>
+        <div class="flow-text"><h4>Problem / emotion</h4><p>What the viewer is actually feeling before they know they need the product.</p></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-num">02</div>
+        <div class="flow-text"><h4>Real-life environment</h4><p>City street, trail, gym, marina, hotel room — or a controlled setup when a brand needs one. The environment serves the story.</p></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-num">03</div>
+        <div class="flow-text"><h4>Product integration</h4><p>Used the way it's actually used, in the moment it actually gets used.</p></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-num">04</div>
+        <div class="flow-text"><h4>Experience</h4><p>What changed — physically, mentally, or in the moment — shown, not narrated.</p></div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-num">05</div>
+        <div class="flow-text"><h4>Outcome / CTA</h4><p>A clear, earned close — built to convert without breaking the tone of everything before it.</p></div>
+      </div>
+    </div>
+
+    <p class="style-quote reveal">"The best UGC doesn't look like an ad wearing a lifestyle costume. It looks like a lifestyle that happens to include the product."</p>
+
+    <div class="style-media-row reveal-stagger">
+      <img src="assets/city-dusk.jpg" alt="City">
+      <img src="assets/pullups-poster.jpg" alt="Gym">
+      <img src="assets/forest-trail.jpg" alt="Trail">
+      <img src="assets/hero-marina.jpg" alt="Waterfront">
+    </div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="section-pad" id="industries">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Industries</div>
+      <h2>Who this works for</h2>
+    </div>
+    <div class="ind-wrap reveal-stagger">
+      <div class="ind-pill">Fitness</div>
+      <div class="ind-pill">Health &amp; Wellness</div>
+      <div class="ind-pill">Travel &amp; Hospitality</div>
+      <div class="ind-pill">Outdoor</div>
+      <div class="ind-pill">Tech / AI / SaaS</div>
+      <div class="ind-pill">Lifestyle</div>
+      <div class="ind-pill">Productivity</div>
+      <div class="ind-pill">Menswear / Grooming</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="section-pad" id="why" style="border-top:1px solid var(--line);">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Why Work With Jake</div>
+      <h2>Built to make your product feel native</h2>
+    </div>
+    <div class="why-grid reveal">
+      <div class="why-item"><h5>Lived-in visual eye</h5><p>City, gym, trail and waterfront environments shot naturally — not staged to look natural.</p></div>
+      <div class="why-item"><h5>Fitness credibility</h5><p>Trains and moves for real. Product integrations read as habit, not endorsement.</p></div>
+      <div class="why-item"><h5>Founder / tech background</h5><p>Runs Ellis AI Studio — understands product positioning, not just how to hold a phone.</p></div>
+      <div class="why-item"><h5>Marketing-literate</h5><p>Thinks in hooks, retention and CTAs, not just "nice content."</p></div>
+      <div class="why-item"><h5>Clear product communication</h5><p>Explains what something does and why it matters, without sounding like a script.</p></div>
+      <div class="why-item"><h5>Multi-environment range</h5><p>Comfortable shooting outdoor, urban, fitness and quiet lifestyle settings in one day.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section-pad services" id="services">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Services</div>
+      <h2>How brands work with Jake</h2>
+    </div>
+    <div class="svc-list reveal">
+      <div class="svc-row"><div><h5>Short-form UGC video</h5><p>Single deliverable, vertical or landscape</p></div><span class="svc-tag">Custom packages available</span></div>
+      <div class="svc-row"><div><h5>Multi-video packages</h5><p>Bundled sets for testing across hooks and formats</p></div><span class="svc-tag">Custom packages available</span></div>
+      <div class="svc-row"><div><h5>Product photography</h5><p>Lifestyle stills for organic and paid use</p></div><span class="svc-tag">Custom packages available</span></div>
+      <div class="svc-row"><div><h5>Raw footage &amp; B-roll packages</h5><p>Editable source for in-house teams</p></div><span class="svc-tag">Custom packages available</span></div>
+      <div class="svc-row"><div><h5>Hook &amp; CTA variations</h5><p>Multiple openers/closers cut from one shoot</p></div><span class="svc-tag">Custom packages available</span></div>
+      <div class="svc-row"><div><h5>Scriptwriting &amp; voiceover</h5><p>Written and recorded to match brand tone</p></div><span class="svc-tag">Custom packages available</span></div>
+      <div class="svc-row"><div><h5>Paid usage licensing</h5><p>Whitelisting / Spark Ads where applicable</p></div><span class="svc-tag">Custom packages available</span></div>
+      <div class="svc-row"><div><h5>Travel &amp; hospitality collaborations</h5><p>On-location content for hotels, tourism boards, resorts</p></div><span class="svc-tag">Custom packages available</span></div>
+    </div>
+    <p class="svc-note reveal">Rates depend on scope, usage rights and turnaround — happy to send a package breakdown after a quick call.</p>
+    <div class="svc-cta reveal"><a href="#contact" class="btn btn-primary">Work With Me</a></div>
+  </div>
+</section>
+
+<!-- WORLD -->
+<section class="world section-pad" id="world">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">JAK3FFECT World</div>
+      <h2>Built in motion.</h2>
+      <p>The world behind the content — the environments a product would actually live in, out here.</p>
+    </div>
+    <div class="world-grid reveal">
+      <div class="wg-1"><img src="assets/hero-marina.jpg" alt="Marina at dusk"><span class="world-label">Waterfront</span></div>
+      <div class="wg-2"><img src="assets/city-dusk.jpg" alt="City at blue hour"><span class="world-label">City</span></div>
+      <div class="wg-3"><img src="assets/forest-trail.jpg" alt="Forest trail"><span class="world-label">Trail</span></div>
+      <div class="wg-4"><img src="assets/sunset-tracks.jpg" alt="Sunset over water"><span class="world-label">Road</span></div>
+      <div class="wg-5"><img src="assets/marina-overcast.jpg" alt="Overcast marina"><span class="world-label">Marina</span></div>
+      <div class="wg-6"><img src="assets/ferris-wheel.jpg" alt="Waterfront sunrise"><span class="world-label">Sound</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="wrap">
+    <div class="contact-head reveal">
+      <div class="eyebrow">Work With Me</div>
+      <h2>Let's create something people actually want to watch.</h2>
+      <p>Fitness, wellness, tech, travel or lifestyle — send the brief and Jake will follow up with fit, format and a package recommendation.</p>
+    </div>
+
+    <div class="contact-grid reveal">
+      <div class="contact-info">
+        <h6>Direct</h6>
+        <span id="emailSlot"></span>
+        <p class="prefer-email" id="preferEmailLine" hidden>Prefer email? <a href="" id="preferEmailLink">Contact Jake directly.</a></p>
+        <div class="contact-social" id="socialSlot"></div>
+      </div>
+
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-name">Name <span aria-hidden="true">*</span></label>
+            <input id="f-name" name="name" type="text" required autocomplete="name">
+            <span class="field-error" data-for="f-name"></span>
+          </div>
+          <div class="field">
+            <label for="f-company">Company / Brand</label>
+            <input id="f-company" name="company" type="text" autocomplete="organization">
+          </div>
+          <div class="field">
+            <label for="f-email">Email <span aria-hidden="true">*</span></label>
+            <input id="f-email" name="email" type="email" required autocomplete="email">
+            <span class="field-error" data-for="f-email"></span>
+          </div>
+          <div class="field">
+            <label for="f-category">Category</label>
+            <select id="f-category" name="category">
+              <option>Fitness</option>
+              <option>Health &amp; Wellness</option>
+              <option>Travel / Outdoor</option>
+              <option>Tech / AI / SaaS</option>
+              <option>Lifestyle</option>
+              <option>Productivity</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-project">Project type</label>
+            <select id="f-project" name="projectType">
+              <option>Single UGC video</option>
+              <option>Multi-video package</option>
+              <option>Product photography</option>
+              <option>Raw footage / B-roll</option>
+              <option>Travel / hospitality collab</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-timeline">Timeline</label>
+            <input id="f-timeline" name="timeline" type="text" placeholder="e.g. within 3 weeks">
+          </div>
+          <div class="field full">
+            <label for="f-deliverables">Deliverables needed</label>
+            <input id="f-deliverables" name="deliverables" type="text" placeholder="e.g. 3x vertical videos, 10 stills">
+          </div>
+          <div class="field">
+            <label for="f-budget">Budget range</label>
+            <select id="f-budget" name="budget">
+              <option>Under $1,000</option>
+              <option>$1,000 – $2,500</option>
+              <option>$2,500 – $5,000</option>
+              <option>$5,000+</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="f-message">Message <span aria-hidden="true">*</span></label>
+            <textarea id="f-message" name="message" required placeholder="Tell me about the brand and the project..."></textarea>
+            <span class="field-error" data-for="f-message"></span>
+          </div>
+        </div>
+        <div class="form-submit">
+          <button class="btn btn-primary" type="submit" id="formSubmitBtn">
+            <span class="btn-label">Send Inquiry</span>
+          </button>
+          <a href="" class="btn btn-ghost" id="emailFallbackBtn" hidden>Email Jake Instead</a>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="foot-mark">JAK3FFECT</div>
+    <p>© 2026 Jacob Ellis. Mindset · Fitness · Wellness · Exploration.</p>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Expanded image view" hidden>
+  <button class="lightbox-close" type="button" aria-label="Close expanded image">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.7l-1.41-1.42L9.17 12 2.89 5.71 4.3 4.29l6.29 6.3 6.3-6.3z"/></svg>
+  </button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+</div>
+
+<!--
+  FUTURE SECTIONS (not built — no content exists yet, so nothing fake ships):
+  - Testimonials: add a new "testimonials" section between Why-Jake and Services
+    once a real client quote exists. Reuse .why-grid card styling for consistency.
+  - Brand logos strip: add a muted logo row under the hero or above Contact once
+    Jake has actual paid partners — never populate with placeholder/unrelated logos.
+  - Case studies: each entry needs — brand, category, goal, what was delivered,
+    and (only if real) outcome. Do not add estimated/typical results.
+  - Creator metrics (followers, views, engagement): only add once real and
+    verifiable; do not estimate.
+-->
+
+<script>
+// ============================================================
+// SITE_CONFIG — Jake fills these in before launch.
+// Leave a value as null until it's real; the UI shows a clearly
+// marked "pending" state instead of a fake/dead link.
+// ============================================================
+const SITE_CONFIG = {
+  email: "Jake@ellisaistudio.com",
+  instagram: "https://www.instagram.com/jak3ffect",
+  tiktok: "https://www.tiktok.com/@jak3ffect",
+  x: "https://x.com/jak3ellis",
+  beacons: "https://beacons.ai/jakeslinks",
+  // Ellis AI Studio website link intentionally withheld from the public
+  // portfolio until Jake explicitly approves publishing it. The founder
+  // background copy still mentions Ellis AI Studio by name — it's just
+  // not hyperlinked. Do not add a URL here without his sign-off.
+  //
+  // formEndpoint: OPTIONAL upgrade path, not a requirement.
+  //
+  // The contact form is already wired to reach Jake: with formEndpoint
+  // left null, a valid submission hands off to the visitor's mail client
+  // pre-filled with every field and addressed to SITE_CONFIG.email. No
+  // account, key or third party involved — it works the moment the site
+  // is live. This mirrors the mailto handoff the Ellis AI Studio audit
+  // form already uses when its webhook isn't configured.
+  //
+  // Setting formEndpoint to a form backend upgrades that to a silent
+  // background POST (no mail client), with the mailto handoff kept as
+  // the fallback if the request fails. Setup (Formspree, free tier):
+  //   1. Create an account at formspree.io with Jake@ellisaistudio.com
+  //   2. Create a new form, set its notification email to Jake@ellisaistudio.com
+  //   3. Copy the endpoint it gives you (looks like https://formspree.io/f/xxxxxxxx)
+  //   4. Paste it below as a string — nothing else needs to change
+  // No API key or secret belongs in this file — Formspree's public form
+  // endpoint is safe to expose client-side by design.
+  formEndpoint: null
+};
+
+function renderConfigLinks(){
+  const emailSlot = document.getElementById('emailSlot');
+  if (emailSlot) {
+    if (SITE_CONFIG.email) {
+      emailSlot.innerHTML = `<a class="email" href="mailto:${SITE_CONFIG.email}">${SITE_CONFIG.email}</a>`;
+    } else {
+      emailSlot.innerHTML = `<span class="email-pending">Inquiry email pending<span class="pending-tag">Add in SITE_CONFIG</span></span>`;
+    }
+  }
+  const socialSlot = document.getElementById('socialSlot');
+  if (socialSlot) {
+    const items = [
+      {label:'Instagram — @jak3ffect', val: SITE_CONFIG.instagram},
+      {label:'TikTok — @jak3ffect', val: SITE_CONFIG.tiktok},
+      {label:'X — @jak3ellis', val: SITE_CONFIG.x},
+      {label:'Beacons', val: SITE_CONFIG.beacons}
+    ];
+    socialSlot.innerHTML = items.map(it => it.val
+      ? `<a href="${it.val}" target="_blank" rel="noopener noreferrer">${it.label}</a>`
+      : `<span class="pending-link">${it.label} — pending<span class="pending-tag">config</span></span>`
+    ).join('');
+  }
+  const preferEmailLine = document.getElementById('preferEmailLine');
+  const preferEmailLink = document.getElementById('preferEmailLink');
+  if (preferEmailLine && preferEmailLink && SITE_CONFIG.email) {
+    preferEmailLink.href = `mailto:${SITE_CONFIG.email}?subject=UGC%20Inquiry`;
+    preferEmailLine.hidden = false;
+  }
+}
+renderConfigLinks();
+
+// ---- Contact form: validation + loading/success/error states ----
+(function(){
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  const statusEl = document.getElementById('formStatus');
+  const btn = document.getElementById('formSubmitBtn');
+
+  function setFieldError(id, msg){
+    const field = document.getElementById(id);
+    const wrap = field.closest('.field');
+    const errEl = wrap.querySelector('.field-error');
+    if (msg) {
+      wrap.classList.add('has-error');
+      if (errEl) errEl.textContent = msg;
+      field.setAttribute('aria-invalid', 'true');
+    } else {
+      wrap.classList.remove('has-error');
+      if (errEl) errEl.textContent = '';
+      field.removeAttribute('aria-invalid');
+    }
+  }
+
+  // Human-readable labels for the mailto handoff, in the order Jake wants
+  // to read them — not the DOM order, which is driven by the grid layout.
+  const FIELD_LABELS = [
+    ['name', 'Name'],
+    ['company', 'Company / Brand'],
+    ['email', 'Email'],
+    ['category', 'Category'],
+    ['projectType', 'Project type'],
+    ['timeline', 'Timeline'],
+    ['deliverables', 'Deliverables needed'],
+    ['budget', 'Budget range'],
+    ['message', 'Message']
+  ];
+
+  // Practical ceiling for a mailto: URL. Outlook and some mobile handlers
+  // truncate or refuse past ~2000 chars, which would silently drop the end
+  // of a long brief, so trim the message and say so rather than lose it.
+  const MAILTO_MAX = 1800;
+
+  function buildInquiryMailto(data){
+    const subject = data.company
+      ? `UGC Inquiry — ${data.company}`
+      : `UGC Inquiry — ${data.name}`;
+    const lines = FIELD_LABELS
+      .filter(([key]) => (data[key] || '').trim())
+      .map(([key, label]) => `${label}: ${data[key].trim()}`);
+    let body = lines.join('\n\n');
+    const base = `mailto:${SITE_CONFIG.email}?subject=${encodeURIComponent(subject)}&body=`;
+    if (base.length + encodeURIComponent(body).length > MAILTO_MAX) {
+      const budget = MAILTO_MAX - base.length - 200;
+      while (encodeURIComponent(body).length > budget && body.length > 0) {
+        body = body.slice(0, -100);
+      }
+      body += '\n\n[Message trimmed to fit the email link — happy to send the full brief on reply.]';
+    }
+    return base + encodeURIComponent(body);
+  }
+
+  // Hand the completed brief to the visitor's mail client, addressed to
+  // Jake. Deliberately does NOT claim the message was sent — the visitor
+  // still has to press send in their own client.
+  function handOffToEmail(data, prefix){
+    const href = buildInquiryMailto(data);
+    const emailBtn = document.getElementById('emailFallbackBtn');
+    if (emailBtn) {
+      emailBtn.href = href;
+      emailBtn.hidden = false;
+    }
+    window.location.href = href;
+    statusEl.textContent = `${prefix}Your email app is opening with the brief filled in — press send and it lands in ${SITE_CONFIG.email}. If nothing opened, use the “Email Jake Instead” button.`;
+    statusEl.classList.add('notice');
+  }
+
+  function validate(){
+    let ok = true;
+    const name = document.getElementById('f-name');
+    const email = document.getElementById('f-email');
+    const message = document.getElementById('f-message');
+    if (!name.value.trim()) { setFieldError('f-name', 'Name is required.'); ok = false; }
+    else setFieldError('f-name', '');
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.value.trim()) { setFieldError('f-email', 'Email is required.'); ok = false; }
+    else if (!emailRe.test(email.value.trim())) { setFieldError('f-email', 'Enter a valid email address.'); ok = false; }
+    else setFieldError('f-email', '');
+    if (!message.value.trim()) { setFieldError('f-message', 'Tell Jake a bit about the project.'); ok = false; }
+    else setFieldError('f-message', '');
+    return ok;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    statusEl.textContent = '';
+    statusEl.className = 'form-status';
+    if (!validate()) {
+      statusEl.textContent = 'Please fix the highlighted fields.';
+      statusEl.classList.add('error');
+      return;
+    }
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    if (!SITE_CONFIG.email && !SITE_CONFIG.formEndpoint) {
+      // Nowhere to send it — do NOT claim success.
+      statusEl.textContent = 'This form isn\'t connected to an inbox yet. Add a form endpoint (or inquiry email) in SITE_CONFIG to enable it.';
+      statusEl.classList.add('error');
+      return;
+    }
+
+    if (!SITE_CONFIG.formEndpoint) {
+      // No form backend configured: hand the brief straight to Jake's inbox
+      // via the visitor's mail client. Not left as a dead end.
+      handOffToEmail(data, '');
+      return;
+    }
+
+    btn.classList.add('is-loading');
+    btn.setAttribute('disabled', 'true');
+    try {
+      const res = await fetch(SITE_CONFIG.formEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Request failed');
+      form.reset();
+      statusEl.textContent = "Thanks — that's in. Jake will follow up shortly.";
+      statusEl.classList.add('success');
+    } catch (err) {
+      // The backend failed; fall back to the mail-client handoff rather than
+      // telling the visitor to try again into the same broken endpoint.
+      if (SITE_CONFIG.email) {
+        handOffToEmail(data, 'That didn\'t send directly. ');
+      } else {
+        statusEl.textContent = 'Something went wrong sending that — please try again or email directly.';
+        statusEl.classList.add('error');
+      }
+    } finally {
+      btn.classList.remove('is-loading');
+      btn.removeAttribute('disabled');
+    }
+  });
+})();
+
+// nav scroll state
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, {passive:true});
+
+// mobile nav toggle
+const navBurger = document.getElementById('navBurger');
+const navMobile = document.getElementById('navMobile');
+if (navBurger && navMobile) {
+  function closeMobileNav(){
+    navMobile.classList.remove('open');
+    navBurger.classList.remove('open');
+    navBurger.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('scroll-locked');
+  }
+  function openMobileNav(){
+    navMobile.classList.add('open');
+    navBurger.classList.add('open');
+    navBurger.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('scroll-locked');
+  }
+  navBurger.addEventListener('click', () => {
+    if (navMobile.classList.contains('open')) closeMobileNav(); else openMobileNav();
+  });
+  navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navMobile.classList.contains('open')) closeMobileNav();
+  });
+}
+
+// reveal on scroll
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+}, {threshold:0.1, rootMargin:'0px 0px -5% 0px'});
+const revealEls = document.querySelectorAll('.reveal, .reveal-stagger');
+revealEls.forEach(el => io.observe(el));
+// safety net: some browsers/edge cases can miss the intersection callback
+// (fast scroll, zero-height parents, etc.) — never leave content permanently invisible.
+revealEls.forEach(el => {
+  const rect = el.getBoundingClientRect();
+  if (rect.top < window.innerHeight * 1.15) { el.classList.add('in'); io.unobserve(el); }
+});
+window.addEventListener('load', () => {
+  setTimeout(() => { revealEls.forEach(el => el.classList.add('in')); }, 2500);
+});
+
+// ---- Lightbox (Pluton workflow expand) ----
+(function(){
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const closeBtn = lightbox.querySelector('.lightbox-close');
+  let lastFocused = null;
+
+  function openLightbox(src, alt){
+    lastFocused = document.activeElement;
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightbox.hidden = false;
+    document.body.classList.add('scroll-locked');
+    closeBtn.focus();
+  }
+  function closeLightbox(){
+    lightbox.hidden = true;
+    lightboxImg.src = '';
+    document.body.classList.remove('scroll-locked');
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll('[data-lightbox-src]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openLightbox(btn.dataset.lightboxSrc, btn.dataset.lightboxAlt);
+    });
+  });
+  closeBtn.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.hidden) return;
+    if (e.key === 'Escape') { closeLightbox(); return; }
+    // Focus trap: the close button is the only interactive control in this
+    // dialog, so Tab/Shift+Tab should never be able to leave it.
+    if (e.key === 'Tab') { e.preventDefault(); closeBtn.focus(); }
+  });
+})();
+
+// ---- Video cards: play/pause toggle, mute toggle, hover preview, viewport autoplay ----
+document.querySelectorAll('.video-card').forEach(card => {
+  const vid = card.querySelector('video.card-video');
+  const playBtn = card.querySelector('.card-play');
+  const muteBtn = card.querySelector('.card-mute');
+  if (!vid || !playBtn) return;
+
+  let userPaused = false; // true once the visitor explicitly pauses — stops auto-resume
+
+  function setPlaying(isPlaying){
+    card.classList.toggle('is-playing', isPlaying);
+    playBtn.setAttribute('aria-label', isPlaying ? 'Pause video' : 'Play video');
+  }
+
+  function playVideo(){
+    vid.play().then(() => setPlaying(true)).catch(() => {});
+  }
+  function pauseVideo(){
+    vid.pause();
+    setPlaying(false);
+  }
+
+  // Explicit play/pause toggle — works identically on mobile tap and desktop click
+  playBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (vid.paused) { userPaused = false; playVideo(); }
+    else { userPaused = true; pauseVideo(); }
+  });
+
+  // Mute toggle
+  if (muteBtn) {
+    muteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      vid.muted = !vid.muted;
+      muteBtn.setAttribute('aria-pressed', vid.muted ? 'false' : 'true');
+      muteBtn.setAttribute('aria-label', vid.muted ? 'Unmute video' : 'Mute video');
+    });
+  }
+
+  // Desktop hover preview — subtle, muted, does not change the persistent play/pause state
+  const canHover = window.matchMedia('(hover: hover)').matches;
+  if (canHover) {
+    card.addEventListener('mouseenter', () => {
+      if (!userPaused && vid.paused) vid.play().catch(() => {});
+    });
+    card.addEventListener('mouseleave', () => {
+      if (!card.classList.contains('is-playing')) { vid.pause(); vid.currentTime = 0; }
+    });
+  }
+
+  // Viewport-based autoplay (primarily touch devices) + pause off-screen to save resources
+  const vio = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        if (!userPaused && window.matchMedia('(hover: none)').matches) playVideo();
+      } else {
+        vid.pause();
+        setPlaying(false);
+      }
+    });
+  }, {threshold:0.6});
+  vio.observe(card);
+});
+
+// filter chips
+const chips = document.querySelectorAll('.chip');
+const cards = document.querySelectorAll('#workGrid .card');
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const f = chip.dataset.filter;
+    cards.forEach(card => {
+      const cats = (card.dataset.catMulti || card.dataset.cat || '').split(',');
+      const show = f === 'all' || cats.includes(f);
+      card.style.display = show ? '' : 'none';
+    });
+  });
+});
+</script>
+
+</body>
+</html>
