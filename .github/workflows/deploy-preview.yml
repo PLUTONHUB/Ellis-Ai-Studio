@@ -18,6 +18,9 @@ on:
 
 permissions:
   contents: read
+  # Needed to attach the preview URL to the commit as a status, so it is
+  # reachable from the API and the commit view rather than only the run log.
+  statuses: write
 
 concurrency:
   group: worker-preview-${{ github.ref }}
@@ -58,6 +61,17 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 098e2f8f23724ea2bb0587b33f8309f3
           WRANGLER_SEND_METRICS: 'false'
+
+      - name: Attach preview URL to the commit
+        if: always() && steps.deploy.outputs.url != ''
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -d "$(printf '{"state":"success","context":"preview","target_url":"%s","description":"%s"}' \
+                  "${{ steps.deploy.outputs.url }}" "Preview Worker deployed")" \
+            -o /dev/null
 
       - name: Publish preview URL
         run: |
