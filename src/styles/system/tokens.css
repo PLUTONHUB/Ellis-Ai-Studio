@@ -1,0 +1,93 @@
+/*
+ * Ellis AI Studio — design tokens.
+ *
+ * One source of truth for colour, type, space, and motion. Nothing in the site
+ * declares a raw hex value; components consume these roles so a venture can
+ * override a single accent without touching the shell.
+ *
+ * The palette is deliberately tonal rather than black-and-gold: five surface
+ * values give sections real separation, and the accent is a desaturated bronze
+ * so it reads as material rather than as a highlight colour.
+ */
+
+:root {
+  /* ---- surfaces: five steps, darkest recessed to lightest raised ---- */
+  --surface-sunken: #101216;
+  --surface-base: #14161a;
+  --surface-veil: #181b20;
+  --surface-raised: #1c1f24;
+  --surface-inset: #22262c;
+
+  /* ---- text ---- */
+  --text-primary: #f0ece4;   /* bone */
+  --text-secondary: #a8a49c; /* stone */
+  --text-muted: #75726c;
+  --text-inverse: #14161a;
+
+  /* ---- lines ---- */
+  --border-subtle: #252932;
+  --border-strong: #333944;
+  --border-accent: rgba(184, 134, 90, 0.42);
+
+  /* ---- accents ---- */
+  --accent: #b8865a;         /* muted bronze */
+  --accent-bright: #d5a878;
+  --accent-dim: rgba(184, 134, 90, 0.14);
+  --accent-cool: #7d8b96;    /* soft mineral */
+  --accent-cool-dim: rgba(125, 139, 150, 0.13);
+
+  /* ---- interactive ---- */
+  --interactive-hover: #d5a878;
+  --interactive-active: #a0714a;
+  --focus-ring: #d5a878;
+
+  /* ---- status ---- */
+  --status-success: #7d9471;
+  --status-error: #c2705e;
+  --status-notice: #a8a49c;
+
+  /* ---- venture accent: overridden per venture, defaults to the shell ---- */
+  --venture-accent: var(--accent);
+  --venture-dim: var(--accent-dim);
+
+  /* ---- type ---- */
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --type-display-xl: clamp(3.25rem, 9vw, 7.5rem);
+  --type-display-l: clamp(2.5rem, 5.6vw, 4.5rem);
+  --type-display-m: clamp(1.9rem, 3.6vw, 3rem);
+  --type-heading: clamp(1.35rem, 2.1vw, 1.75rem);
+  --type-lede: clamp(1.0625rem, 1.35vw, 1.3125rem);
+  --type-body: 1rem;
+  --type-small: 0.875rem;
+  --type-label: 0.6875rem;
+
+  --leading-tight: 0.98;
+  --leading-snug: 1.2;
+  --leading-body: 1.68;
+  --tracking-label: 0.16em;
+
+  /* ---- space ---- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --space-9: 96px; --space-10: 128px;
+
+  --gutter: clamp(20px, 5vw, 56px);
+  --container: 1240px;
+  --measure: 68ch;
+  --section-y: clamp(84px, 11vw, 168px);
+
+  /* ---- motion ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 160ms;
+  --dur: 320ms;
+  --dur-slow: 620ms;
+}
+
+/*
+ * The site commits to a single dark editorial world — it is not a document that
+ * should invert with the reader's OS. Every colour is still declared explicitly
+ * through the tokens above, so the page never borrows a host background.
+ */

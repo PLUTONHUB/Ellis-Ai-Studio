@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FounderDetailPage } from "~/components/venture-studio";
+import { FounderDetailPage } from "~/components/pages/founders";
 import { findFounder } from "~/data/founders";
 import { pageHead } from "~/lib/seo";
 

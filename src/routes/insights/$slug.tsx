@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArticlePage } from "~/components/venture-studio";
+import { ArticlePage } from "~/components/pages/insights";
 import { findArticle, isPublished } from "~/data/insights";
 import { pageHead } from "~/lib/seo";
 

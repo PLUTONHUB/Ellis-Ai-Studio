@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AboutPage } from "~/components/acquisition-site";
+import { AboutPage } from "~/components/pages/studio";
 import { pageHead } from "~/lib/seo";
 
-export const Route = createFileRoute("/about")({
-  head: () => pageHead({ title: "About Jacob Ellis | Ellis AI Studio", description: "Why Ellis AI Studio starts with the business problem before recommending technology.", path: "/about" }),
-  component: AboutPage,
-});
+export const Route = createFileRoute("/about")({ head: () => pageHead({ title: "About | Ellis AI Studio", description: "Ellis AI Studio is a founder-led venture studio building systems, products, brands and ventures — for itself and for the businesses it works with.", path: "/about" }), component: AboutPage });

@@ -1,0 +1,29 @@
+/*
+ * Internal dashboards (/dashboard/*).
+ *
+ * These are operator tools, not public pages, and they were written against the
+ * deleted app.css. This restores only the utility classes they actually use so
+ * they stay legible after the frontend reset — it is not a design pass.
+ */
+
+.wrap { width: min(1120px, 100% - var(--gutter) * 2); margin-inline: auto; }
+
+.eyebrow {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--accent);
+}
+
+[class*="wrap"] h1 { font-family: var(--font-display); font-size: var(--type-display-m); margin-bottom: var(--space-6); }
+[class*="wrap"] h2 { font-size: var(--type-heading); font-weight: 500; margin-bottom: var(--space-3); }
+
+.wrap form { display: grid; gap: var(--space-4); max-width: 620px; margin-bottom: var(--space-8); }
+.wrap label { display: grid; gap: var(--space-2); font-size: var(--type-small); color: var(--text-secondary); }
+.wrap input, .wrap textarea, .wrap select {
+  width: 100%; min-height: 44px; padding: var(--space-3);
+  background: var(--surface-sunken); border: 1px solid var(--border-subtle); color: var(--text-primary);
+}
+.wrap textarea { min-height: 100px; resize: vertical; }
+.wrap summary { cursor: pointer; padding-block: var(--space-2); color: var(--accent-bright); font-family: var(--font-mono); font-size: var(--type-small); }
+.wrap article p { color: var(--text-secondary); font-size: var(--type-small); }
+.wrap [role="alert"] { color: var(--status-error); }
