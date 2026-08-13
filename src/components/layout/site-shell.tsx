@@ -61,14 +61,20 @@ function Header({ pathname }: { pathname: string }) {
         <div className="nav-overlay" id="site-menu">
           <nav aria-label="Primary mobile">
             <ul>
-              {primaryNav.map(([label, href]) => (
-                <li key={href}><a href={href} onClick={() => setOpen(false)}>{label}</a></li>
+              {primaryNav.map(([label, href], i) => (
+                <li key={href} style={{ "--i": i } as React.CSSProperties}>
+                  <a href={href} onClick={() => setOpen(false)}>
+                    <span className="n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>{label}
+                  </a>
+                </li>
               ))}
             </ul>
             <div className="nav-overlay-secondary">
               <ul>
-                {secondaryNav.map(([label, href]) => (
-                  <li key={href}><a href={href} onClick={() => setOpen(false)}>{label}</a></li>
+                {secondaryNav.map(([label, href], i) => (
+                  <li key={href} style={{ "--i": i + 6 } as React.CSSProperties}>
+                    <a href={href} onClick={() => setOpen(false)}>{label}</a>
+                  </li>
                 ))}
               </ul>
             </div>

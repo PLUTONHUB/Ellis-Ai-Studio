@@ -15,9 +15,9 @@ export function FoundersPage() {
         title={<>Ellis AI Studio <em>is</em> its founders.</>}
         lede="Jacob Ellis and Amber Dowling build the studio's client systems and its own ventures. There is no account layer between you and them."
       />
-      <Section ruled><FounderRows /></Section>
-      <Section tone="sunken" ruled>
-        <SectionIntro label="Work together" title="Start a conversation." copy="Studio enquiries and creator enquiries go to different places — both reach a founder directly." />
+      <Section><FounderRows /></Section>
+      <Section tone="warm">
+        <SectionIntro index="02" label="Work together" title="Start a conversation." copy="Studio enquiries and creator enquiries go to different places — both reach a founder directly." />
         <div className="hero-actions">
           <a className="button button-solid" href={routes.contact}>Contact</a>
           <a className="link" href={routes.ventures}>See the ventures</a>
@@ -45,7 +45,7 @@ export function FounderDetailPage({ slug }: { slug: string }) {
   return (
     <SiteShell>
       <PageHeader label={founder.role} title={founder.name} lede={founder.positioning} />
-      <Section ruled>
+      <Section>
         <div className="split">
           <div className="prose">
             {founder.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
@@ -73,8 +73,8 @@ export function FounderDetailPage({ slug }: { slug: string }) {
         </div>
       </Section>
       {(published.length > 0 || drafts.length > 0) && (
-        <Section tone="sunken" ruled>
-          <SectionIntro label="Writing" title={`From ${founder.name}`} />
+        <Section tone="cool">
+          <SectionIntro index="02" label="Writing" title={`From ${founder.name}`} />
           {published.length > 0 && <ul className="rows">{published.map((a, i) => <ArticleRow key={a.slug} article={a} index={i} />)}</ul>}
           {drafts.length > 0 && <ul className="rows">{drafts.map((a, i) => <DraftRow key={a.slug} article={a} index={i} />)}</ul>}
         </Section>

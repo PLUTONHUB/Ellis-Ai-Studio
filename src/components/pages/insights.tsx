@@ -14,7 +14,7 @@ export function InsightsPage() {
         title="Notes from building."
         lede="Writing from Jacob Ellis and Amber Dowling on systems, products, ventures and the creator side of the studio."
       />
-      <Section ruled>
+      <Section>
         {publishedArticles.length > 0 ? (
           <ul className="rows">{publishedArticles.map((a, i) => <ArticleRow key={a.slug} article={a} index={i} />)}</ul>
         ) : (
@@ -26,13 +26,13 @@ export function InsightsPage() {
         )}
       </Section>
       {draftArticles.length > 0 && (
-        <Section tone="sunken" ruled>
-          <SectionIntro label="In progress" title="What we're writing" copy="Planned pieces, listed so you can see where this is going. These are drafts — not published claims." />
+        <Section tone="cool">
+          <SectionIntro index="02" label="In progress" title="What we're writing" copy="Planned pieces, listed so you can see where this is going. These are drafts — not published claims." />
           <ul className="rows">{draftArticles.map((a, i) => <DraftRow key={a.slug} article={a} index={i} />)}</ul>
         </Section>
       )}
-      <Section ruled>
-        <SectionIntro label="Topics" title="What we write about" />
+      <Section tone="warm">
+        <SectionIntro index="03" label="Topics" title="What we write about" />
         <InlineMeta items={articleCategories} />
       </Section>
     </SiteShell>
@@ -58,7 +58,7 @@ export function ArticlePage({ slug }: { slug: string }) {
     return (
       <SiteShell>
         <PageHeader label="In progress" title={article.title} lede={article.excerpt} />
-        <Section ruled>
+        <Section>
           <div className="empty" style={{ borderTop: 0, paddingTop: 0 }}>
             <p>This piece hasn't been written yet — it's a planned topic, not a published article. It will appear here in full when it's finished.</p>
             <p className="meta">Planned by {names}</p>
@@ -74,7 +74,7 @@ export function ArticlePage({ slug }: { slug: string }) {
   return (
     <SiteShell>
       <PageHeader label={article.categories[0] ?? "Insights"} title={article.title} lede={article.excerpt} />
-      <Section ruled>
+      <Section>
         <div className="split">
           <article className="prose">
             <p className="meta">

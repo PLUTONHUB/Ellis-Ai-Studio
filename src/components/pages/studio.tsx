@@ -19,7 +19,7 @@ export function SolutionsPage() {
         title="We build around the problem."
         lede="Not around a service menu. The right answer might be one system or several connected ones — that is what the diagnosis is for."
       />
-      <Section ruled>
+      <Section>
         <ul className="rows">
           {capabilities.map((capability, index) => (
             <li className="row reveal" key={capability.name}>
@@ -34,8 +34,8 @@ export function SolutionsPage() {
           ))}
         </ul>
       </Section>
-      <Section tone="sunken" ruled>
-        <SectionIntro label="Start with context" title="Not sure which one you need?" copy="You shouldn't have to diagnose your own infrastructure before getting in touch." />
+      <Section tone="cool">
+        <SectionIntro index="02" label="Start with context" title="Not sure which one you need?" copy="You shouldn't have to diagnose your own infrastructure before getting in touch." />
         <div className="hero-actions">
           <a className="button button-solid" href={routes.apply}>Request an audit</a>
           <a className="link" href={routes.howItWorks}>How we work</a>
@@ -53,7 +53,7 @@ export function HowItWorksPage() {
         title={<>Technology comes <em>second</em>.</>}
         lede="Understanding the business comes first. You don't need to know whether your problem needs automation, AI, a CRM, a website or something custom — determining that is the job."
       />
-      <Section ruled>
+      <Section>
         <ul className="rows">
           {method.map((step, index) => (
             <li className="row reveal" key={step.phase}>
@@ -67,7 +67,7 @@ export function HowItWorksPage() {
           ))}
         </ul>
       </Section>
-      <Section tone="sunken" ruled>
+      <Section tone="cool">
         <div className="hero-actions"><a className="button button-solid" href={routes.apply}>Request an audit</a></div>
       </Section>
     </SiteShell>
@@ -84,7 +84,7 @@ export function FoundingPage() {
         title="Three businesses with a process worth fixing."
         lede="Selected businesses get hands-on systems design and implementation at preferred founding-client pricing, in exchange for structured feedback and permission to document what changed."
       />
-      <Section ruled>
+      <Section>
         <div className="split">
           <div className="prose">
             <p>Ellis AI Studio is in its early growth stage. Instead of presenting results we don't have yet, we're choosing a small group of real businesses and earning that proof by solving real operational problems.</p>
@@ -102,8 +102,8 @@ export function FoundingPage() {
           </aside>
         </div>
       </Section>
-      <Section tone="sunken" ruled>
-        <SectionIntro label="What happens" title="From problem to proof." />
+      <Section tone="cool">
+        <SectionIntro index="02" label="What happens" title="From problem to proof." />
         <InlineMeta items={["Apply", "Audit", "Diagnosis", "Recommendation", "Scope", "Build", "Validate", "Document"]} />
         <div className="hero-actions" style={{ marginTop: "var(--space-7)" }}>
           <a className="button button-solid" href={routes.apply}>Apply for the program</a>
@@ -121,7 +121,7 @@ export function AboutPage() {
         title="A studio that builds its own work."
         lede="Ellis AI Studio is a founder-led venture studio. We build systems, products, brands and ventures — for ourselves, and for the businesses we work with."
       />
-      <Section ruled>
+      <Section>
         <div className="split">
           <div className="prose">
             <p>The studio started with websites — helping businesses get online without enormous development budgets. It became obvious fairly quickly that the website usually wasn't the whole problem. The friction was everything happening around it.</p>
@@ -138,8 +138,8 @@ export function AboutPage() {
           </aside>
         </div>
       </Section>
-      <Section tone="sunken" ruled>
-        <SectionIntro label="Founders" title="Who you actually work with." />
+      <Section tone="cool">
+        <SectionIntro index="02" label="Founders" title="Who you actually work with." />
         <FounderRows />
       </Section>
     </SiteShell>
@@ -154,7 +154,7 @@ export function ApplyPage() {
         title="What's the biggest challenge in your business right now?"
         lede="Don't worry about choosing a service. Tell us what's happening and we'll determine whether Ellis AI Studio can help — including if the answer is no."
       />
-      <Section ruled>
+      <Section>
         <div className="split">
           <AuditForm />
           <aside className="split-aside">
@@ -181,7 +181,7 @@ export function ContactPage() {
         title="Tell us what you're trying to build."
         lede="Studio work and creator work start in different places. Pick the one that matches what you need."
       />
-      <Section ruled>
+      <Section>
         <div className="contact-paths">
           <div className="contact-path">
             <p className="label">Hire the studio</p>

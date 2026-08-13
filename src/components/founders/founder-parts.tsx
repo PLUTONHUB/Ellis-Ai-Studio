@@ -14,6 +14,7 @@ export function FounderRow({ founder, index }: { founder: Founder; index: number
     <li className="row row-link reveal">
       <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
       <div className="row-head">
+        <span className="row-rule reveal-rule" aria-hidden="true" />
         <p className="label">{founder.role}</p>
         <h3 className="display-m"><a href={href}>{founder.name}</a></h3>
         {venture && <p className="meta">{venture.name}</p>}

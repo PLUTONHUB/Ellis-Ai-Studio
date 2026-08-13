@@ -1,5 +1,5 @@
 /*
- * Reset, typography base, layout primitives and motion.
+ * Reset, typography, layout primitives and the motion system.
  * Everything here consumes tokens.css and sets no literal colours.
  */
 
@@ -27,18 +27,17 @@ img, svg, video { display: block; max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
 :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; border-radius: 2px; }
-
 ::selection { background: var(--accent); color: var(--text-inverse); }
 
 /* ------------------------------------------------------------- primitives */
 
 .container { width: min(var(--container), 100% - var(--gutter) * 2); margin-inline: auto; }
-.container-narrow { width: min(880px, 100% - var(--gutter) * 2); margin-inline: auto; }
+.container-narrow { width: min(920px, 100% - var(--gutter) * 2); margin-inline: auto; }
 
 .section { padding-block: var(--section-y); position: relative; }
-.section-sunken { background: var(--surface-sunken); }
-.section-veil { background: var(--surface-veil); }
-/* A hairline instead of a hard edge keeps tonal shifts from reading as boxes. */
+.section-deep { background: var(--surface-deep); }
+.section-cool { background: var(--surface-cool); }
+.section-warm { background: var(--surface-warm); }
 .section-ruled { border-top: 1px solid var(--border-subtle); }
 
 .stack { display: grid; align-content: start; }
@@ -51,16 +50,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ------------------------------------------------------------- typography */
 
-.display-xl { font-family: var(--font-display); font-size: var(--type-display-xl); line-height: var(--leading-tight); letter-spacing: -0.022em; }
-.display-l  { font-family: var(--font-display); font-size: var(--type-display-l);  line-height: 1.02; letter-spacing: -0.02em; }
-.display-m  { font-family: var(--font-display); font-size: var(--type-display-m);  line-height: 1.08; letter-spacing: -0.016em; }
+.hero-type  { font-family: var(--font-display); font-size: var(--type-hero); line-height: var(--leading-tight); letter-spacing: -0.028em; }
+.display-xl { font-family: var(--font-display); font-size: var(--type-display-xl); line-height: 0.94; letter-spacing: -0.024em; }
+.display-l  { font-family: var(--font-display); font-size: var(--type-display-l);  line-height: 0.98; letter-spacing: var(--venture-tracking); }
+.display-m  { font-family: var(--font-display); font-size: var(--type-display-m);  line-height: 1.06; letter-spacing: -0.016em; }
 .heading    { font-family: var(--font-sans); font-size: var(--type-heading); font-weight: 500; line-height: var(--leading-snug); letter-spacing: -0.015em; }
 
-.lede { font-size: var(--type-lede); line-height: 1.62; color: var(--text-secondary); }
+.lede { font-size: var(--type-lede); line-height: 1.6; color: var(--text-secondary); }
 .body { color: var(--text-secondary); }
 .small { font-size: var(--type-small); color: var(--text-muted); }
 
-/* The mono register carries anything systemic: labels, status, counts, meta. */
+/* The mono register carries everything systemic: labels, status, counts, meta. */
 .label {
   font-family: var(--font-mono); font-size: var(--type-label); font-weight: 500;
   letter-spacing: var(--tracking-label); text-transform: uppercase; color: var(--accent);
@@ -68,8 +68,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .label-quiet { color: var(--text-muted); }
 .meta { font-family: var(--font-mono); font-size: var(--type-small); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
-/* Emphasis inside display type, used sparingly for the second clause. */
-.display-xl em, .display-l em, .display-m em { font-style: italic; color: var(--text-secondary); }
+.display-xl em, .display-l em, .display-m em, .hero-type em { font-style: italic; color: var(--text-secondary); }
 
 /* ----------------------------------------------------------------- links */
 
@@ -77,41 +76,71 @@ button, input, select, textarea { font: inherit; color: inherit; }
   display: inline-flex; align-items: center; gap: var(--space-2);
   font-family: var(--font-mono); font-size: var(--type-small);
   color: var(--accent-bright); padding-block: var(--space-2);
-  transition: gap var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+  transition: color var(--dur) var(--ease-out);
 }
 .link::after { content: "→"; transition: transform var(--dur) var(--ease-out); }
 .link:hover { color: var(--interactive-hover); }
-.link:hover::after { transform: translateX(4px); }
+.link:hover::after { transform: translateX(5px); }
 
 .button {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: 52px; padding-inline: var(--space-6);
+  min-height: 54px; padding-inline: var(--space-6);
   font-family: var(--font-mono); font-size: var(--type-small); letter-spacing: 0.04em;
   border: 1px solid var(--accent); color: var(--accent-bright); background: transparent;
   cursor: pointer;
-  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+  transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
 }
-.button:hover { background: var(--accent); color: var(--text-inverse); }
+/* The fill wipes up from the baseline rather than cross-fading. */
+.button::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--accent);
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform var(--dur) var(--ease-out);
+}
+.button:hover { color: var(--text-inverse); }
+.button:hover::before { transform: scaleY(1); }
 .button-solid { background: var(--accent); color: var(--text-inverse); }
-.button-solid:hover { background: var(--interactive-hover); border-color: var(--interactive-hover); }
+.button-solid::before { background: var(--accent-bright); }
+.button-solid:hover { color: var(--text-inverse); border-color: var(--accent-bright); }
 .button-quiet { border-color: var(--border-strong); color: var(--text-primary); }
-.button-quiet:hover { background: var(--surface-inset); color: var(--text-primary); border-color: var(--border-strong); }
+.button-quiet::before { background: var(--surface-inset); }
+.button-quiet:hover { color: var(--text-primary); border-color: var(--border-strong); }
 
-/* ---------------------------------------------------------------- motion
- * Reveals are scroll-driven and native-only. Behind @supports so a browser
- * without scroll timelines simply renders everything visible — content can
- * never be stranded hidden, and no JavaScript is involved.
+/* -------------------------------------------------------------- motion
+ * Two systems, kept separate on purpose:
+ *
+ *  - Entrance choreography on load (hero) is time-based, so it runs in every
+ *    browser and never depends on scroll support.
+ *  - Reveals further down the page are scroll-driven and native-only, behind
+ *    @supports. A browser without scroll timelines renders them visible, so
+ *    content can never be stranded hidden and no JavaScript is involved.
  */
+
 @media (prefers-reduced-motion: no-preference) {
+  /* --- on-load entrance --- */
+  .enter { opacity: 0; animation: enter-up var(--dur-reveal) var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 90ms); }
+  .enter-rule { transform: scaleX(0); transform-origin: left; animation: rule-in var(--dur-slow) var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 90ms); }
+  .enter-mask > span { display: inline-block; opacity: 0; animation: enter-up var(--dur-reveal) var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 110ms); }
+
+  /* --- scroll-driven --- */
   @supports (animation-timeline: view()) {
-    .reveal { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 42%; }
-    .reveal-late { animation: reveal linear both; animation-timeline: view(); animation-range: entry 4% entry 52%; }
+    .reveal { animation: enter-up linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
+    .reveal-rule { animation: rule-in linear both; animation-timeline: view(); animation-range: entry 0% entry 55%; transform-origin: left; }
+    /* Typographic depth: display text drifts a touch slower than the page. */
+    .parallax { animation: drift linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
+    .parallax-soft { animation: drift-soft linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
   }
 }
-@keyframes reveal { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+
+@keyframes enter-up { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes rule-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes drift { from { transform: translateY(34px); } to { transform: translateY(-34px); } }
+@keyframes drift-soft { from { transform: translateY(16px); } to { transform: translateY(-16px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .link, .button, .link::after { transition: none; }
+  .link, .button, .link::after, .button::before { transition: none; }
+  .enter, .enter-mask > span { opacity: 1; animation: none; }
+  .enter-rule { transform: none; animation: none; }
 }
 
 /* --------------------------------------------------------------- a11y */

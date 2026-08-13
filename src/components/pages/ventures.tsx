@@ -15,9 +15,9 @@ export function VenturesPage() {
         title={<>Things we are <em>actually</em> building.</>}
         lede="Ellis AI Studio builds systems, products, brands and media around real problems and opportunities. These are the ventures the founders are building and operating now."
       />
-      <Section ruled><VentureRows /></Section>
-      <Section tone="sunken" ruled>
-        <SectionIntro label="Work with the studio" title="Building something of your own?" copy="The same team builds client systems — AI, automation, operational infrastructure and digital products." />
+      <Section><VentureRows /></Section>
+      <Section tone="cool">
+        <SectionIntro index="02" label="Work with the studio" title="Building something of your own?" copy="The same team builds client systems — AI, automation, operational infrastructure and digital products." />
         <div className="hero-actions">
           <a className="button button-solid" href={routes.apply}>Request an audit</a>
           <a className="link" href={routes.solutions}>See our capabilities</a>
@@ -45,7 +45,7 @@ export function VentureDetailPage({ slug }: { slug: string }) {
     <SiteShell>
       <div className={ventureClass(venture)}>
         <PageHeader label={venture.category} title={venture.name} lede={venture.positioning} />
-        <Section ruled>
+        <Section>
           <div className="split">
             <div className="prose">
               <VentureStatus venture={venture} />
@@ -98,13 +98,13 @@ export function VentureDetailPage({ slug }: { slug: string }) {
           </div>
         </Section>
         {related.length > 0 && (
-          <Section tone="sunken" ruled>
-            <SectionIntro label="Related" title={`Writing about ${venture.name}`} />
+          <Section tone="cool">
+            <SectionIntro index="02" label="Related" title={`Writing about ${venture.name}`} />
             <ul className="rows">{related.map((a, i) => <ArticleRow key={a.slug} article={a} index={i} />)}</ul>
           </Section>
         )}
-        <Section tone={related.length > 0 ? "base" : "sunken"} ruled>
-          <SectionIntro label="Ventures" title="The rest of the studio." />
+        <Section tone={related.length > 0 ? "warm" : "cool"}>
+          <SectionIntro index="03" label="Ventures" title="The rest of the studio." />
           <VentureRows items={orderedVentures.filter((v) => v.slug !== venture.slug)} />
         </Section>
       </div>

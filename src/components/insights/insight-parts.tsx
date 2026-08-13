@@ -15,6 +15,7 @@ export function ArticleRow({ article, index }: { article: Article; index: number
     <li className="row row-link reveal">
       <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
       <div className="row-head">
+        <span className="row-rule reveal-rule" aria-hidden="true" />
         <p className="label">{article.categories[0]}</p>
         <h3 className="display-m"><a href={href}>{article.title}</a></h3>
       </div>
@@ -39,6 +40,7 @@ export function DraftRow({ article, index }: { article: Article; index: number }
     <li className="row reveal">
       <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
       <div className="row-head">
+        <span className="row-rule reveal-rule" aria-hidden="true" />
         <span className="status status-pending">In progress</span>
         <h3 className="heading">{article.title}</h3>
       </div>

@@ -28,6 +28,7 @@ export function VentureRow({ venture, index }: { venture: Venture; index: number
     <li className={`row row-link reveal ${ventureClass(venture)}`}>
       <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
       <div className="row-head">
+        <span className="row-rule reveal-rule" aria-hidden="true" />
         <VentureStatus venture={venture} />
         <h3 className="display-m"><a href={href}>{venture.name}</a></h3>
         <p className="meta">{venture.category}</p>
