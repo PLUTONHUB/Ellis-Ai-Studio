@@ -1,0 +1,76 @@
+name: Deploy Preview Worker
+
+# Deploys a branch to a separate preview Worker so changes can be reviewed at a
+# real URL without touching production. The production Worker is only ever
+# deployed by deploy-worker.yml, from main.
+#
+# The worker name is overridden on the command line rather than through a
+# wrangler environment block: the Cloudflare vite plugin flattens the config at
+# build time (dist/server/wrangler.json reports "definedEnvironments": []), so
+# --env would have nothing to resolve against. --name is applied to the
+# generated config directly and cannot fall through to production.
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worker-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PREVIEW_WORKER_NAME: ellis-ai-studio-preview
+
+jobs:
+  deploy-preview:
+    name: Build and deploy preview Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and validate types
+        run: npm run build && npm run typecheck
+
+      - name: Deploy preview Worker
+        id: deploy
+        run: |
+          set -o pipefail
+          npx wrangler deploy --name "$PREVIEW_WORKER_NAME" 2>&1 | tee deploy.log
+          # wrangler prints the live URL; surface it instead of making someone read the log.
+          URL=$(grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 098e2f8f23724ea2bb0587b33f8309f3
+          WRANGLER_SEND_METRICS: 'false'
+
+      - name: Publish preview URL
+        run: |
+          {
+            echo "### Preview deployed"
+            echo ""
+            echo "Branch \`${GITHUB_REF_NAME}\` → \`${PREVIEW_WORKER_NAME}\`"
+            echo ""
+            if [ -n "${{ steps.deploy.outputs.url }}" ]; then
+              echo "**${{ steps.deploy.outputs.url }}**"
+            else
+              echo "Deployed, but no workers.dev URL was printed — check whether workers.dev is enabled for this Worker."
+            fi
+            echo ""
+            echo "_Production (ellisaistudio.com) was not touched by this run._"
+          } >> "$GITHUB_STEP_SUMMARY"
