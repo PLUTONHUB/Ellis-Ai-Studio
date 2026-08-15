@@ -1,0 +1,523 @@
+/*
+ * JAK3FFECT — jake.ellisaistudio.com
+ *
+ * The composition is taken from the approved Portfolite template: panelled
+ * sections behind a 48px hairline frame, a three-column work grid whose centre
+ * column is wider and sits flush to the top, counter-scrolling deliverable
+ * tickers, a 2x2 service bento, and a scroll-snapped reel.
+ *
+ * The *surface* is not taken from it. Portfolite is pure black, Satoshi and
+ * white; this page runs on the studio's warm brown-black tokens with
+ * JAK3FFECT's cinematic sage accent, so it reads as Jake's property on Ellis
+ * infrastructure rather than as a template someone bought. Everything below
+ * consumes tokens.css — no raw hex appears except inside the atmospheric
+ * gradients, which need alpha.
+ *
+ * Scoped under `.jake` so none of it can leak into the studio site.
+ */
+
+.jake {
+  /* JAK3FFECT identity, matching the `cinematic` accent on /ventures/jak3ffect. */
+  --jk-accent: #8FA890;
+  --jk-accent-bright: #A9C0AA;
+  --jk-dim: rgba(143, 168, 144, 0.14);
+  --jk-tint: rgba(143, 168, 144, 0.04);
+  --jk-frame: 1px solid var(--border-subtle);
+  --jk-radius: clamp(20px, 3.4vw, 48px);
+
+  background: var(--surface-deep);
+  color: var(--text-primary);
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+.jake-shell { display: flow-root; }
+
+.jake-header {
+  position: sticky; top: 0; z-index: 40;
+  border-bottom: 1px solid transparent;
+  transition: background var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+.jake-header[data-scrolled="true"] {
+  background: color-mix(in srgb, var(--surface-deep) 86%, transparent);
+  backdrop-filter: blur(16px) saturate(140%);
+  border-bottom-color: var(--border-subtle);
+}
+.jake-header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-5); min-height: 84px;
+  transition: min-height var(--dur) var(--ease-out);
+}
+.jake-header[data-scrolled="true"] .jake-header-inner { min-height: 68px; }
+
+.jake-wordmark {
+  font-family: var(--font-mono); font-size: var(--type-small);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-primary); text-decoration: none; white-space: nowrap;
+}
+.jake-wordmark span { color: var(--jk-accent); }
+
+.jake-nav { display: none; gap: var(--space-6); }
+@media (min-width: 860px) { .jake-nav { display: flex; } }
+.jake-nav a {
+  position: relative; font-size: var(--type-small); color: var(--text-secondary);
+  text-decoration: none; padding-block: var(--space-2);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.jake-nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: var(--jk-accent); transform: scaleX(0); transform-origin: right;
+  transition: transform var(--dur) var(--ease-out);
+}
+.jake-nav a:hover { color: var(--text-primary); }
+.jake-nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+/* ------------------------------------------------------------- sections -- */
+
+/*
+ * The panel. Portfolite draws its 48px frame as an absolutely-positioned
+ * child; a border on the section itself does the same job without the extra
+ * node, and keeps the radius from clipping sticky children.
+ */
+.jake-panel {
+  position: relative;
+  margin-inline: var(--gutter);
+  border: var(--jk-frame);
+  border-radius: var(--jk-radius);
+  padding: clamp(56px, 8vw, 100px) clamp(20px, 5vw, 80px);
+  overflow: hidden;
+}
+.jake-panel + .jake-panel { margin-top: clamp(16px, 2.5vw, 28px); }
+.jake-panel-inner { max-width: 1600px; margin-inline: auto; }
+
+.jake-eyebrow {
+  display: inline-flex; align-items: center; gap: var(--space-3);
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: var(--tracking-label); text-transform: uppercase;
+  color: var(--jk-accent);
+  border: 1px solid var(--jk-dim); border-radius: 999px;
+  padding: var(--space-2) var(--space-4);
+}
+
+.jake-h2 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: var(--type-display-l); line-height: var(--leading-tight);
+  letter-spacing: -0.02em; margin: var(--space-5) 0 0;
+  text-wrap: balance;
+}
+.jake-lede {
+  font-size: var(--type-lede); line-height: var(--leading-body);
+  color: var(--text-secondary); max-width: 54ch; margin: var(--space-5) 0 0;
+}
+
+/* ----------------------------------------------------------------- hero -- */
+
+.jake-hero {
+  position: relative; overflow: hidden;
+  display: grid; align-content: center;
+  min-height: min(92vh, 940px);
+  padding: clamp(120px, 16vw, 180px) 0 clamp(48px, 7vw, 80px);
+}
+/*
+ * Stands in for the template's animated WebGL gradient. Two offset radial
+ * washes plus a fine grain give the same atmospheric floor at a fraction of
+ * the cost, and they cannot drop frames on a mid-range phone.
+ */
+.jake-hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 85% at 12% 100%, rgba(143, 168, 144, 0.10), transparent 58%),
+    radial-gradient(90% 70% at 88% 0%, rgba(188, 139, 94, 0.07), transparent 60%);
+}
+.jake-hero-ghost {
+  position: absolute; right: -0.06em; top: 18%; z-index: 0;
+  font-family: var(--font-display); font-size: clamp(7rem, 24vw, 20rem);
+  line-height: 0.72; letter-spacing: -0.05em; white-space: nowrap;
+  color: transparent; -webkit-text-stroke: 1px rgba(242, 237, 228, 0.055);
+  pointer-events: none; user-select: none;
+}
+.jake-hero-inner { position: relative; z-index: 1; }
+
+.jake-hero-label {
+  display: inline-flex; align-items: center; gap: var(--space-4);
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: var(--tracking-label); text-transform: uppercase;
+  color: var(--text-muted);
+}
+.jake-hero-label .rule {
+  display: block; width: clamp(40px, 8vw, 90px); height: 1px;
+  background: linear-gradient(90deg, var(--jk-accent), transparent);
+}
+
+.jake-hero-type {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: var(--type-hero); line-height: 0.86; letter-spacing: -0.035em;
+  margin: var(--space-6) 0 0;
+}
+.jake-hero-type .line { display: block; overflow: hidden; }
+.jake-hero-type .line:last-child { color: var(--jk-accent); font-style: italic; }
+
+.jake-hero-lede {
+  font-size: var(--type-lede); line-height: var(--leading-body);
+  color: var(--text-secondary); max-width: 52ch; margin: var(--space-6) 0 0;
+}
+
+.jake-actions {
+  display: flex; flex-wrap: wrap; gap: var(--space-4);
+  margin-top: var(--space-7);
+}
+
+.jake-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  position: relative; overflow: hidden;
+  font-family: var(--font-mono); font-size: var(--type-small);
+  letter-spacing: 0.06em; text-decoration: none; white-space: nowrap;
+  padding: var(--space-4) var(--space-6); border-radius: 999px;
+  border: 1px solid var(--border-strong); color: var(--text-primary);
+  transition: border-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+}
+.jake-btn::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: var(--jk-accent); transform: scaleY(0); transform-origin: bottom;
+  transition: transform var(--dur) var(--ease-out);
+}
+.jake-btn:hover { border-color: var(--jk-accent); color: var(--surface-deep); }
+.jake-btn:hover::before { transform: scaleY(1); }
+.jake-btn-solid {
+  background: var(--jk-accent); color: var(--surface-deep); border-color: var(--jk-accent);
+}
+.jake-btn-solid:hover { background: var(--jk-accent-bright); border-color: var(--jk-accent-bright); }
+
+/* Scroll cue — hidden on phones, exactly as the template does. */
+.jake-scrollcue {
+  display: none; align-items: center; gap: var(--space-4);
+  margin-top: clamp(56px, 8vw, 88px); max-width: 640px;
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint);
+}
+@media (min-width: 700px) { .jake-scrollcue { display: flex; } }
+.jake-scrollcue .rule { flex: 1; height: 1px; background: var(--border-subtle); }
+
+/* -------------------------------------------------------------- tickers -- */
+
+/*
+ * Marquee. The track holds the list twice — the second copy is aria-hidden so
+ * assistive tech reads the row once — and slides exactly -50%, which loops
+ * seamlessly regardless of item widths.
+ */
+.jake-ticker { position: relative; overflow: hidden; }
+.jake-ticker::before, .jake-ticker::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: clamp(40px, 8vw, 120px);
+  z-index: 2; pointer-events: none;
+}
+.jake-ticker::before { left: 0; background: linear-gradient(90deg, var(--surface-deep), transparent); }
+.jake-ticker::after { right: 0; background: linear-gradient(270deg, var(--surface-deep), transparent); }
+
+.jake-ticker-track {
+  display: flex; width: max-content; gap: var(--space-5);
+  animation: jk-marquee var(--jk-speed, 46s) linear infinite;
+}
+.jake-ticker[data-direction="right"] .jake-ticker-track { animation-direction: reverse; }
+.jake-ticker:hover .jake-ticker-track { animation-play-state: paused; }
+
+@keyframes jk-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.jake-chip {
+  display: inline-flex; align-items: center; gap: var(--space-3); white-space: nowrap;
+  font-family: var(--font-mono); font-size: var(--type-small); color: var(--text-secondary);
+  border: var(--jk-frame); border-radius: 999px;
+  padding: var(--space-3) var(--space-5); background: var(--surface-base);
+}
+.jake-chip::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--jk-accent); flex: none;
+}
+
+/* Hero niche ticker sits flush against the hero floor. */
+.jake-hero-ticker { margin-top: clamp(48px, 7vw, 76px); }
+
+/* ------------------------------------------------------------ work grid -- */
+
+/*
+ * The template's masonry: three columns where the centre is 1.2fr and flush to
+ * the top while the outer two are pushed down. That offset is the whole effect,
+ * so it is the thing preserved most literally.
+ */
+.jake-work {
+  display: grid; gap: var(--space-4);
+  grid-template-columns: 1fr;
+  margin-top: clamp(48px, 6vw, 72px);
+}
+@media (min-width: 720px) { .jake-work { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) {
+  .jake-work { grid-template-columns: 1fr 1.2fr 1fr; gap: var(--space-5); }
+  .jake-work-col:nth-child(odd) { margin-top: clamp(40px, 6vw, 96px); }
+}
+.jake-work-col { display: grid; gap: var(--space-4); align-content: start; }
+@media (min-width: 720px) and (max-width: 1099px) {
+  /* Two columns: the third stacks under, so only the first is offset. */
+  .jake-work-col:nth-child(2) { margin-top: clamp(32px, 5vw, 64px); }
+}
+
+.jake-card {
+  position: relative; display: grid; align-content: end; gap: var(--space-3);
+  min-height: clamp(220px, 30vw, 300px);
+  padding: var(--space-6);
+  border: var(--jk-frame); border-radius: clamp(14px, 1.6vw, 20px);
+  background: var(--surface-base);
+  overflow: hidden;
+  transition: background var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+.jake-work-col:nth-child(2) .jake-card { min-height: clamp(260px, 34vw, 360px); }
+.jake-card::after {
+  content: ""; position: absolute; left: 0; top: 0; height: 1px; width: 100%;
+  background: var(--jk-accent); transform: scaleX(0); transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.jake-card:hover { background: var(--jk-tint); border-color: var(--border-strong); }
+.jake-card:hover::after { transform: scaleX(1); }
+
+.jake-card-index {
+  position: absolute; top: var(--space-5); left: var(--space-6);
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: 0.14em; color: var(--text-faint);
+}
+.jake-card h3 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.05;
+  letter-spacing: -0.02em; margin: 0;
+}
+.jake-card p {
+  font-size: var(--type-small); line-height: 1.6;
+  color: var(--text-muted); margin: 0; max-width: 40ch;
+}
+
+/*
+ * Media slot. Reserved, labelled, and deliberately empty — no stock imagery
+ * and no generated stand-in. Real footage stills drop straight in here.
+ */
+.jake-slot {
+  position: relative; aspect-ratio: 4 / 5; border-radius: clamp(14px, 1.6vw, 20px);
+  border: 1px dashed var(--border-strong); background: var(--surface-base);
+  display: grid; place-items: center;
+}
+.jake-slot span {
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint);
+}
+
+/* --------------------------------------------------------------- about --- */
+
+.jake-split {
+  display: grid; gap: clamp(40px, 6vw, 72px);
+  grid-template-columns: 1fr; align-items: start;
+  margin-top: clamp(40px, 5vw, 64px);
+}
+@media (min-width: 900px) { .jake-split { grid-template-columns: 1fr 1fr; } }
+.jake-split-wide { grid-template-columns: 1fr; }
+@media (min-width: 900px) { .jake-split-wide { grid-template-columns: 1.15fr 1fr; } }
+
+.jake-prose p {
+  font-size: var(--type-body); line-height: var(--leading-body);
+  color: var(--text-secondary); margin: 0 0 var(--space-5);
+  max-width: 60ch;
+}
+.jake-prose p:last-child { margin-bottom: 0; }
+
+.jake-rule { height: 1px; background: var(--border-subtle); margin-block: var(--space-7); }
+
+.jake-pills { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.jake-pill {
+  font-family: var(--font-mono); font-size: var(--type-small); color: var(--text-secondary);
+  border: var(--jk-frame); border-radius: 999px; padding: var(--space-2) var(--space-4);
+}
+
+.jake-exp { display: grid; gap: 0; }
+.jake-exp li {
+  display: grid; gap: var(--space-1) var(--space-5);
+  grid-template-columns: 1fr auto; align-items: baseline;
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+.jake-exp li:last-child { border-bottom: 1px solid var(--border-subtle); }
+.jake-exp .role {
+  font-family: var(--font-display); font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+  letter-spacing: -0.015em; color: var(--text-primary);
+}
+.jake-exp .org { font-size: var(--type-small); color: var(--text-muted); grid-column: 1; }
+.jake-exp .period {
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--jk-accent);
+  grid-column: 2; grid-row: 1 / span 2;
+}
+
+/* ----------------------------------------------------------------- reel -- */
+
+/*
+ * Stands in for the template's Carousel component. Native scroll-snap needs no
+ * JavaScript, keeps keyboard and touch behaviour the browser already gets
+ * right, and degrades to a plain scrolling row everywhere.
+ */
+.jake-reel {
+  display: grid; grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 28%);
+  gap: var(--space-4); margin-top: var(--space-7);
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-4);
+  scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent;
+}
+@media (max-width: 720px) { .jake-reel { grid-auto-columns: minmax(200px, 74%); } }
+.jake-reel > * { scroll-snap-align: center; }
+
+/* ---------------------------------------------------------------- bento -- */
+
+.jake-bento {
+  display: grid; gap: var(--space-4); grid-template-columns: 1fr;
+  margin-top: clamp(40px, 5vw, 64px);
+}
+@media (min-width: 860px) { .jake-bento { grid-template-columns: 1fr 1fr; gap: var(--space-5); } }
+
+.jake-service {
+  position: relative; padding: clamp(28px, 3.4vw, 44px);
+  border: var(--jk-frame); border-radius: clamp(14px, 1.6vw, 20px);
+  background: var(--surface-base);
+  transition: background var(--dur) var(--ease-out);
+}
+.jake-service:hover { background: var(--jk-tint); }
+.jake-service h3 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem); line-height: 1.1;
+  letter-spacing: -0.02em; margin: var(--space-4) 0 var(--space-4);
+}
+.jake-service p {
+  font-size: var(--type-small); line-height: 1.7; color: var(--text-muted);
+  margin: 0; max-width: 46ch;
+}
+.jake-service .n {
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: 0.14em; color: var(--jk-accent);
+}
+
+/* ------------------------------------------------------------- process --- */
+
+.jake-steps { display: grid; gap: 0; margin-top: clamp(40px, 5vw, 64px); }
+.jake-step {
+  display: grid; gap: var(--space-4);
+  grid-template-columns: 1fr; align-items: start;
+  padding-block: clamp(32px, 4vw, 48px);
+  border-top: 1px solid var(--border-subtle);
+}
+.jake-steps .jake-step:last-child { border-bottom: 1px solid var(--border-subtle); }
+@media (min-width: 800px) {
+  .jake-step { grid-template-columns: 100px minmax(0, 1fr) minmax(0, 1.1fr); gap: var(--space-6); }
+}
+.jake-step .n {
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: 0.14em; color: var(--text-faint);
+}
+.jake-step h3 {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem); line-height: 1.05;
+  letter-spacing: -0.02em; margin: 0;
+}
+.jake-step p {
+  font-size: var(--type-body); line-height: var(--leading-body);
+  color: var(--text-secondary); margin: 0;
+}
+
+/* ---------------------------------------------------- principles / trio -- */
+
+.jake-trio {
+  display: grid; gap: var(--space-4); grid-template-columns: 1fr;
+  margin-top: clamp(40px, 5vw, 64px);
+}
+@media (min-width: 760px) { .jake-trio { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .jake-trio { grid-template-columns: repeat(4, 1fr); } }
+
+.jake-principle {
+  padding: clamp(24px, 3vw, 36px);
+  border: var(--jk-frame); border-radius: clamp(14px, 1.6vw, 20px);
+  background: var(--surface-warm);
+}
+.jake-principle h3 {
+  font-family: var(--font-sans); font-weight: 500;
+  font-size: var(--type-body); letter-spacing: -0.01em;
+  margin: 0 0 var(--space-3); color: var(--text-primary);
+}
+.jake-principle p {
+  font-size: var(--type-small); line-height: 1.65; color: var(--text-muted); margin: 0;
+}
+
+/* ------------------------------------------------------------------ faq -- */
+
+.jake-faq { display: grid; margin-top: clamp(32px, 4vw, 48px); }
+.jake-faq details {
+  border-top: 1px solid var(--border-subtle);
+}
+.jake-faq details:last-of-type { border-bottom: 1px solid var(--border-subtle); }
+.jake-faq summary {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-5);
+  padding-block: var(--space-6); cursor: pointer; list-style: none;
+  font-family: var(--font-display); font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  letter-spacing: -0.015em; color: var(--text-primary);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.jake-faq summary::-webkit-details-marker { display: none; }
+.jake-faq summary:hover { color: var(--jk-accent); }
+.jake-faq summary::after {
+  content: "+"; font-family: var(--font-mono); font-size: 1.1rem;
+  color: var(--jk-accent); flex: none;
+  transition: transform var(--dur) var(--ease-out);
+}
+.jake-faq details[open] summary::after { transform: rotate(45deg); }
+.jake-faq .answer {
+  font-size: var(--type-body); line-height: var(--leading-body);
+  color: var(--text-secondary); margin: 0 0 var(--space-6); max-width: 62ch;
+  padding-right: var(--space-7);
+}
+
+/* ------------------------------------------------------------- contact --- */
+
+.jake-contact { text-align: left; }
+.jake-contact .jake-h2 { max-width: 16ch; }
+.jake-mail {
+  display: inline-block; margin-top: var(--space-6);
+  font-family: var(--font-display); font-size: clamp(1.4rem, 4vw, 2.6rem);
+  letter-spacing: -0.02em; color: var(--text-primary); text-decoration: none;
+  border-bottom: 1px solid var(--border-strong); padding-bottom: var(--space-2);
+  transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+  overflow-wrap: anywhere;
+}
+.jake-mail:hover { color: var(--jk-accent); border-color: var(--jk-accent); }
+
+.jake-socials { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-7); }
+
+/* ---------------------------------------------------------------- foot --- */
+
+.jake-footer {
+  margin-top: clamp(56px, 8vw, 96px);
+  padding: var(--space-8) var(--gutter) var(--space-7);
+  border-top: 1px solid var(--border-subtle);
+}
+.jake-footer-inner {
+  max-width: 1600px; margin-inline: auto;
+  display: flex; flex-wrap: wrap; gap: var(--space-5);
+  align-items: center; justify-content: space-between;
+  font-family: var(--font-mono); font-size: var(--type-label);
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint);
+}
+.jake-footer-inner a { color: var(--text-muted); text-decoration: none; }
+.jake-footer-inner a:hover { color: var(--jk-accent); }
+
+/* -------------------------------------------------------------- motion --- */
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+   * Marquees stop entirely and become an ordinary scrollable row, so the
+   * content is still reachable without anything moving on its own.
+   */
+  .jake-ticker-track { animation: none; width: auto; flex-wrap: wrap; }
+  .jake-ticker { overflow-x: auto; }
+  .jake-ticker::before, .jake-ticker::after { display: none; }
+  .jake-btn::before, .jake-card::after { transition: none; }
+}
