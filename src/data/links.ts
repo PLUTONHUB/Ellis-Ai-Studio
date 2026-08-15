@@ -22,33 +22,24 @@ export const emails = {
 /** Internal routes referenced from more than one place. */
 export const routes = {
   home: "/",
-  solutions: "/solutions",
-  ventures: "/ventures",
-  founders: "/founders",
-  insights: "/insights",
-  contact: "/contact",
+  systems: "/systems",
   apply: "/apply",
   founding: "/founding",
   howItWorks: "/how-it-works",
   about: "/about",
 } as const;
 
-/** Primary navigation, in order. */
+/** Primary navigation, in order. Apply is the CTA button, not a nav link. */
 export const primaryNav = [
-  ["Home", routes.home],
-  ["Solutions", routes.solutions],
-  ["Ventures", routes.ventures],
-  ["Founders", routes.founders],
-  ["Insights", routes.insights],
-  ["Contact", routes.contact],
+  ["How It Works", routes.howItWorks],
+  ["Systems", routes.systems],
+  ["About", routes.about],
+  ["Founding Program", routes.founding],
 ] as const;
 
-/** Secondary destinations — real pages, reached from the footer. */
+/** Secondary destinations, reached from the footer. */
 export const secondaryNav = [
-  ["How We Work", routes.howItWorks],
-  ["Founding Client Program", routes.founding],
-  ["About", routes.about],
-  ["Request an Audit", routes.apply],
+  ["Business Bottleneck Audit", routes.apply],
 ] as const;
 
 export function mailto(address: string, subject?: string) {

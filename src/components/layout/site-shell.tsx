@@ -46,7 +46,7 @@ function Header({ pathname }: { pathname: string }) {
               <a key={href} href={href} aria-current={current(href) ? "page" : undefined}>{label}</a>
             ))}
           </nav>
-          <a className="button button-quiet header-cta" href={routes.contact}>Start a project</a>
+          <a className="button button-solid header-cta" href={routes.apply}>Free Business Bottleneck Audit</a>
           <button
             className="nav-toggle" type="button" aria-expanded={open}
             aria-controls="site-menu" onClick={() => setOpen((v) => !v)}
@@ -71,14 +71,12 @@ function Header({ pathname }: { pathname: string }) {
             </ul>
             <div className="nav-overlay-secondary">
               <ul>
-                {secondaryNav.map(([label, href], i) => (
-                  <li key={href} style={{ "--i": i + 6 } as React.CSSProperties}>
-                    <a href={href} onClick={() => setOpen(false)}>{label}</a>
-                  </li>
-                ))}
+                <li style={{ "--i": primaryNav.length } as React.CSSProperties}>
+                  <a href={studio.booking} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>Book a conversation</a>
+                </li>
               </ul>
             </div>
-            <a className="button button-solid" href={studio.booking} target="_blank" rel="noreferrer">Book a conversation</a>
+            <a className="button button-solid" href={routes.apply} onClick={() => setOpen(false)}>Free Business Bottleneck Audit</a>
           </nav>
         </div>
       )}
@@ -93,23 +91,21 @@ function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Wordmark />
-            <p>A founder-led venture studio. We build systems, products, brands and ventures — for ourselves and for the businesses we work with.</p>
+            <p>Ellis AI Studio is an AI systems and business-operations company. We identify friction inside a business and build the systems that remove it.</p>
           </div>
           <div className="footer-col">
             <p className="label">Explore</p>
-            <ul>{primaryNav.slice(1).map(([label, href]) => <li key={href}><a href={href}>{label}</a></li>)}</ul>
+            <ul>{primaryNav.map(([label, href]) => <li key={href}><a href={href}>{label}</a></li>)}</ul>
           </div>
           <div className="footer-col">
-            <p className="label">Studio</p>
+            <p className="label">Get started</p>
             <ul>{secondaryNav.map(([label, href]) => <li key={href}><a href={href}>{label}</a></li>)}</ul>
           </div>
           <div className="footer-col">
             <p className="label">Contact</p>
             <ul>
               <li><a href={mailto(emails.jake)}>{emails.jake}</a></li>
-              <li><a href={mailto(emails.amber)}>{emails.amber}</a></li>
               <li><a href={studio.booking} target="_blank" rel="noreferrer">Book a conversation</a></li>
-              <li><a href={studio.beacons} target="_blank" rel="noreferrer">Beacons</a></li>
               <li><a href={studio.phoneHref}>{studio.phone}</a></li>
             </ul>
           </div>

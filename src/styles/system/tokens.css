@@ -1,91 +1,109 @@
 /*
  * Ellis AI Studio — design tokens.
  *
- * One source of truth for colour, type, space and motion. Nothing in the site
- * declares a raw hex value; components consume these roles so a venture can
- * override a single accent without touching the shell.
+ * One source of truth for colour, type, space, radius and motion. Nothing in
+ * the site declares a raw hex value outside this file; components consume
+ * these roles.
  *
- * The greys are not neutral. They run on a warm brown-black axis, with one
- * deliberately cooler mineral surface used to alternate against them — that
- * warm/cool alternation is what gives sections depth without introducing
- * colour. Pure black never appears.
+ * The system: a warm off-white canvas carries most of the page. Charcoal ink
+ * — never pure black — carries the text. A deep botanical green does almost
+ * all the accent work (intelligence, systems, progress). A rust/clay accent
+ * is reserved for a small number of deliberate moments — it is not a second
+ * primary colour.
  */
+
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/geist-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/geist-mono-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   /* ---- surfaces -------------------------------------------------------
-   * deep    : brown-black, the floor — hero and footer
-   * base    : warm charcoal, the default ground
-   * cool    : desaturated mineral, one step blue — alternates against warm
-   * warm    : warm graphite, the raised alternate
-   * raised  : panels sitting above the ground
-   * inset   : inputs and wells, recessed
+   * canvas     : warm off-white, the floor of the page
+   * canvas-alt : a half-step warmer/darker off-white — alternates against
+   *              canvas so sections separate without a hard colour block
+   * raised     : true white, panels sitting a touch above the canvas
+   * sunken     : inputs and wells, recessed
+   * ink        : charcoal-ink, used sparingly for the few deliberately dark
+   *              moments (footer, final CTA, the OS-flow diagram)
+   * ink-raised : panels sitting above ink
    */
-  --surface-deep: #0E0C0B;
-  --surface-base: #131110;
-  --surface-cool: #121517;
-  --surface-warm: #1A1715;
-  --surface-raised: #201C19;
-  --surface-inset: #262220;
+  --surface-canvas: #FBF9F4;
+  --surface-canvas-alt: #F3EEE3;
+  --surface-raised: #FFFFFF;
+  --surface-sunken: #EFE8D9;
+  --surface-ink: #1E1B17;
+  --surface-ink-raised: #29241F;
 
   /* ---- text ---- */
-  --text-primary: #F2EDE4;   /* bone */
-  --text-secondary: #A9A29A; /* stone */
-  --text-muted: #78716A;
-  --text-faint: #4A4441;     /* index numerals, ghost rules */
-  --text-inverse: #131110;
+  --text-primary: #211E1A;    /* charcoal ink, not black */
+  --text-secondary: #58524A;
+  --text-muted: #8B8377;
+  --text-faint: #BCB4A4;
+  --text-inverse: #F7F3E9;      /* on ink surfaces */
+  --text-inverse-muted: #B7AE9E;
 
   /* ---- lines ---- */
-  --border-subtle: #262120;
-  --border-strong: #38322D;
-  --border-accent: rgba(188, 139, 94, 0.4);
+  --border-subtle: #E7E0D1;
+  --border-strong: #D3C9B4;
+  --border-inverse: rgba(247, 243, 233, 0.14);
 
-  /* ---- accents ---- */
-  --accent: #BC8B5E;          /* muted bronze */
-  --accent-bright: #DCAE7C;
-  --accent-deep: #8E6740;
-  --accent-dim: rgba(188, 139, 94, 0.13);
-  --accent-cool: #7E8B93;     /* soft mineral */
-  --accent-cool-dim: rgba(126, 139, 147, 0.12);
+  /* ---- accents: green (primary) ---- */
+  --green-900: #1E3227;
+  --green-700: #2F4B3C;   /* primary accent */
+  --green-500: #4C7359;   /* bright / hover */
+  --green-300: #8FAE9B;
+  --green-dim: rgba(47, 75, 60, 0.09);
+  --green-dim-strong: rgba(47, 75, 60, 0.16);
+
+  /* ---- accents: rust (secondary, sparing) ---- */
+  --rust-700: #9C4324;
+  --rust-500: #BE5A34;   /* CTA fill */
+  --rust-300: #E0A886;
+  --rust-dim: rgba(190, 90, 52, 0.1);
 
   /* ---- interactive ---- */
-  --interactive-hover: #DCAE7C;
-  --interactive-active: #8E6740;
-  --focus-ring: #DCAE7C;
+  --interactive-hover: var(--green-500);
+  --interactive-active: var(--green-900);
+  --focus-ring: var(--green-500);
 
   /* ---- status ---- */
-  --status-success: #7F9573;
-  --status-error: #C4735F;
-  --status-notice: #A9A29A;
+  --status-success: var(--green-700);
+  --status-error: #A3402A;
+  --status-notice: var(--text-muted);
 
-  /* ---- venture identity ------------------------------------------------
-   * Ventures override these four. Everything venture-specific — accent,
-   * heading tracking, display style and surface tint — flows from here, so a
-   * venture reads differently without a single bespoke rule.
+  /* ---- type ------------------------------------------------------------
+   * One clean sans throughout — no decorative serif. Geist Mono carries the
+   * systemic register: eyebrows, index numerals, status, meta.
    */
-  --venture-accent: var(--accent);
-  --venture-dim: var(--accent-dim);
-  --venture-tracking: -0.02em;
-  --venture-tint: transparent;
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* ---- type ---- */
-  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
-  --font-sans: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
-
-  --type-hero: clamp(3.75rem, 12vw, 11rem);
-  --type-display-xl: clamp(3rem, 8vw, 6.5rem);
-  --type-display-l: clamp(2.5rem, 5.8vw, 4.75rem);
-  --type-display-m: clamp(1.9rem, 3.6vw, 3rem);
-  --type-heading: clamp(1.3rem, 2vw, 1.7rem);
-  --type-lede: clamp(1.0625rem, 1.3vw, 1.25rem);
+  --type-hero: clamp(2.5rem, 5.2vw, 4.25rem);
+  --type-display-xl: clamp(2.15rem, 4vw, 3.1rem);
+  --type-display-l: clamp(1.85rem, 3vw, 2.6rem);
+  --type-display-m: clamp(1.4rem, 2.1vw, 1.9rem);
+  --type-heading: clamp(1.1rem, 1.4vw, 1.3rem);
+  --type-lede: clamp(1.0625rem, 1.15vw, 1.1875rem);
   --type-body: 1rem;
   --type-small: 0.875rem;
   --type-label: 0.6875rem;
 
-  --leading-tight: 0.9;
-  --leading-snug: 1.18;
-  --leading-body: 1.7;
-  --tracking-label: 0.18em;
+  --leading-tight: 1.06;
+  --leading-snug: 1.22;
+  --leading-body: 1.62;
+  --tracking-label: 0.13em;
+  --tracking-heading: -0.015em;
 
   /* ---- space ---- */
   --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
@@ -93,23 +111,25 @@
   --space-9: 96px; --space-10: 128px; --space-11: 176px;
 
   --gutter: clamp(20px, 5vw, 56px);
-  --container: 1280px;
-  --measure: 66ch;
-  --section-y: clamp(96px, 13vw, 200px);
+  --container: 1240px;
+  --measure: 64ch;
+  /* Compact, engineered rhythm — not the enormous 100vh-per-idea spacing of
+     a template site. */
+  --section-y: clamp(56px, 7vw, 112px);
+  --section-y-tight: clamp(36px, 4.5vw, 68px);
   /* Width of the marginal index rail that runs down the left of the grid. */
-  --rail: clamp(0px, 7vw, 96px);
+  --rail: clamp(0px, 6vw, 84px);
+
+  /* ---- radius — restrained, used with intent, never pill-everything ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
 
   /* ---- motion ---- */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-fast: 180ms;
-  --dur: 340ms;
-  --dur-slow: 700ms;
-  --dur-reveal: 900ms;
+  --dur-fast: 160ms;
+  --dur: 300ms;
+  --dur-slow: 560ms;
+  --dur-reveal: 720ms;
 }
-
-/*
- * The site commits to one dark editorial world rather than inverting with the
- * reader's OS. Every colour is still declared explicitly through the tokens
- * above, so the page never borrows a host background.
- */

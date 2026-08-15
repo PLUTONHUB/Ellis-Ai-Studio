@@ -1,5 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { FoundersPage } from "~/components/pages/founders";
-import { pageHead } from "~/lib/seo";
-
-export const Route = createFileRoute("/founders/")({ head: () => pageHead({ title: "Founders | Ellis AI Studio", description: "Jacob Ellis and Amber Dowling, co-founders of Ellis AI Studio.", path: "/founders" }), component: FoundersPage });
+import { createFileRoute, redirect } from "@tanstack/react-router";
+// Retired with the venture-studio reset; the team now lives on /about.
+export const Route = createFileRoute("/founders/")({ beforeLoad: () => { throw redirect({ to: "/about" }); } });

@@ -5,24 +5,21 @@ import baseCss from "~/styles/system/base.css?url";
 import dashboardCss from "~/styles/system/dashboard.css?url";
 import { jsonLd, organizationSchema, siteUrl } from "~/lib/seo";
 
-const FONTS =
-  "https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap";
-
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#14161a" },
+      { name: "theme-color", content: "#FBF9F4" },
       { name: "application-name", content: "Ellis AI Studio" },
       { name: "robots", content: "index, follow" },
-      { title: "Ellis AI Studio | Founder-Led Venture Studio" },
-      { name: "description", content: "Ellis AI Studio builds systems, products, brands and digital ventures around real problems — and builds AI systems, automation and business infrastructure for companies that need the same." },
+      { title: "Ellis AI Studio | AI Systems & Business Operations" },
+      { name: "description", content: "Ellis AI Studio identifies business friction and builds AI-powered systems that save time, reduce costs, improve operations, and support growth. We diagnose the problem before recommending technology." },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "en_US" },
       { property: "og:site_name", content: "Ellis AI Studio" },
-      { property: "og:title", content: "Ellis AI Studio | Founder-Led Venture Studio" },
-      { property: "og:description", content: "Systems, products, brands and ventures — built around real problems and opportunities." },
+      { property: "og:title", content: "Ellis AI Studio | AI Systems & Business Operations" },
+      { property: "og:description", content: "Your business doesn't need more tools. It needs a better system. We diagnose operational bottlenecks and build the AI-powered systems that fix them." },
       { property: "og:image", content: `${siteUrl}/logo/ellis-og-acquisition.png` },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: `${siteUrl}/logo/ellis-og-acquisition.png` },
@@ -32,9 +29,9 @@ export const Route = createRootRoute({
       { rel: "stylesheet", href: baseCss },
       // Utility classes the internal /dashboard tools rely on.
       { rel: "stylesheet", href: dashboardCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const },
-      { rel: "stylesheet", href: FONTS },
+      // Self-hosted Geist — no external font request, preloaded to avoid CLS.
+      { rel: "preload", href: "/fonts/geist-latin.woff2", as: "font", type: "font/woff2", crossOrigin: "anonymous" as const },
+      { rel: "preload", href: "/fonts/geist-mono-latin.woff2", as: "font", type: "font/woff2", crossOrigin: "anonymous" as const },
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/logo/ellis-favicon-32.png" },
       { rel: "apple-touch-icon", sizes: "180x180", href: "/logo/ellis-apple-touch-icon.png" },
     ],

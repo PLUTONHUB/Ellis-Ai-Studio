@@ -1,34 +1,33 @@
 /**
- * Studio pages: Solutions, How We Work, Founding Client Program, About, Apply,
- * Contact. All six stay live — four of them carry historically indexed URLs and
- * /apply is the studio's only conversion form.
+ * Studio pages: Systems, How It Works, Founding Client Program, About, Apply.
+ * /apply is the site's only conversion form; the rest support the diagnosis
+ * before it.
  */
 import { SiteShell } from "~/components/layout/site-shell";
 import { PageHeader, Section, SectionIntro, InlineMeta } from "~/components/layout/page";
 import { AuditForm } from "~/components/forms/audit-form";
-import { FounderRows } from "~/components/founders/founder-parts";
-import { capabilities, method } from "~/data/solutions";
+import { systemGroups, method } from "~/data/solutions";
+import { founders } from "~/data/founders";
 import { auditFaq } from "~/data/audit-form";
-import { routes, studio, emails, mailto } from "~/data/links";
+import { routes, mailto } from "~/data/links";
 
-export function SolutionsPage() {
+export function SystemsPage() {
   return (
     <SiteShell>
       <PageHeader
-        label="Solutions"
+        label="Systems"
         title="We build around the problem."
-        lede="Not around a service menu. The right answer might be one system or several connected ones — that is what the diagnosis is for."
+        lede="Not around a service menu. The right answer might be one system or several connected ones — that's what the diagnosis is for. Everything we build falls into one of four outcomes."
       />
       <Section>
         <ul className="rows">
-          {capabilities.map((capability, index) => (
-            <li className="row reveal" key={capability.name}>
+          {systemGroups.map((group, index) => (
+            <li className="row reveal" key={group.key}>
               <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
-              <div className="row-head"><h2 className="display-m">{capability.name}</h2></div>
+              <div className="row-head"><h2 className="display-m">{group.name}</h2></div>
               <div className="row-body">
-                <p>{capability.summary}</p>
-                <InlineMeta items={capability.includes} />
-                <p className="small">{capability.outcome}</p>
+                <p>{group.summary}</p>
+                <InlineMeta items={group.items} />
               </div>
             </li>
           ))}
@@ -51,21 +50,26 @@ export function HowItWorksPage() {
       <PageHeader
         label="How we work"
         title={<>Technology comes <em>second</em>.</>}
-        lede="Understanding the business comes first. You don't need to know whether your problem needs automation, AI, a CRM, a website or something custom — determining that is the job."
+        lede="Understanding the business comes first. You don't need to know whether your problem needs automation, AI, a CRM, a website or something custom — determining that is the job. Ten steps, three stages."
       />
       <Section>
-        <ul className="rows">
-          {method.map((step, index) => (
-            <li className="row reveal" key={step.phase}>
-              <span className="row-index">Phase {String(index + 1).padStart(2, "0")}</span>
-              <div className="row-head">
-                <h2 className="display-m">{step.phase}</h2>
-                <p className="meta">{step.title}</p>
+        <div className="method">
+          {method.map((stage) => (
+            <div className="method-stage" key={stage.stage}>
+              <p className="method-stage-label label">{stage.stage} <span className="n">— {stage.description}</span></p>
+              <div className="method-steps">
+                {stage.steps.map((s) => (
+                  <div className="method-step reveal" key={s.n}>
+                    <span className="method-step-dot" aria-hidden="true" />
+                    <p className="meta">{s.n}</p>
+                    <h3>{s.title}</h3>
+                    <p>{s.detail}</p>
+                  </div>
+                ))}
               </div>
-              <div className="row-body"><p>{step.detail}</p></div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </Section>
       <Section tone="cool">
         <div className="hero-actions"><a className="button button-solid" href={routes.apply}>Request an audit</a></div>
@@ -81,7 +85,7 @@ export function FoundingPage() {
     <SiteShell>
       <PageHeader
         label="Founding client program"
-        title="Three businesses with a process worth fixing."
+        title="A small number of businesses with a process worth fixing."
         lede="Selected businesses get hands-on systems design and implementation at preferred founding-client pricing, in exchange for structured feedback and permission to document what changed."
       />
       <Section>
@@ -118,15 +122,15 @@ export function AboutPage() {
     <SiteShell>
       <PageHeader
         label="About"
-        title="A studio that builds its own work."
-        lede="Ellis AI Studio is a founder-led venture studio. We build systems, products, brands and ventures — for ourselves, and for the businesses we work with."
+        title="An AI systems and business-operations company."
+        lede="Ellis AI Studio identifies friction inside a business and builds the systems — AI, automation, websites, integrations — that remove it. Tools are implementation components; the product is a better business system."
       />
       <Section>
         <div className="split">
           <div className="prose">
             <p>The studio started with websites — helping businesses get online without enormous development budgets. It became obvious fairly quickly that the website usually wasn't the whole problem. The friction was everything happening around it.</p>
             <p>Information had to be copied by hand. Processes lived across disconnected apps. Things depended on someone remembering the next step. So the work moved from building pages to building systems: automations, connected workflows, structured intake, business intelligence and AI-assisted processes.</p>
-            <p>The same instinct now drives the studio's own ventures. Building for clients and building for ourselves inform each other — what we learn shipping a venture makes the client work sharper, and the reverse is just as true.</p>
+            <p>That's still the instinct today: diagnose what's actually happening before recommending anything, and measure the result in time saved, cost reduced, and room to grow — not in software installed.</p>
           </div>
           <aside className="split-aside">
             <div className="aside-block">
@@ -139,8 +143,23 @@ export function AboutPage() {
         </div>
       </Section>
       <Section tone="cool">
-        <SectionIntro index="02" label="Founders" title="Who you actually work with." />
-        <FounderRows />
+        <SectionIntro index="02" label="Founders" title="Who you actually work with." copy="There is no account layer between you and the people doing the work." />
+        <ul className="rows">
+          {founders.map((founder, index) => (
+            <li className="row" id={founder.slug} key={founder.slug}>
+              <span className="row-index">{String(index + 1).padStart(2, "0")}</span>
+              <div className="row-head">
+                <p className="label">{founder.role}</p>
+                <h3 className="display-m">{founder.name}</h3>
+              </div>
+              <div className="row-body">
+                <p>{founder.positioning}</p>
+                {founder.focus.length > 0 && <InlineMeta items={founder.focus} />}
+                <a className="link" href={mailto(founder.email)}>{founder.email}</a>
+              </div>
+            </li>
+          ))}
+        </ul>
       </Section>
     </SiteShell>
   );
@@ -167,50 +186,6 @@ export function ApplyPage() {
               ))}
             </div>
           </aside>
-        </div>
-      </Section>
-    </SiteShell>
-  );
-}
-
-export function ContactPage() {
-  return (
-    <SiteShell>
-      <PageHeader
-        label="Contact"
-        title="Tell us what you're trying to build."
-        lede="Studio work and creator work start in different places. Pick the one that matches what you need."
-      />
-      <Section>
-        <div className="contact-paths">
-          <div className="contact-path">
-            <p className="label">Hire the studio</p>
-            <h2 className="display-m">AI systems, automation and business infrastructure.</h2>
-            <p>Start with the business problem rather than picking a service. We'll assess the process first and tell you whether we're the right fit.</p>
-            <div className="hero-actions">
-              <a className="button button-solid" href={routes.apply}>Request an audit</a>
-              <a className="link" href={studio.booking} target="_blank" rel="noreferrer">Book 30 minutes</a>
-            </div>
-            <p className="small">Prefer email?</p>
-            <a className="contact-inline" href={mailto(emails.jake)}>{emails.jake}</a>
-          </div>
-          <div className="contact-path is-secondary">
-            <p className="label">Creator &amp; brand partnerships</p>
-            <h2 className="display-m">Content and venture collaborations.</h2>
-            <p>Creator enquiries go straight to the founder who'd be doing the work — not into a sales pipeline.</p>
-            <ul className="contact-list">
-              <li>
-                <strong>JAK3FFECT</strong>
-                <span>Fitness, wellness, tech, travel, lifestyle</span>
-                <a href={mailto(emails.jake, "UGC Inquiry — JAK3FFECT")}>{emails.jake}</a>
-              </li>
-              <li>
-                <strong>organicambervibez</strong>
-                <span>Lifestyle, motherhood, finance, beauty, wellness</span>
-                <a href={mailto(emails.amber, "UGC Inquiry — organicambervibez")}>{emails.amber}</a>
-              </li>
-            </ul>
-          </div>
         </div>
       </Section>
     </SiteShell>
