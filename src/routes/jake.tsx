@@ -7,8 +7,9 @@ import { pageHead } from "~/lib/seo";
  *
  * Served at `/jake` on the studio app today so it can be reviewed on the
  * existing preview Worker. Once `jake.ellisaistudio.com` is attached as a
- * Custom Domain (see `wrangler.production.jsonc`), the subdomain resolves to
- * this same Worker and this route is what it lands on.
+ * Custom Domain — bound outside the repo, as the apex already is; see
+ * `docs/jake-subdomain-setup.md` — the subdomain resolves to this same Worker
+ * and this route is what it lands on.
  */
 export const Route = createFileRoute("/jake")({
   head: () =>
