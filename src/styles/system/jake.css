@@ -232,6 +232,12 @@
    */
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: 1fr auto;
+  /*
+   * Guarantees clearance between the CTA row and the scroll cue. Without it
+   * the centred statement can press right up against the hero floor on a
+   * short laptop, where the 1fr row has almost no slack to distribute.
+   */
+  row-gap: var(--jk-md);
   min-height: min(78vh, 780px);
   padding-block: clamp(28px, 3.4vw, 52px) clamp(18px, 2.2vw, 30px);
   scroll-margin-top: 0;
