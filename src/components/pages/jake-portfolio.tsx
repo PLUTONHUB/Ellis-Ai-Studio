@@ -109,14 +109,22 @@ function Hero() {
           </a>
           <a className="jake-btn" href="#work">See the work</a>
         </div>
-        <div className="jake-scrollcue enter" style={step(5)}>
-          <span>Scroll</span>
-          <span className="rule" aria-hidden="true" />
-          <span>Categories Jake shoots</span>
-        </div>
       </div>
-      <div className="jake-hero-ticker">
-        <Ticker items={primaryNiches.map((n) => n.name)} speed={52} />
+      {/*
+        The hero floor: cue and ticker travel together as the transition into
+        Work, rather than the cue reserving a band of its own above them.
+      */}
+      <div className="jake-hero-foot">
+        <div className="container">
+          <div className="jake-scrollcue enter" style={step(5)}>
+            <span>Scroll</span>
+            <span className="rule" aria-hidden="true" />
+            <span>Categories Jake shoots</span>
+          </div>
+        </div>
+        <div className="jake-hero-ticker">
+          <Ticker items={primaryNiches.map((n) => n.name)} speed={52} />
+        </div>
       </div>
     </section>
   );
