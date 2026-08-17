@@ -23,13 +23,20 @@ export const emails = {
 export const routes = {
   home: "/",
   systems: "/systems",
+  /** The AI Opportunity Audit — the site's interactive product. */
+  audit: "/audit",
   apply: "/apply",
   founding: "/founding",
   howItWorks: "/how-it-works",
   about: "/about",
 } as const;
 
-/** Primary navigation, in order. Apply is the CTA button, not a nav link. */
+/** Persistent report URL for a completed audit: /audit/[report-id]. */
+export function auditReport(reportId: string) {
+  return `${routes.audit}/${reportId}`;
+}
+
+/** Primary navigation, in order. The audit is the CTA button, not a nav link. */
 export const primaryNav = [
   ["How It Works", routes.howItWorks],
   ["Systems", routes.systems],
@@ -39,6 +46,7 @@ export const primaryNav = [
 
 /** Secondary destinations, reached from the footer. */
 export const secondaryNav = [
+  ["AI Opportunity Audit", routes.audit],
   ["Business Bottleneck Audit", routes.apply],
 ] as const;
 

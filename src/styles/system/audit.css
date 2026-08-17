@@ -1,0 +1,1113 @@
+/*
+ * AI Opportunity Audit — the product surface.
+ *
+ * Extends the existing system rather than replacing it: every colour, space,
+ * type and motion value here comes from tokens.css, and the composition rules
+ * from base.css/content.css (hairlines, the marginal rail, the mono register
+ * for anything systemic) are the ones used throughout.
+ *
+ * Three decisions worth stating, because they are product requirements:
+ *
+ *  1. Priority is NOT a traffic light. Rust — the reserved high-stakes accent
+ *     — marks Critical only. Green carries High. The lower two tiers step
+ *     down into the neutral register. Nothing is red, amber or green-as-good.
+ *  2. Evidence class is carried by border style as well as colour, so the
+ *     Observed/Inferred distinction survives greyscale, low vision and print.
+ *     Inferred is always dashed. Unknown is always hollow.
+ *  3. Diagrams are CSS grid with drawn connectors, not scaled SVG. A grid
+ *     re-flows into a legible vertical stack on a phone; a viewBox just gets
+ *     smaller until the labels are unreadable.
+ */
+
+/* ================================================================== entry */
+
+.audit-entry {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(96px, 12vw, 168px) var(--section-y);
+}
+.audit-entry::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(58% 52% at 50% 0%, var(--green-dim), transparent 68%);
+}
+.audit-entry-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: var(--space-5);
+}
+/* Wide enough that `text-wrap: balance` lands two full lines rather than
+   leaving a two-word orphan in the middle. */
+.audit-entry .hero-type { max-width: 19ch; }
+.audit-entry .lede { max-width: 52ch; }
+
+/* The URL field. One input, one action — the whole first interaction. */
+.url-form {
+  width: min(660px, 100%);
+  margin-top: var(--space-4);
+  display: grid;
+  gap: var(--space-4);
+}
+.url-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgba(33, 30, 26, 0.03), 0 12px 32px -20px rgba(33, 30, 26, 0.22);
+  transition: border-color var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+.url-field:hover { border-color: var(--text-muted); }
+.url-field:focus-within {
+  border-color: var(--green-700);
+  box-shadow: 0 0 0 4px var(--green-dim), 0 12px 32px -20px rgba(33, 30, 26, 0.26);
+}
+.url-field-prefix {
+  font-family: var(--font-mono);
+  font-size: var(--type-small);
+  color: var(--text-faint);
+  flex: none;
+}
+.url-field input {
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: var(--type-lede);
+  color: var(--text-primary);
+}
+.url-field input::placeholder { color: var(--text-faint); }
+.url-field .button { flex: none; }
+
+.url-note {
+  font-size: var(--type-small);
+  color: var(--text-muted);
+  text-align: center;
+  text-wrap: pretty;
+  max-width: 58ch;
+  margin-inline: auto;
+}
+.url-error { font-size: var(--type-small); color: var(--status-error); }
+
+/* The seven pillars, previewed on the entry page as the method promise. */
+.pillar-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  width: min(880px, 100%);
+}
+.pillar-strip li {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.pillar-strip li::before { content: "— "; color: var(--green-500); }
+
+/* =============================================================== analysis
+ * Not a spinner. A visible list of the work, with the current stage held on
+ * a hairline rail. Completed stages settle into the mono register; pending
+ * ones stay faint. Nothing pretends to be a terminal.
+ */
+
+.analysis {
+  min-height: min(78vh, 720px);
+  display: grid;
+  align-content: center;
+  padding-block: var(--section-y);
+}
+.analysis-head { display: grid; gap: var(--space-3); margin-bottom: var(--space-8); }
+.analysis-target {
+  font-family: var(--font-mono);
+  font-size: var(--type-small);
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* Bounded so the completion tick sits near its label rather than being flung
+   to the far edge of an 880px column. */
+.analysis-stages { position: relative; display: grid; padding-left: var(--space-6); max-width: 460px; }
+.analysis-stages::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: var(--border-subtle);
+}
+/* The travelled portion of the rail, scaled by how far the sequence has run. */
+.analysis-stages::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: var(--green-700);
+  transform: scaleY(var(--progress, 0));
+  transform-origin: top;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.analysis-stage {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  min-height: 46px;
+  padding-block: var(--space-2);
+  color: var(--text-faint);
+  transition: color var(--dur) var(--ease-out);
+}
+.analysis-stage::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--space-6) + 1px);
+  top: 1.05em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--surface-canvas);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+  z-index: 1;
+  transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+.analysis-stage[data-state="active"] {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+.analysis-stage[data-state="active"]::before {
+  background: var(--green-700);
+  box-shadow: 0 0 0 4px var(--green-dim);
+}
+.analysis-stage[data-state="done"] { color: var(--text-secondary); }
+.analysis-stage[data-state="done"]::before {
+  background: var(--green-700);
+  box-shadow: inset 0 0 0 1px var(--green-700);
+}
+.analysis-stage-tick {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--text-faint);
+  margin-left: auto;
+  flex: none;
+}
+.analysis-stage[data-state="done"] .analysis-stage-tick { color: var(--green-700); }
+
+/* A single soft pulse on the active node — the only motion in the sequence. */
+@media (prefers-reduced-motion: no-preference) {
+  .analysis-stage[data-state="active"]::before { animation: audit-pulse 1.8s var(--ease-in-out) infinite; }
+}
+@keyframes audit-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--green-dim); }
+  50% { box-shadow: 0 0 0 8px transparent; }
+}
+
+.analysis-foot {
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--type-small);
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+
+/* ========================================================= report header
+ * The five-second layer: who this is, the headline number, what it means,
+ * and where their systems stand. Everything else on the page is detail.
+ */
+
+/* Tighter at the top than the site's editorial page headers: the score is the
+   five-second payload and should not open below the fold. */
+.report-header {
+  padding-block: clamp(56px, 6vw, 88px) var(--space-8);
+  position: relative;
+  overflow: hidden;
+}
+.report-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(64% 58% at 84% 6%, var(--green-dim), transparent 62%);
+}
+.report-header-inner { position: relative; z-index: 1; }
+
+.report-identity { display: grid; gap: var(--space-3); }
+.report-identity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+/* The gap supplies the space before the separator; the margin supplies the
+   space after it — an inline trailing space would be collapsed away. */
+.report-identity-meta li + li::before { content: "·"; margin-right: var(--space-4); color: var(--text-faint); }
+.report-identity-meta li { display: inline-flex; }
+
+/* A notice rendered above the identity block owns the header's top spacing. */
+.report-header-inner > .evidence-disclosure:first-child { margin-top: 0; margin-bottom: var(--space-7); }
+
+.report-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(var(--space-6), 5vw, var(--space-9));
+  align-items: start;
+  margin-top: var(--space-8);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--border-subtle);
+}
+.report-headline { max-width: 48ch; }
+
+/* ------------------------------------------------------------ score dial
+ * A thin arc, not a gauge — no needle, no red zone. The number carries the
+ * weight; the arc only gives it a sense of scale.
+ */
+
+.score { display: flex; align-items: flex-start; gap: clamp(var(--space-5), 3vw, var(--space-7)); }
+.score-dial { position: relative; flex: none; width: clamp(132px, 15vw, 168px); }
+.score-dial svg { width: 100%; height: auto; overflow: visible; }
+.score-dial-track { fill: none; stroke: var(--border-subtle); stroke-width: 6; stroke-linecap: round; }
+.score-dial-value {
+  fill: none;
+  stroke: var(--green-700);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--fill, 0));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .score-dial-value { animation: score-fill var(--dur-reveal) var(--ease-out) 180ms backwards; }
+}
+@keyframes score-fill { from { stroke-dashoffset: 1; } }
+
+.score-dial-readout {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+}
+.score-number {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 4.4vw, 3.1rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.score-denominator {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--text-faint);
+}
+
+.score-body { display: grid; gap: var(--space-3); align-content: start; padding-top: var(--space-2); min-width: 0; }
+.score-band { font-family: var(--font-sans); font-weight: 600; font-size: var(--type-display-m); line-height: 1.1; letter-spacing: var(--tracking-heading); }
+
+/* The polarity note. Non-optional: the score is meaningless, and actively
+   misleading, without it. */
+.score-polarity {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface-canvas-alt);
+  border-left: 2px solid var(--green-700);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+  max-width: 52ch;
+}
+.score-polarity strong { color: var(--text-primary); font-weight: 600; }
+.score-scale {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.score-scale-rule {
+  flex: 1;
+  height: 1px;
+  min-width: 32px;
+  background: linear-gradient(90deg, var(--border-strong), var(--green-700));
+}
+
+/* ------------------------------------------------------- maturity ladder */
+
+.maturity { display: grid; gap: var(--space-4); }
+.maturity-ladder { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-2); }
+.maturity-step { display: grid; gap: var(--space-3); }
+.maturity-step-bar { height: 3px; border-radius: 2px; background: var(--border-subtle); }
+.maturity-step[data-state="reached"] .maturity-step-bar { background: var(--green-300); }
+.maturity-step[data-state="current"] .maturity-step-bar { background: var(--green-700); }
+.maturity-step-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  line-height: 1.3;
+}
+.maturity-step[data-state="reached"] .maturity-step-label { color: var(--text-muted); }
+.maturity-step[data-state="current"] .maturity-step-label { color: var(--green-700); font-weight: 600; }
+.maturity-definition { font-size: var(--type-small); color: var(--text-secondary); max-width: 46ch; }
+
+/* Headline counts sitting under the score. */
+.report-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6) var(--space-8);
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+.report-count { display: grid; gap: var(--space-1); }
+.report-count-value {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--type-display-m);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.report-count-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Persistent, quiet reminder of what this analysis can and cannot know. */
+.evidence-disclosure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  margin-top: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+}
+.evidence-disclosure .label { color: var(--text-muted); flex: none; }
+.evidence-disclosure p { max-width: 74ch; }
+
+/* ========================================================= evidence badge
+ * Border style carries the meaning as well as colour: solid = observed,
+ * dashed = inferred, hollow/faint = unknown.
+ */
+
+.evidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 3px var(--space-3);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.evidence-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.evidence-badge[data-evidence="observed"] {
+  color: var(--green-900);
+  background: var(--green-dim);
+  border: 1px solid transparent;
+}
+.evidence-badge[data-evidence="observed"]::before { background: var(--green-700); }
+.evidence-badge[data-evidence="inferred"] {
+  color: var(--text-secondary);
+  border: 1px dashed var(--border-strong);
+}
+.evidence-badge[data-evidence="inferred"]::before { background: transparent; box-shadow: inset 0 0 0 1px var(--text-muted); }
+.evidence-badge[data-evidence="unknown"] {
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  background: repeating-linear-gradient(135deg, transparent 0 3px, var(--surface-canvas-alt) 3px 6px);
+}
+.evidence-badge[data-evidence="unknown"]::before { box-shadow: inset 0 0 0 1px var(--text-faint); }
+
+.evidence-badges { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* A finding: the badge and its statement, on one line where there's room. */
+.finding {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3) var(--space-4);
+  align-items: baseline;
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+.finding:first-child { border-top: 0; }
+.finding-text { font-size: var(--type-small); color: var(--text-secondary); }
+.finding[data-evidence="inferred"] .finding-text { color: var(--text-muted); font-style: italic; }
+.finding[data-evidence="unknown"] .finding-text { color: var(--text-faint); }
+.finding-source {
+  display: block;
+  margin-top: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  font-style: normal;
+}
+
+/* The three-class key, printed once so the badges are self-explaining. */
+.evidence-key { display: grid; gap: var(--space-4); }
+.evidence-key-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: var(--space-4); align-items: baseline; }
+.evidence-key-row p { font-size: var(--type-small); color: var(--text-secondary); }
+
+/* ==================================================== confidence + priority */
+
+.confidence { display: inline-flex; align-items: center; gap: var(--space-3); }
+.confidence-meter { display: inline-flex; gap: 3px; }
+.confidence-seg { width: 16px; height: 4px; border-radius: 1px; background: var(--border-subtle); }
+.confidence[data-level="high"] .confidence-seg[data-on="true"] { background: var(--green-700); }
+.confidence[data-level="medium"] .confidence-seg[data-on="true"] { background: var(--green-500); }
+.confidence[data-level="low"] .confidence-seg[data-on="true"] { background: var(--text-muted); }
+.confidence-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Priority: a number and a classification, weighted by tier — never a colour
+   scale that implies danger. */
+.priority { display: inline-flex; align-items: baseline; gap: var(--space-3); }
+.priority-score {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.priority-tier {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.priority-tier::before { content: ""; width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.priority-tier[data-tone="rust"] { color: var(--rust-700); }
+.priority-tier[data-tone="rust"]::before { background: var(--rust-500); box-shadow: 0 0 0 3px var(--rust-dim); }
+.priority-tier[data-tone="green"] { color: var(--green-700); }
+.priority-tier[data-tone="green"]::before { background: var(--green-700); box-shadow: 0 0 0 3px var(--green-dim); }
+.priority-tier[data-tone="quiet"] { color: var(--text-secondary); }
+.priority-tier[data-tone="quiet"]::before { box-shadow: inset 0 0 0 1px var(--text-muted); }
+.priority-tier[data-tone="faint"] { color: var(--text-muted); }
+.priority-tier[data-tone="faint"]::before { box-shadow: inset 0 0 0 1px var(--text-faint); }
+
+/* The four sub-scores behind a priority number, shown on demand. */
+.score-breakdown { display: grid; gap: var(--space-3); }
+.score-breakdown-row { display: grid; grid-template-columns: 132px minmax(0, 1fr) 42px; gap: var(--space-4); align-items: center; }
+.score-breakdown-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.score-breakdown-track { height: 3px; border-radius: 2px; background: var(--border-subtle); overflow: hidden; }
+.score-breakdown-fill { height: 100%; border-radius: 2px; background: var(--green-500); width: calc(var(--value, 0) * 1%); }
+.score-breakdown-value { font-family: var(--font-mono); font-size: var(--type-small); color: var(--text-secondary); font-variant-numeric: tabular-nums; text-align: right; }
+.score-formula {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ========================================================= pillar signals */
+
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  border-top: 1px solid var(--border-subtle);
+  border-left: 1px solid var(--border-subtle);
+}
+.pillar-cell {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  padding: var(--space-5);
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pillar-cell-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
+.pillar-cell h3 { font-size: var(--type-small); font-weight: 600; }
+.pillar-cell-count {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--green-700);
+  white-space: nowrap;
+}
+.pillar-cell[data-empty="true"] .pillar-cell-count { color: var(--text-faint); }
+.pillar-meter { height: 3px; border-radius: 2px; background: var(--border-subtle); overflow: hidden; }
+.pillar-meter-fill { height: 100%; border-radius: 2px; background: var(--green-500); width: calc(var(--value, 0) * 1%); }
+.pillar-cell[data-empty="true"] .pillar-meter-fill { background: var(--border-strong); }
+.pillar-cell p { font-size: var(--type-small); color: var(--text-secondary); line-height: 1.5; }
+
+/* ======================================================= customer journey */
+
+.journey { display: grid; gap: 0; border-top: 1px solid var(--border-subtle); }
+.journey-stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: var(--space-5);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.journey-index {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.journey-head { display: grid; gap: var(--space-2); align-content: start; }
+.journey-head h3 { font-size: var(--type-small); font-weight: 600; }
+.journey-body { display: grid; gap: var(--space-3); align-content: start; }
+.journey-body p { font-size: var(--type-small); color: var(--text-secondary); }
+.journey-friction {
+  display: flex;
+  gap: var(--space-3);
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--rust-300);
+  color: var(--text-muted) !important;
+}
+
+/* ====================================================== opportunity cards
+ * Progressive disclosure via native <details>: the summary carries what a
+ * skimmer needs, the panel carries the reasoning. No JS, keyboard-native,
+ * and it prints expanded.
+ */
+
+.opportunities { display: grid; border-top: 1px solid var(--border-subtle); }
+.opportunity { border-bottom: 1px solid var(--border-subtle); }
+.opportunity > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-4) var(--space-6);
+  align-items: center;
+  padding: var(--space-6) 0;
+  cursor: pointer;
+  list-style: none;
+  transition: background var(--dur) var(--ease-out);
+}
+.opportunity > summary::-webkit-details-marker { display: none; }
+.opportunity > summary:hover { background: var(--surface-canvas-alt); }
+.opportunity > summary:hover .opportunity-name { color: var(--green-700); }
+.opportunity-heading { display: grid; gap: var(--space-3); min-width: 0; }
+.opportunity-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.opportunity-eyebrow span + span::before { content: "·"; margin-right: var(--space-4); color: var(--text-faint); }
+.opportunity-name {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--type-display-m);
+  line-height: 1.12;
+  letter-spacing: var(--tracking-heading);
+  transition: color var(--dur) var(--ease-out);
+}
+.opportunity-lead { font-size: var(--type-small); color: var(--text-secondary); max-width: 62ch; }
+.opportunity-aside { display: grid; gap: var(--space-3); justify-items: end; text-align: right; }
+.opportunity-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--green-700);
+}
+.opportunity-toggle::after { content: "+"; transition: transform var(--dur) var(--ease-out); }
+.opportunity[open] > summary .opportunity-toggle::after { transform: rotate(45deg); }
+.opportunity[open] > summary { background: var(--surface-canvas-alt); }
+.opportunity-toggle .close-copy { display: none; }
+.opportunity[open] .opportunity-toggle .open-copy { display: none; }
+.opportunity[open] .opportunity-toggle .close-copy { display: inline; }
+
+.opportunity-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(var(--space-6), 4vw, var(--space-8));
+  padding-block: var(--space-6) var(--space-8);
+  align-items: start;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .opportunity[open] .opportunity-panel { animation: enter-up var(--dur) var(--ease-out); }
+}
+.opportunity-block { display: grid; gap: var(--space-3); }
+.opportunity-block > p { font-size: var(--type-small); color: var(--text-secondary); max-width: 62ch; }
+.opportunity-col { display: grid; gap: var(--space-6); align-content: start; min-width: 0; }
+
+.benefit-list { display: grid; gap: var(--space-2); }
+.benefit-list li {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+}
+.benefit-list li::before { content: ""; flex: none; width: 5px; height: 5px; margin-top: 0.6em; border-radius: 50%; background: var(--green-500); }
+
+/* The discovery question — the honest end of every card. */
+.discovery-question {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface-canvas-alt);
+  border-radius: var(--radius-md);
+}
+.discovery-question p {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--type-body);
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+.section-deep .discovery-question { background: var(--surface-ink-raised); }
+.section-deep .discovery-question p { color: var(--text-inverse); }
+
+/* ============================================================ system flow
+ * A chain of steps with drawn connectors. Horizontal where there is room,
+ * vertical on a rail when there is not — same markup either way.
+ */
+
+.system-flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--space-2); }
+.system-flow-step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.system-flow-node {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+.system-flow-node[data-emphasis="true"] {
+  border-color: var(--green-700);
+  background: var(--green-dim);
+  color: var(--green-900);
+  font-weight: 600;
+}
+.system-flow-arrow { flex: none; color: var(--green-500); font-family: var(--font-mono); font-size: var(--type-small); }
+.section-deep .system-flow-node { background: var(--surface-ink-raised); border-color: var(--border-inverse); color: var(--text-inverse); }
+.section-deep .system-flow-node[data-emphasis="true"] { border-color: var(--green-500); color: var(--green-300); background: transparent; }
+
+/* ================================================================ roadmap
+ * The signature moment. Three phases on one rail, revealed as they scroll
+ * in. Built to be screenshotted.
+ */
+
+.roadmap { position: relative; display: grid; gap: var(--space-6); }
+.roadmap::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 24px;
+  bottom: 24px;
+  width: 1px;
+  background: var(--border-inverse);
+}
+.roadmap-phase {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: var(--space-5) clamp(var(--space-6), 5vw, var(--space-9));
+  padding: var(--space-6) 0 var(--space-6) clamp(48px, 6vw, 72px);
+  align-items: start;
+}
+.roadmap-phase::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: calc(var(--space-6) + 6px);
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--surface-ink);
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+.roadmap-phase[data-active="true"]::before {
+  background: var(--green-500);
+  box-shadow: 0 0 0 5px rgba(76, 115, 89, 0.18);
+}
+.roadmap-phase-head { display: grid; gap: var(--space-3); align-content: start; }
+.roadmap-phase-number {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--green-300);
+}
+.roadmap-phase-name {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--type-display-m);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-heading);
+  color: var(--text-inverse);
+}
+.roadmap-phase-intent { font-size: var(--type-small); color: var(--text-inverse-muted); max-width: 44ch; }
+.roadmap-phase-body { display: grid; gap: var(--space-4); align-content: start; }
+.roadmap-items { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.roadmap-item {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-inverse);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+}
+.roadmap-phase-links { display: grid; gap: var(--space-2); }
+.roadmap-phase-links li { font-size: var(--type-small); color: var(--text-inverse-muted); display: flex; gap: var(--space-3); }
+.roadmap-phase-links li::before { content: ""; flex: none; width: 5px; height: 5px; margin-top: 0.6em; border-radius: 50%; background: var(--green-500); }
+
+/* =========================================================== architecture
+ * Layers as grid rows. Connectors are drawn between rows, so the diagram
+ * folds to a single readable column on a phone instead of shrinking.
+ */
+
+.architecture { display: grid; gap: 0; }
+.architecture-layer {
+  display: grid;
+  grid-template-columns: clamp(84px, 11vw, 132px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: center;
+  padding-block: var(--space-4);
+}
+.architecture-layer-name {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: right;
+}
+.architecture-nodes { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.architecture-node {
+  display: grid;
+  gap: var(--space-1);
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+}
+.architecture-node-label { font-size: var(--type-small); font-weight: 600; color: var(--text-primary); }
+.architecture-node-detail { font-size: var(--type-label); color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.04em; line-height: 1.4; }
+.architecture-node[data-kind="source"] { border-style: dashed; background: transparent; }
+.architecture-node[data-kind="ai"] { border-color: var(--green-700); background: var(--green-dim); }
+.architecture-node[data-kind="ai"] .architecture-node-detail { color: var(--green-700); }
+.architecture-node[data-kind="store"] { border-color: var(--text-primary); border-width: 1px; }
+.architecture-node[data-kind="output"] { border-color: var(--rust-300); }
+
+/* Connector between layers: a hairline down the middle of the node column. */
+.architecture-join {
+  display: grid;
+  grid-template-columns: clamp(84px, 11vw, 132px) minmax(0, 1fr);
+  gap: var(--space-5);
+}
+.architecture-join-line {
+  grid-column: 2;
+  justify-self: center;
+  width: 1px;
+  height: 22px;
+  background: var(--border-strong);
+  position: relative;
+}
+.architecture-join-line::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 5px;
+  height: 5px;
+  border-right: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border-strong);
+  transform: translate(-50%, 1px) rotate(45deg);
+}
+.architecture-caption {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+}
+.architecture-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.architecture-legend::before { content: ""; width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--border-strong); flex: none; }
+.architecture-legend[data-kind="source"]::before { border-style: dashed; }
+.architecture-legend[data-kind="ai"]::before { border-color: var(--green-700); background: var(--green-dim); }
+.architecture-legend[data-kind="store"]::before { border-color: var(--text-primary); }
+.architecture-legend[data-kind="output"]::before { border-color: var(--rust-300); }
+
+/* ================================================================= unlock
+ * The gate sits AFTER the score, the profile and the top opportunity — the
+ * visitor has already been given something before anything is asked of them.
+ * Two fields, no dark patterns, and the free portion stays readable.
+ */
+
+.unlock {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: clamp(var(--space-6), 5vw, var(--space-9));
+  align-items: start;
+  padding: clamp(var(--space-6), 4vw, var(--space-8));
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 48px -40px rgba(33, 30, 26, 0.4);
+}
+.unlock-copy { display: grid; gap: var(--space-4); align-content: start; }
+.unlock-list { display: grid; gap: var(--space-2); }
+.unlock-list li { display: flex; gap: var(--space-3); font-size: var(--type-small); color: var(--text-secondary); }
+.unlock-list li::before { content: ""; flex: none; width: 5px; height: 5px; margin-top: 0.6em; border-radius: 50%; background: var(--rust-500); }
+.unlock-form { display: grid; gap: var(--space-4); }
+.unlock-form .field input { background: var(--surface-canvas); }
+.unlock-fineprint { font-size: var(--type-label); font-family: var(--font-mono); letter-spacing: 0.04em; color: var(--text-muted); line-height: 1.6; }
+
+/* A soft fade over the locked preview — legible, not censored. */
+.locked-preview { position: relative; max-height: 260px; overflow: hidden; }
+.locked-preview::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 180px;
+  background: linear-gradient(transparent, var(--surface-canvas));
+  pointer-events: none;
+}
+.section-cool .locked-preview::after { background: linear-gradient(transparent, var(--surface-canvas-alt)); }
+
+/* ======================================================== discovery bridge */
+
+.bridge { display: grid; gap: var(--space-6); max-width: 68ch; }
+.bridge-statement {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--type-display-l);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-heading);
+  max-width: 20ch;
+}
+.bridge-statement em { font-style: normal; color: var(--green-300); }
+
+/* What the audit could not see — the honesty panel before the CTA. */
+.unknowns { display: grid; gap: var(--space-3); }
+.unknowns li {
+  display: flex;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--border-inverse);
+  font-size: var(--type-small);
+  color: var(--text-inverse-muted);
+}
+.unknowns li::before {
+  content: "?";
+  flex: none;
+  font-family: var(--font-mono);
+  color: var(--green-300);
+}
+
+/* ========================================================= report actions
+ * Share / print / book. Everything here does something real — nothing is a
+ * placeholder for functionality that does not exist.
+ */
+
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.report-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 42px;
+  padding-inline: var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+.report-action:hover { color: var(--green-700); border-color: var(--green-700); }
+.section-deep .report-action { border-color: var(--border-inverse); color: var(--text-inverse-muted); }
+.section-deep .report-action:hover { color: var(--green-300); border-color: var(--green-300); }
+
+.report-url {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  word-break: break-all;
+}
+
+/* ============================================================ breakpoints */
+
+@media (max-width: 1060px) {
+  .report-summary { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
+  .opportunity-panel { grid-template-columns: minmax(0, 1fr); }
+  .unlock { grid-template-columns: minmax(0, 1fr); }
+  .roadmap-phase { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 860px) {
+  .journey-stage { grid-template-columns: minmax(0, 2.5rem) minmax(0, 1fr); }
+  .journey-body { grid-column: 2; }
+  .architecture-layer,
+  .architecture-join { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+  .architecture-layer-name { text-align: left; }
+  .architecture-join-line { grid-column: 1; }
+  .architecture-node { flex: 1 1 100%; }
+}
+
+@media (max-width: 720px) {
+  .maturity-ladder { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; }
+  /* Only the current stage keeps its word on a phone — the rest stay as
+     ticks, so five labels never collapse into unreadable stacked type. */
+  .maturity-step[data-state="reached"] .maturity-step-label,
+  .maturity-step[data-state="ahead"] .maturity-step-label { display: none; }
+  .maturity-step[data-state="current"] .maturity-step-label { white-space: nowrap; }
+  .score { flex-direction: column; gap: var(--space-5); }
+  .score-dial { width: 128px; }
+  .opportunity > summary { grid-template-columns: minmax(0, 1fr); }
+  .opportunity-aside { justify-items: start; text-align: left; }
+  .evidence-key-row { grid-template-columns: minmax(0, 1fr); gap: var(--space-2); }
+  .score-breakdown-row { grid-template-columns: 104px minmax(0, 1fr) 36px; gap: var(--space-3); }
+}
+
+@media (max-width: 620px) {
+  .url-field { flex-wrap: wrap; padding: var(--space-4); gap: var(--space-4); }
+  .url-field-prefix { display: none; }
+  .url-field input { flex: 1 1 100%; min-height: 44px; }
+  .url-field .button { width: 100%; }
+  .journey-stage { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+  .journey-index { display: none; }
+  .journey-body { grid-column: 1; }
+  .report-counts { gap: var(--space-5); }
+  .report-count { min-width: 42%; }
+  /* Stacked, so a wrapped separator never starts a line with a lone middot. */
+  .report-identity-meta { display: grid; gap: var(--space-1); justify-items: start; }
+  .report-identity-meta li + li::before { display: none; }
+  .analysis-stage { flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
+  .analysis-stage-tick { margin-left: 0; }
+  .roadmap::before { left: 7px; }
+  .roadmap-phase { padding-left: var(--space-7); }
+  .roadmap-phase::before { left: 0; width: 13px; height: 13px; }
+  .system-flow { flex-direction: column; align-items: stretch; }
+  .system-flow-step { flex-direction: column; align-items: stretch; }
+  .system-flow-node { justify-content: center; text-align: center; }
+  .system-flow-arrow { align-self: center; }
+  /* The arrow rotates rather than being swapped for a different glyph, so
+     the flow reads top-to-bottom without duplicating markup. */
+  .system-flow-arrow { transform: rotate(90deg); }
+}
+
+/* ================================================================== print
+ * The report is a deliverable. Print/Save-as-PDF has to produce something
+ * a business owner would actually forward — every disclosure expanded,
+ * no navigation, no dark surfaces bleeding a whole page of toner.
+ */
+
+@media print {
+  .header, .footer, .nav-overlay, .skip-link, .report-actions, .unlock { display: none !important; }
+  .section, .report-header, .audit-entry { padding-block: var(--space-6); background: #fff !important; }
+  .section-deep { background: #fff !important; color: var(--text-primary) !important; }
+  .section-deep .roadmap-phase-name,
+  .section-deep .roadmap-item,
+  .section-deep .bridge-statement { color: var(--text-primary) !important; }
+  .section-deep .roadmap-phase-intent,
+  .section-deep .unknowns li,
+  .section-deep .roadmap-phase-links li,
+  .section-deep p { color: var(--text-secondary) !important; }
+  .roadmap::before, .roadmap-item, .unknowns li { border-color: var(--border-strong) !important; }
+  .opportunity-panel { display: grid !important; }
+  .locked-preview { max-height: none; overflow: visible; }
+  .locked-preview::after { display: none; }
+  .opportunity { break-inside: avoid; }
+  .roadmap-phase, .architecture-layer { break-inside: avoid; }
+}

@@ -46,7 +46,7 @@ function Header({ pathname }: { pathname: string }) {
               <a key={href} href={href} aria-current={current(href) ? "page" : undefined}>{label}</a>
             ))}
           </nav>
-          <a className="button button-solid header-cta" href={routes.apply}>Free Business Bottleneck Audit</a>
+          <a className="button button-solid header-cta" href={routes.audit}>AI Opportunity Audit</a>
           <button
             className="nav-toggle" type="button" aria-expanded={open}
             aria-controls="site-menu" onClick={() => setOpen((v) => !v)}
@@ -72,11 +72,14 @@ function Header({ pathname }: { pathname: string }) {
             <div className="nav-overlay-secondary">
               <ul>
                 <li style={{ "--i": primaryNav.length } as React.CSSProperties}>
+                  <a href={routes.apply} onClick={() => setOpen(false)}>Business Bottleneck Audit</a>
+                </li>
+                <li style={{ "--i": primaryNav.length + 1 } as React.CSSProperties}>
                   <a href={studio.booking} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>Book a conversation</a>
                 </li>
               </ul>
             </div>
-            <a className="button button-solid" href={routes.apply} onClick={() => setOpen(false)}>Free Business Bottleneck Audit</a>
+            <a className="button button-solid" href={routes.audit} onClick={() => setOpen(false)}>Run my AI Opportunity Audit</a>
           </nav>
         </div>
       )}
