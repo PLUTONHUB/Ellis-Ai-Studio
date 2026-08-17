@@ -20,9 +20,11 @@ import { AnalysisSequence } from "~/components/audit/analysis";
 import { AuditResults } from "~/components/audit/report";
 import { EvidenceKey } from "~/components/audit/primitives";
 import { auditFixture } from "~/data/audit-fixture";
+import { runOpportunityAudit } from "~/lib/audit-engine";
 import { PILLARS } from "~/lib/audit-scoring";
 import { normalizeWebsite } from "~/lib/audit-url";
 import { routes, studio } from "~/data/links";
+import type { AuditReport } from "~/types/audit";
 import "~/styles/system/content.css";
 import "~/styles/system/audit.css";
 
@@ -165,7 +167,7 @@ function EntryState({ onStart }: { onStart: (website: string) => void }) {
 
 /* ------------------------------------------------------------- the flow */
 
-type Phase = { name: "entry" } | { name: "analyzing"; website: string } | { name: "results"; website: string };
+type Phase = { name: "entry" } | { name: "analyzing"; website: string } | { name: "results"; website: string; report: AuditReport; sample: boolean } | { name: "error"; message: string };
 
 /** Marks the report as sample data. Shown for as long as that is true. */
 function SampleNotice({ website }: { website: string }) {
@@ -191,17 +193,18 @@ export function AuditPage() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
-  const finish = useCallback(() => {
-    setPhase((p) => (p.name === "analyzing" ? { name: "results", website: p.website } : p));
-  }, []);
+  const finish = useCallback(async () => {
+    if (phase.name !== "analyzing") return;
+    try { const report = await runOpportunityAudit({ data: { website: phase.website } }); setPhase({ name: "results", website: phase.website, report, sample: false }); }
+    catch (error) { setPhase({ name: "error", message: error instanceof Error ? error.message : "We couldn't complete this audit right now." }); }
+  }, [phase]);
 
   return (
     <SiteShell>
       {phase.name === "entry" && <EntryState onStart={start} />}
       {phase.name === "analyzing" && <AnalysisSequence target={phase.website} onComplete={finish} />}
-      {phase.name === "results" && (
-        <AuditResults report={auditFixture} notice={<SampleNotice website={phase.website} />} />
-      )}
+      {phase.name === "results" && <AuditResults report={phase.report} notice={phase.sample ? <SampleNotice website={phase.website} /> : undefined} />}
+      {phase.name === "error" && <Section><div className="container-narrow stack stack-5"><p className="label">Audit unavailable</p><h1 className="display-l">We couldn't complete that audit.</h1><p className="lede">{phase.message}</p><button className="button button-solid" onClick={() => setPhase({ name: "entry" })}>Try another website</button></div></Section>}
     </SiteShell>
   );
 }
