@@ -1,0 +1,269 @@
+/*
+ * /demos — the before/after design studies.
+ * Consumes tokens.css only; no literal colour is declared here.
+ */
+
+/* --------------------------------------------------------- comparison view */
+
+/*
+ * Both frames are the same 1440x900 shot, stacked. The "after" is clipped from
+ * the left by --pos, so dragging sweeps the redesign across the original. The
+ * range input is the real control — transparent, full-bleed, and therefore
+ * keyboard-operable for free; the visible handle is decoration on top of it.
+ */
+.cmp {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 4%), 0 40px 80px -60px rgb(0 0 0 / 60%);
+  touch-action: pan-y;
+}
+
+.cmp-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.cmp-after { clip-path: inset(0 0 0 var(--pos)); }
+
+.cmp-line {
+  position: absolute;
+  inset-block: 0;
+  left: var(--pos);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--surface-raised);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 12%);
+  pointer-events: none;
+}
+
+.cmp-handle {
+  position: absolute;
+  top: 50%;
+  left: var(--pos);
+  translate: -50% -50%;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--space-1);
+  place-content: center;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 22%);
+  pointer-events: none;
+}
+
+/* The control itself: invisible, but it is what actually has focus. */
+.cmp-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: ew-resize;
+}
+.cmp-range::-webkit-slider-thumb { appearance: none; width: 46px; height: 100%; cursor: ew-resize; }
+.cmp-range::-moz-range-thumb { width: 46px; height: 100%; border: 0; background: transparent; cursor: ew-resize; }
+.cmp-range:focus-visible { outline: none; }
+.cmp-range:focus-visible ~ .cmp-handle {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.cmp-tag {
+  position: absolute;
+  top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.cmp-tag-before { left: var(--space-4); background: rgb(0 0 0 / 62%); color: var(--text-inverse); }
+.cmp-tag-after { right: var(--space-4); background: var(--green-700); color: var(--text-inverse); }
+
+.cmp-caption {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: var(--type-small);
+}
+
+/* A "before" we could not capture must not masquerade as one we did. */
+.cmp-missing {
+  position: absolute;
+  inset: auto var(--space-4) var(--space-4) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+}
+
+/* ------------------------------------------------------------- index cards */
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-7);
+}
+
+.demo-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+}
+.demo-card:hover { border-color: var(--border-strong); transform: translateY(-3px); }
+@media (prefers-reduced-motion: reduce) { .demo-card, .demo-card:hover { transition: none; transform: none; } }
+
+.demo-card-shot {
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  /* The width/height attributes reserve space against CLS, but their
+     presentational height would otherwise beat aspect-ratio. */
+  height: auto;
+  object-fit: cover;
+  object-position: top center;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-sunken);
+}
+
+.demo-card-body { display: grid; gap: var(--space-3); padding: var(--space-5) var(--space-6) var(--space-6); }
+.demo-card-meta { display: flex; gap: var(--space-3); align-items: baseline; justify-content: space-between; }
+.demo-card-body h2 { font-size: var(--type-display-m); letter-spacing: var(--tracking-heading); }
+.demo-card-body p { color: var(--text-secondary); }
+.demo-card-go {
+  margin-top: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--green-700);
+}
+
+/* ------------------------------------------------------- case study layout */
+
+.demo-thesis {
+  font-size: var(--type-display-m);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-heading);
+  max-width: 24ch;
+}
+
+.demo-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
+
+.demo-list { display: grid; gap: var(--space-4); }
+.demo-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+.demo-list li::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-top: 9px;
+  border-radius: 999px;
+  background: var(--text-faint);
+}
+.demo-list-moves li::before { background: var(--green-700); }
+.demo-list-moves b { display: block; color: var(--text-primary); margin-bottom: var(--space-1); font-weight: 500; }
+
+.demo-facts { display: grid; gap: var(--space-4); }
+.demo-fact { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-top: 1px solid var(--border-subtle); }
+.demo-fact dt {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.demo-fact dd { margin: 0; color: var(--text-secondary); }
+
+/* The live concept, embedded. Scaled down so a 1440px design fits the column. */
+.demo-frame-shell {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-raised);
+}
+.demo-frame-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-canvas-alt);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.demo-frame-dots { display: flex; gap: var(--space-1); }
+.demo-frame-dots span { width: 9px; height: 9px; border-radius: 999px; background: var(--border-strong); }
+.demo-frame-viewport { height: 620px; overflow: hidden; }
+.demo-frame-viewport iframe {
+  width: 1440px;
+  height: 1550px;
+  border: 0;
+  transform-origin: 0 0;
+  display: block;
+}
+
+.demo-nextprev { display: flex; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap; }
+
+/* ------------------------------------------------------------- disclaimer */
+
+.demo-disclaimer {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-5) var(--space-6);
+  background: var(--surface-canvas-alt);
+  color: var(--text-secondary);
+  font-size: var(--type-small);
+  line-height: var(--leading-body);
+}
+.demo-disclaimer strong { color: var(--text-primary); font-weight: 500; }
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 900px) {
+  .demo-grid, .demo-split { grid-template-columns: 1fr; }
+  .demo-split { gap: var(--space-7); }
+  .demo-frame-viewport { height: 460px; }
+}
+
+@media (max-width: 620px) {
+  .cmp { aspect-ratio: 4 / 3; }
+  .cmp-tag { font-size: 0.625rem; padding: var(--space-1) var(--space-3); }
+}

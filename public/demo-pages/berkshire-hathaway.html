@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Berkshire Hathaway — concept redesign</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ===========================================================================
+   Berkshire Hathaway — unsolicited concept redesign
+   Direction: "Institutional Clarity". The brief is not to make a holding
+   company look like a startup. It is to make 60 years of compounding legible:
+   a parchment canvas, one serif carrying every statement, and data set in the
+   quiet, ledger-like register a shareholder already trusts.
+   Type: Source Serif 4 (display) + Inter (interface) — the DB's finance
+   pairing swapped off Lexend, which reads too contemporary for this issuer.
+   =========================================================================== */
+@font-face{font-family:"Source Serif 4";src:url("_assets/fonts/source-serif-4.woff2") format("woff2");font-weight:200 900;font-display:block}
+@font-face{font-family:"Inter";src:url("_assets/fonts/inter.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+:root{
+  --paper:#F7F5F0;      /* parchment canvas */
+  --paper-alt:#EFEBE2;
+  --card:#FFFFFF;
+  --navy:#16283F;       /* the one dark, used structurally */
+  --navy-soft:#22405F;
+  --ink:#111820;
+  --ink-2:#4A5563;
+  --ink-3:#7C8794;
+  --rule:#DFD8CA;
+  --gold:#8E6E36;       /* accent, reserved for emphasis only */
+  --gold-dim:rgba(142,110,54,.10);
+  --gain:#2C6045;
+  --sp:8px;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{margin:0;font-family:"Source Serif 4",Georgia,serif;font-weight:400;letter-spacing:-.015em;text-wrap:balance}
+p{margin:0}ul{margin:0;padding:0;list-style:none}a{color:inherit;text-decoration:none}
+.wrap{width:1240px;max-width:calc(100% - 96px);margin-inline:auto}
+.label{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.serif{font-family:"Source Serif 4",Georgia,serif}
+
+/* ---- concept ribbon: this is a study, and it says so ---- */
+.ribbon{background:var(--ink);color:#CBD3DC;font-size:11.5px;letter-spacing:.05em;padding:9px 0}
+.ribbon .wrap{display:flex;gap:16px;align-items:center;justify-content:space-between}
+.ribbon strong{color:#fff;font-weight:600;letter-spacing:.13em;text-transform:uppercase;font-size:10.5px}
+
+/* ---- masthead ---- */
+.mast{border-bottom:1px solid var(--rule);background:rgba(247,245,240,.9)}
+.mast .wrap{display:flex;align-items:center;gap:40px;height:82px}
+.mark{display:flex;align-items:center;gap:13px}
+.mark-glyph{width:36px;height:36px;flex:none}
+.mark-txt{display:grid;line-height:1.05}
+.mark-txt b{font-family:"Source Serif 4",serif;font-weight:500;font-size:18px;letter-spacing:.01em}
+.mark-txt span{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.mnav{display:flex;gap:30px;margin-left:auto;font-size:14.5px;color:var(--ink-2)}
+.mnav a{padding-bottom:2px;border-bottom:1.5px solid transparent}
+.mnav a.on{color:var(--ink);border-color:var(--gold)}
+.btn{display:inline-flex;align-items:center;gap:9px;height:44px;padding:0 22px;border-radius:2px;
+  font-size:14.5px;font-weight:500;letter-spacing:.01em;white-space:nowrap}
+.btn-solid{background:var(--navy);color:#fff}
+.btn-ghost{border:1px solid var(--rule);color:var(--ink);background:var(--card)}
+
+/* ---- hero ---- */
+.hero{padding:104px 0 88px;position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1fr 400px;gap:88px;align-items:start}
+.eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:30px}
+.eyebrow .bar{width:34px;height:1.5px;background:var(--gold)}
+h1{font-size:76px;line-height:1.02;letter-spacing:-.028em}
+h1 em{font-style:italic;color:var(--navy-soft)}
+.lede{margin-top:30px;font-size:19px;line-height:1.62;color:var(--ink-2);max-width:37ch}
+.acts{display:flex;gap:14px;margin-top:40px}
+/* the quiet ledger card — the one place numbers appear */
+.ledger{background:var(--card);border:1px solid var(--rule);border-radius:3px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(17,24,32,.04),0 12px 32px -20px rgba(17,24,32,.3)}
+.ledger-hd{padding:18px 24px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:baseline}
+.ledger-hd b{font-size:12.5px;font-weight:600;letter-spacing:.05em}
+.ledger-row{display:flex;justify-content:space-between;align-items:baseline;padding:15px 24px;border-bottom:1px solid #F0ECE3}
+.ledger-row:last-of-type{border-bottom:0}
+.ledger-row .k{font-size:13.5px;color:var(--ink-2)}
+.ledger-row .v{font-family:"Source Serif 4",serif;font-size:22px;letter-spacing:-.01em}
+/* Exchange is metadata, not performance — keep gain-green off it. */
+.ledger-row .v small{font-size:11.5px;color:var(--ink-3);font-family:"Inter";margin-left:10px;font-weight:600;letter-spacing:.1em}
+.ledger-ft{padding:12px 24px;background:var(--paper-alt);font-size:11px;color:var(--ink-3);line-height:1.5}
+.spark{display:block;width:100%;height:64px}
+
+/* ---- section furniture ---- */
+section{padding:96px 0}
+.band{background:var(--paper-alt);border-block:1px solid var(--rule)}
+.s-head{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:end;margin-bottom:56px}
+.s-head h2{font-size:42px;line-height:1.1}
+.s-head p{color:var(--ink-2);font-size:16.5px;max-width:52ch}
+
+/* ---- operating companies ---- */
+.cos{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.co{background:var(--card);padding:30px 26px 28px;display:grid;gap:9px;align-content:start;min-height:158px}
+.co .sector{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.co h3{font-size:22px;letter-spacing:-.01em}
+.co p{font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.co.more{background:var(--navy);color:#fff;align-content:center;justify-items:start;gap:14px}
+.co.more h3{color:#fff;font-size:20px}
+.co.more span{font-size:13px;color:#A9BACD}
+
+/* ---- letters ---- */
+.letters{display:grid;grid-template-columns:repeat(2,1fr);gap:0 64px}
+.letter{display:grid;grid-template-columns:78px 1fr auto;gap:22px;align-items:baseline;
+  padding:21px 0;border-bottom:1px solid var(--rule)}
+.letter .yr{font-family:"Source Serif 4",serif;font-size:26px;color:var(--navy)}
+.letter .ti{font-size:15px;color:var(--ink-2);line-height:1.5}
+.letter .go{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--gold)}
+
+/* ---- meeting ---- */
+.meet{display:grid;grid-template-columns:1.15fr 1fr;gap:0;border:1px solid var(--rule);background:var(--card)}
+.meet-l{padding:64px 60px;display:grid;gap:24px;align-content:center}
+.meet-l h2{font-size:40px;line-height:1.08}
+.meet-l p{color:var(--ink-2);font-size:16.5px;max-width:44ch}
+.meet-facts{display:flex;gap:44px;margin-top:8px}
+.meet-facts div{display:grid;gap:5px}
+.meet-facts .v{font-family:"Source Serif 4",serif;font-size:24px}
+.meet-r{background:var(--navy);position:relative;overflow:hidden;min-height:400px}
+
+/* ---- reports strip ---- */
+.reports{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.report{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:32px 30px;display:grid;gap:11px;align-content:start}
+.report h3{font-size:20px}
+.report p{font-size:14px;color:var(--ink-2);line-height:1.6}
+.report .go{margin-top:6px;font-size:12.5px;font-weight:600;letter-spacing:.06em;color:var(--navy);display:flex;align-items:center;gap:7px}
+
+/* ---- footer ---- */
+footer{background:var(--navy);color:#C3CFDD;padding:76px 0 40px;font-size:14px}
+.fgrid{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:56px;padding-bottom:52px;border-bottom:1px solid rgba(255,255,255,.13)}
+footer h4{color:#fff;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;font-family:"Inter";margin-bottom:18px}
+footer li{padding:6px 0}
+.fbrand p{margin-top:16px;max-width:34ch;line-height:1.65;color:#9DAEC1;font-size:14px}
+.fbot{padding-top:26px;display:flex;justify-content:space-between;gap:24px;color:#8496AB;font-size:12.5px}
+</style>
+</head>
+<body>
+
+<div class="ribbon"><div class="wrap">
+  <span><strong>Concept redesign</strong> &nbsp;·&nbsp; An unsolicited design study by Ellis AI Studio. Not affiliated with, sponsored by, or endorsed by Berkshire Hathaway Inc.</span>
+  <span>Figures and quotations shown are illustrative placeholders.</span>
+</div></div>
+
+<header class="mast"><div class="wrap">
+  <a class="mark" href="#">
+    <svg class="mark-glyph" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+      <rect width="36" height="36" rx="2" fill="#16283F"/>
+      <path d="M9 26V10h7.4c2.9 0 4.7 1.5 4.7 3.9 0 1.7-.9 2.9-2.5 3.4 2 .4 3.2 1.8 3.2 3.8 0 2.9-2.1 4.9-5.4 4.9H9Z" fill="#F7F5F0"/>
+      <path d="M24.5 10h2.6v16h-2.6z" fill="#8E6E36"/>
+    </svg>
+    <span class="mark-txt"><b>Berkshire Hathaway</b><span>Inc. &nbsp;·&nbsp; Omaha</span></span>
+  </a>
+  <nav class="mnav">
+    <a class="on" href="#">Businesses</a><a href="#">Shareholders</a><a href="#">Reports</a><a href="#">Governance</a><a href="#">News</a>
+  </nav>
+  <a class="btn btn-ghost" href="#">Shareholder letters</a>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow"><span class="bar"></span><span class="label">Annual report &amp; shareholder information</span></div>
+    <h1>A collection of businesses<br>built to <em>outlast</em> us.</h1>
+    <p class="lede">Berkshire Hathaway owns and operates companies across insurance, rail, energy, manufacturing and retail — and holds equity in many more. This is where owners come to read the record.</p>
+    <div class="acts">
+      <a class="btn btn-solid" href="#">Read the 2025 letter
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="#">Annual reports archive</a>
+    </div>
+  </div>
+
+  <aside class="ledger" aria-label="Share information">
+    <div class="ledger-hd"><b>Share information</b><span class="label">Delayed</span></div>
+    <div class="ledger-row"><span class="k">Class A &nbsp;<span style="color:var(--ink-3)">BRK.A</span></span><span class="v">—<small>NYSE</small></span></div>
+    <div class="ledger-row"><span class="k">Class B &nbsp;<span style="color:var(--ink-3)">BRK.B</span></span><span class="v">—<small>NYSE</small></span></div>
+    <svg class="spark" viewBox="0 0 400 64" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2C6045" stop-opacity=".16"/><stop offset="1" stop-color="#2C6045" stop-opacity="0"/>
+      </linearGradient></defs>
+      <path d="M0 52 L40 47 L80 49 L120 40 L160 43 L200 32 L240 35 L280 24 L320 26 L360 15 L400 9 L400 64 L0 64Z" fill="url(#g)"/>
+      <path d="M0 52 L40 47 L80 49 L120 40 L160 43 L200 32 L240 35 L280 24 L320 26 L360 15 L400 9" fill="none" stroke="#2C6045" stroke-width="1.6"/>
+    </svg>
+    <div class="ledger-ft">Quotes are illustrative in this concept. In production this panel binds to a delayed market-data feed with an explicit “as of” timestamp.</div>
+  </aside>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <div class="s-head">
+    <h2>The operating companies.</h2>
+    <p>Wholly-owned subsidiaries run themselves. Head office allocates capital and otherwise stays out of the way — the site should be organised the same way, by business rather than by department.</p>
+  </div>
+  <div class="cos">
+    <article class="co"><span class="sector">Insurance</span><h3>GEICO</h3><p>Direct auto insurance, written across the United States.</p></article>
+    <article class="co"><span class="sector">Rail</span><h3>BNSF Railway</h3><p>One of North America’s largest freight rail networks.</p></article>
+    <article class="co"><span class="sector">Energy</span><h3>Berkshire Hathaway Energy</h3><p>Regulated utilities, transmission and renewable generation.</p></article>
+    <article class="co"><span class="sector">Manufacturing</span><h3>Precision Castparts</h3><p>Complex metal components for aerospace and industry.</p></article>
+    <article class="co"><span class="sector">Consumer</span><h3>Duracell</h3><p>Portable power, sold in more than a hundred countries.</p></article>
+    <article class="co"><span class="sector">Consumer</span><h3>See’s Candies</h3><p>Boxed chocolates, made in California since 1921.</p></article>
+    <article class="co"><span class="sector">Services</span><h3>Pilot Travel Centers</h3><p>Travel centres serving the North American trucking network.</p></article>
+    <article class="co more"><h3>And roughly sixty more</h3><span>Browse the full subsidiary index →</span></article>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="s-head">
+    <h2>Fifty years of shareholder letters.</h2>
+    <p>The letters are the most-read documents Berkshire publishes. They should be one click from the front door — not four levels down a directory listing.</p>
+  </div>
+  <div class="letters">
+    <a class="letter" href="#"><span class="yr">2025</span><span class="ti">To the Shareholders of Berkshire Hathaway Inc.</span><span class="go">PDF</span></a>
+    <a class="letter" href="#"><span class="yr">2024</span><span class="ti">To the Shareholders of Berkshire Hathaway Inc.</span><span class="go">PDF</span></a>
+    <a class="letter" href="#"><span class="yr">2023</span><span class="ti">To the Shareholders of Berkshire Hathaway Inc.</span><span class="go">PDF</span></a>
+    <a class="letter" href="#"><span class="yr">2022</span><span class="ti">To the Shareholders of Berkshire Hathaway Inc.</span><span class="go">PDF</span></a>
+    <a class="letter" href="#"><span class="yr">2021</span><span class="ti">To the Shareholders of Berkshire Hathaway Inc.</span><span class="go">PDF</span></a>
+    <a class="letter" href="#"><span class="yr">1977</span><span class="ti">The first letter in the published archive.</span><span class="go">PDF</span></a>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <div class="meet">
+    <div class="meet-l">
+      <span class="label">Omaha, Nebraska</span>
+      <h2>The annual meeting.</h2>
+      <p>Shareholders travel to Omaha each spring for the meeting. Everything an attendee needs — credentials, schedule, the webcast — belongs on one page, not scattered across six.</p>
+      <div class="meet-facts">
+        <div><span class="label">Format</span><span class="v">In person + webcast</span></div>
+        <div><span class="label">Held</span><span class="v">Annually, spring</span></div>
+      </div>
+      <div class="acts"><a class="btn btn-solid" href="#">Meeting information</a><a class="btn btn-ghost" href="#">Watch the webcast</a></div>
+    </div>
+    <div class="meet-r">
+      <!-- An abstract of the CHI/Omaha arena floor: concentric seating, one lit stage. -->
+      <svg viewBox="0 0 480 400" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect width="480" height="400" fill="#16283F"/>
+        <g fill="none" stroke="#8E6E36" stroke-opacity=".30">
+          <ellipse cx="240" cy="215" rx="212" ry="150" stroke-width="1"/>
+          <ellipse cx="240" cy="215" rx="172" ry="120" stroke-width="1"/>
+          <ellipse cx="240" cy="215" rx="132" ry="90" stroke-width="1"/>
+          <ellipse cx="240" cy="215" rx="92" ry="60" stroke-width="1"/>
+        </g>
+        <g fill="#22405F">
+          <rect x="86" y="330" width="308" height="4" rx="2"/>
+          <rect x="120" y="344" width="240" height="4" rx="2"/>
+        </g>
+        <rect x="196" y="196" width="88" height="38" rx="2" fill="#8E6E36" fill-opacity=".9"/>
+        <g fill="#F7F5F0" fill-opacity=".55">
+          <circle cx="150" cy="128" r="2.5"/><circle cx="196" cy="112" r="2.5"/><circle cx="252" cy="106" r="2.5"/>
+          <circle cx="308" cy="116" r="2.5"/><circle cx="352" cy="134" r="2.5"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="s-head"><h2>Reports and filings.</h2><p>Three destinations cover almost every visit. The rest belongs behind a search field.</p></div>
+  <div class="reports">
+    <article class="report"><span class="label">Quarterly</span><h3>Interim reports</h3><p>Condensed consolidated results, published quarterly with the accompanying press release.</p><span class="go">View reports →</span></article>
+    <article class="report"><span class="label">Annual</span><h3>Annual report &amp; 10-K</h3><p>The full annual report, including the shareholder letter and audited financial statements.</p><span class="go">View reports →</span></article>
+    <article class="report"><span class="label">Ongoing</span><h3>SEC filings</h3><p>Every filing made with the Securities and Exchange Commission, in reverse order.</p><span class="go">View filings →</span></article>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div class="fbrand">
+      <span class="mark-txt"><b style="color:#fff;font-size:19px">Berkshire Hathaway Inc.</b></span>
+      <p>3555 Farnam Street, Omaha, Nebraska. A holding company owning subsidiaries engaged in a number of diverse business activities.</p>
+    </div>
+    <div><h4>Businesses</h4><ul><li>Insurance</li><li>Rail</li><li>Energy &amp; utilities</li><li>Manufacturing</li><li>Retail &amp; services</li></ul></div>
+    <div><h4>Shareholders</h4><ul><li>Annual letters</li><li>Annual meeting</li><li>Share information</li><li>Transfer agent</li></ul></div>
+    <div><h4>Company</h4><ul><li>Governance</li><li>Careers</li><li>Newsroom</li><li>Contact</li></ul></div>
+  </div>
+  <div class="fbot">
+    <span>Concept redesign by Ellis AI Studio · Not affiliated with Berkshire Hathaway Inc.</span>
+    <span>All marks are the property of their respective owners.</span>
+  </div>
+</div></footer>
+
+</body>
+</html>

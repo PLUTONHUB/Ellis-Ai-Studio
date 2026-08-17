@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>USPS — concept redesign</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ===========================================================================
+   United States Postal Service — unsolicited concept redesign
+   Direction: "Tracking is the homepage". Most visits to a postal site are one
+   task — where is my package. The current front door spends the fold on
+   promotions and gives the tracking field a fraction of it. This flips the
+   ratio: an enormous tracking input on the fold, the five other real tasks
+   directly under it, and everything promotional pushed below the work.
+   Type: Archivo (headings) + Inter (body) — a grotesque with the squared,
+   signage-adjacent character public infrastructure earns, kept at AA contrast.
+   =========================================================================== */
+@font-face{font-family:"Archivo";src:url("_assets/fonts/archivo.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Inter";src:url("_assets/fonts/inter.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+:root{
+  --blue:#0B3D7B;        /* the institutional blue */
+  --blue-deep:#072A57;
+  --blue-soft:#1C5CAE;
+  --blue-wash:#EDF3FB;
+  --blue-line:#CFDDF0;
+  --red:#B32017;         /* used only for the stripe and urgent state */
+  --ink:#12161C;
+  --ink-2:#4A5361;
+  --ink-3:#79828F;
+  --card:#FFFFFF;
+  --bg:#FAFBFD;
+  --rule:#E2E7EE;
+  --ok:#136A43;
+  --ok-dim:#E6F4ED;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Inter",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-family:"Archivo",system-ui,sans-serif;font-weight:600;letter-spacing:-.022em;text-wrap:balance}
+p{margin:0}ul{margin:0;padding:0;list-style:none}a{color:inherit;text-decoration:none}
+.wrap{width:1220px;max-width:calc(100% - 80px);margin-inline:auto}
+.label{font-family:"Archivo";font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+
+.ribbon{background:#12161C;color:#B7C0CD;font-size:11.5px;padding:9px 0}
+.ribbon .wrap{display:flex;gap:16px;justify-content:space-between;align-items:center}
+.ribbon strong{color:#fff;font-family:"Archivo";font-weight:600;letter-spacing:.13em;text-transform:uppercase;font-size:10.5px}
+
+/* ---- header ---- */
+.util{background:var(--blue-deep);color:#B9CCE8;font-size:12.5px}
+.util .wrap{display:flex;justify-content:space-between;align-items:center;height:38px}
+.util a{color:#DCE7F6}
+.util .l{display:flex;gap:22px}
+header{background:var(--card);border-bottom:3px solid var(--red)}
+header .wrap{display:flex;align-items:center;gap:36px;height:82px}
+.brand{display:flex;align-items:center;gap:13px}
+.eagle{width:44px;height:34px;flex:none}
+.brand-txt{display:grid;line-height:1.1}
+.brand-txt b{font-family:"Archivo";font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--blue)}
+.brand-txt span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.hnav{display:flex;gap:28px;margin-left:10px;font-family:"Archivo";font-size:15px;font-weight:500;color:var(--ink-2)}
+.hnav a.on{color:var(--blue);border-bottom:2.5px solid var(--blue);padding-bottom:3px}
+.hright{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:46px;padding:0 22px;border-radius:6px;
+  font-family:"Archivo";font-size:15px;font-weight:600;white-space:nowrap;border:1.5px solid transparent}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-line{border-color:var(--blue-line);color:var(--blue);background:var(--card)}
+
+/* ---- hero: one enormous input ---- */
+.hero{background:var(--blue);color:#fff;padding:70px 0 76px;position:relative;overflow:hidden}
+.hero .bg{position:absolute;inset:0;opacity:.55}
+.hero .wrap{position:relative;z-index:1;text-align:center}
+.hero h1{font-size:50px;line-height:1.06;letter-spacing:-.03em;color:#fff}
+.hero .sub{margin:16px auto 0;font-size:18.5px;color:#BDD1EC;max-width:54ch}
+.track{margin:38px auto 0;max-width:820px;background:#fff;border-radius:12px;padding:9px 9px 9px 26px;
+  display:flex;align-items:center;gap:16px;box-shadow:0 30px 60px -28px rgba(7,42,87,.9)}
+.track .ico{color:var(--ink-3);flex:none}
+.track .ph{flex:1;text-align:left;font-size:19px;color:var(--ink-3);font-family:"Inter"}
+.track .btn{height:56px;padding:0 34px;font-size:16.5px;background:var(--blue);color:#fff}
+.track-hint{margin-top:16px;font-size:14px;color:#A9C2E4}
+.hero-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:30px}
+.htab{padding:9px 20px;border-radius:999px;font-family:"Archivo";font-size:14px;font-weight:500;
+  color:#C4D6EE;border:1px solid rgba(255,255,255,.24)}
+.htab.on{background:#fff;color:var(--blue);border-color:#fff;font-weight:700}
+
+/* ---- the five other real tasks ---- */
+.tasks{padding:64px 0 78px}
+.t-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:26px}
+.t-head h2{font-size:26px}
+.t-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.task{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:24px 18px 20px;
+  display:grid;gap:12px;justify-items:center;text-align:center;min-height:150px;align-content:start}
+.task .ico{width:46px;height:46px;border-radius:12px;background:var(--blue-wash);color:var(--blue);display:grid;place-items:center}
+.task b{font-family:"Archivo";font-size:15px;font-weight:600;letter-spacing:-.01em}
+.task span{font-size:13px;color:var(--ink-2);line-height:1.5}
+
+/* ---- live status example ---- */
+.status{padding:80px 0;background:var(--blue-wash);border-block:1px solid var(--blue-line)}
+.status .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:72px;align-items:center}
+.status h2{font-size:38px;line-height:1.1}
+.status p{margin-top:16px;color:var(--ink-2);font-size:17px;max-width:44ch}
+.status ul{margin-top:26px;display:grid;gap:12px}
+.status li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px;color:var(--ink-2)}
+.status li svg{flex:none;color:var(--ok);margin-top:4px}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:16px;overflow:hidden;
+  box-shadow:0 24px 50px -34px rgba(11,61,123,.6)}
+.panel-hd{padding:20px 24px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center}
+.panel-hd .n{font-family:"Archivo";font-size:15px;font-weight:600}
+.panel-hd .n small{display:block;font-family:"Inter";font-size:12.5px;color:var(--ink-3);font-weight:400;margin-top:2px;letter-spacing:.02em}
+.badge{background:var(--ok-dim);color:var(--ok);font-family:"Archivo";font-size:12px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;padding:7px 13px;border-radius:999px}
+.steps{padding:24px 24px 26px;display:grid;gap:0}
+.step{display:grid;grid-template-columns:26px 1fr auto;gap:16px;padding:13px 0;position:relative}
+.step .dot{width:12px;height:12px;border-radius:999px;background:var(--rule);margin:6px auto 0;position:relative;z-index:1}
+.step.done .dot{background:var(--ok)}
+.step.now .dot{background:var(--blue);box-shadow:0 0 0 5px rgba(28,92,174,.18)}
+.step:not(:last-child)::before{content:"";position:absolute;left:12.5px;top:24px;bottom:-4px;width:2px;background:var(--rule)}
+.step.done::before{background:var(--ok)}
+.step b{font-family:"Archivo";font-size:15px;font-weight:600;display:block}
+.step span{font-size:13.5px;color:var(--ink-2)}
+.step .t{font-size:13px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* ---- locations ---- */
+.loc{padding:86px 0}
+.loc .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:72px;align-items:center}
+.map{background:var(--blue-deep);border-radius:18px;overflow:hidden;aspect-ratio:5/4}
+.loc h2{font-size:38px;line-height:1.1}
+.loc p{margin-top:16px;color:var(--ink-2);font-size:17px;max-width:44ch}
+.locbox{margin-top:28px;display:flex;gap:10px}
+.locbox .f{flex:1;background:var(--card);border:1.5px solid var(--rule);border-radius:8px;padding:13px 18px;
+  font-size:16px;color:var(--ink-3)}
+
+/* ---- footer ---- */
+footer{background:var(--blue-deep);color:#AFC4E0;padding:66px 0 34px;font-size:14.5px}
+.fgrid{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:44px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.13)}
+footer h4{color:#fff;font-family:"Archivo";font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
+footer li{padding:5px 0}
+.fbrand p{margin-top:14px;max-width:34ch;line-height:1.6;color:#93AACB}
+.fbot{padding-top:24px;display:flex;justify-content:space-between;gap:20px;color:#89A0C2;font-size:12.5px}
+</style>
+</head>
+<body>
+
+<div class="ribbon"><div class="wrap">
+  <span><strong>Concept redesign</strong> &nbsp;·&nbsp; An unsolicited design study by Ellis AI Studio. Not affiliated with, sponsored by, or endorsed by the United States Postal Service.</span>
+  <span>Tracking numbers and statuses shown are illustrative placeholders.</span>
+</div></div>
+
+<div class="util"><div class="wrap">
+  <span class="l"><a href="#">Español</a><a href="#">Business</a><a href="#">International</a></span>
+  <span class="l"><a href="#">Locate a post office</a><a href="#">Sign in</a></span>
+</div></div>
+
+<header><div class="wrap">
+  <a class="brand" href="#">
+    <svg class="eagle" viewBox="0 0 48 34" fill="none" aria-hidden="true">
+      <path d="M2 26 20 6l10 6 16-8-8 14 6 4H2Z" fill="#0B3D7B"/>
+      <path d="M2 29h44v3H2z" fill="#B32017"/>
+    </svg>
+    <span class="brand-txt"><b>UNITED STATES</b><span>Postal Service</span></span>
+  </a>
+  <nav class="hnav">
+    <a class="on" href="#">Track</a><a href="#">Send</a><a href="#">Receive</a><a href="#">Shop</a><a href="#">Business</a><a href="#">Help</a>
+  </nav>
+  <div class="hright">
+    <a class="btn btn-line" href="#">Locations</a>
+    <a class="btn btn-blue" href="#">Sign in</a>
+  </div>
+</div></header>
+
+<section class="hero">
+  <svg class="bg" viewBox="0 0 1440 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g stroke="#fff" stroke-opacity=".10" stroke-width="1.4" fill="none">
+      <path d="M-40 400h1520M-40 460h1520M-40 340h1520"/>
+    </g>
+    <g fill="#fff" fill-opacity=".05"><circle cx="1230" cy="120" r="200"/><circle cx="180" cy="440" r="150"/></g>
+  </svg>
+  <div class="wrap">
+    <div class="hero-tabs">
+      <span class="htab on">Track a package</span><span class="htab">Calculate a price</span><span class="htab">Look up a ZIP Code</span>
+    </div>
+    <h1>Where is my package?</h1>
+    <p class="sub">It is the reason most people open this site. So it gets the whole fold.</p>
+    <div class="track">
+      <span class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 7.6 12 3l8.5 4.6v8.8L12 21l-8.5-4.6V7.6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3.5 7.6 12 12.2l8.5-4.6M12 12.2V21" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      <span class="ph">Enter up to 35 tracking numbers, one per line</span>
+      <span class="btn">Track</span>
+    </div>
+    <p class="track-hint">No account needed. Paste a whole email — we will find the number in it.</p>
+  </div>
+</section>
+
+<section class="tasks"><div class="wrap">
+  <div class="t-head"><h2>Everything else people actually come here to do</h2><span class="label">Six tasks · one row</span></div>
+  <div class="t-grid">
+    <article class="task">
+      <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="m3.5 7 8.5 6 8.5-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      <b>Send a package</b><span>Print a label and pay online</span>
+    </article>
+    <article class="task">
+      <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 9.5h7M8.5 14h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+      <b>Buy stamps</b><span>Delivered to your door</span>
+    </article>
+    <article class="task">
+      <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      <b>Change of address</b><span>Forward mail to a new home</span>
+    </article>
+    <article class="task">
+      <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+      <b>Hold mail</b><span>Pause delivery while away</span>
+    </article>
+    <article class="task">
+      <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-5.9 7-11.2A7 7 0 0 0 5 9.8C5 15.1 12 21 12 21Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="9.6" r="2.6" stroke="currentColor" stroke-width="1.7"/></svg></span>
+      <b>Find a location</b><span>Hours, services and pickup</span>
+    </article>
+    <article class="task">
+      <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.7"/><path d="M12 8.2v4.4l2.9 1.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+      <b>Schedule a pickup</b><span>Free from your address</span>
+    </article>
+  </div>
+</div></section>
+
+<section class="status"><div class="wrap">
+  <div>
+    <span class="label">Delivery status</span>
+    <h2>A status a person can read.</h2>
+    <p>Scan events are written for the network, not the recipient. The redesign keeps the raw log — and puts a plain sentence on top of it.</p>
+    <ul>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.6 8 14.5l8-8.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> One headline answer, above the event list</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.6 8 14.5l8-8.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> An expected window, not just the last scan</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.6 8 14.5l8-8.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Text and email alerts offered inline, at the moment of worry</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <div class="panel-hd">
+      <span class="n">Arriving tomorrow by 8:00 PM<small>9400 1000 0000 0000 0000 00 · Ground Advantage</small></span>
+      <span class="badge">In transit</span>
+    </div>
+    <div class="steps">
+      <div class="step done"><span class="dot"></span><span><b>Shipping label created</b><span>Portland, OR</span></span><span class="t">Mon 9:14 AM</span></div>
+      <div class="step done"><span class="dot"></span><span><b>Accepted at facility</b><span>Portland, OR 97218</span></span><span class="t">Mon 6:02 PM</span></div>
+      <div class="step done"><span class="dot"></span><span><b>Departed regional facility</b><span>Portland, OR</span></span><span class="t">Tue 1:38 AM</span></div>
+      <div class="step now"><span class="dot"></span><span><b>Arrived at your local facility</b><span>Seattle, WA 98108</span></span><span class="t">Wed 4:21 AM</span></div>
+      <div class="step"><span class="dot"></span><span><b>Out for delivery</b><span>Expected Thursday</span></span><span class="t">—</span></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="loc"><div class="wrap">
+  <div class="map">
+    <svg viewBox="0 0 520 416" width="100%" height="100%" aria-hidden="true">
+      <rect width="520" height="416" fill="#072A57"/>
+      <g stroke="#1C5CAE" stroke-width="1" fill="none" stroke-opacity=".65">
+        <path d="M0 96h520M0 176h520M0 256h520M0 336h520M104 0v416M208 0v416M312 0v416M416 0v416"/>
+      </g>
+      <g fill="#1C5CAE" fill-opacity=".5">
+        <rect x="118" y="112" width="70" height="48" rx="3"/><rect x="236" y="196" width="54" height="40" rx="3"/>
+        <rect x="330" y="120" width="62" height="52" rx="3"/><rect x="150" y="286" width="80" height="34" rx="3"/>
+      </g>
+      <g>
+        <circle cx="196" cy="168" r="20" fill="#B32017" fill-opacity=".18"/>
+        <circle cx="196" cy="168" r="8" fill="#B32017"/>
+        <circle cx="322" cy="242" r="7" fill="#fff" fill-opacity=".85"/>
+        <circle cx="142" cy="268" r="7" fill="#fff" fill-opacity=".85"/>
+        <circle cx="380" cy="150" r="7" fill="#fff" fill-opacity=".85"/>
+        <circle cx="250" cy="330" r="7" fill="#fff" fill-opacity=".85"/>
+      </g>
+    </svg>
+  </div>
+  <div>
+    <span class="label">Post offices &amp; collection boxes</span>
+    <h2>Thirty thousand locations.</h2>
+    <p>Search once, then filter by what you actually need — passport appointments, Saturday hours, a self-service kiosk, a collection box with a late pickup.</p>
+    <div class="locbox">
+      <span class="f">ZIP Code, city or address</span>
+      <a class="btn btn-blue" href="#">Find locations</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div class="fbrand">
+      <span class="brand-txt"><b style="color:#fff;font-size:18px">UNITED STATES</b><span style="color:#93AACB">Postal Service</span></span>
+      <p>An independent establishment of the executive branch, delivering to every address in the nation.</p>
+    </div>
+    <div><h4>Track &amp; manage</h4><ul><li>Track a package</li><li>Informed Delivery</li><li>Change of address</li><li>Hold mail</li></ul></div>
+    <div><h4>Send</h4><ul><li>Click-N-Ship</li><li>Calculate a price</li><li>Schedule a pickup</li><li>Customs forms</li></ul></div>
+    <div><h4>Shop</h4><ul><li>Stamps</li><li>Supplies</li><li>Money orders</li><li>Gift cards</li></ul></div>
+    <div><h4>Help</h4><ul><li>FAQs</li><li>File a claim</li><li>Missing mail</li><li>Contact us</li></ul></div>
+  </div>
+  <div class="fbot">
+    <span>Concept redesign by Ellis AI Studio · Not affiliated with the United States Postal Service.</span>
+    <span>All marks are the property of their respective owners.</span>
+  </div>
+</div></footer>
+
+</body>
+</html>
