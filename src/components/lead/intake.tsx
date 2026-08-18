@@ -254,7 +254,7 @@ function ContactStep({ form, update }: StepProps) {
             value={form.lastName} onChange={(e) => update("lastName", e.target.value)}
           />
         </Field>
-        <Field id="li-email" label="Email" wide hint="Where the summary of this conversation goes.">
+        <Field id="li-email" label="Email" wide hint="Where Ellis AI Studio will follow up.">
           <input
             id="li-email" name="email" type="email" required autoComplete="email"
             value={form.email} onChange={(e) => update("email", e.target.value)}
