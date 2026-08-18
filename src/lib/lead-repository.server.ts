@@ -4,7 +4,17 @@ import type { LeadAnalysisRow, LeadListRow, LeadRow } from "~/types/lead-record"
 type Row = Record<string, unknown>;
 function required(name: string) { const value = process.env[name]; if (!value) throw new Error(`${name} is not configured.`); return value; }
 function api(path: string, init: RequestInit = {}) { const key = required("SUPABASE_SERVICE_ROLE_KEY"); return fetch(`${required("SUPABASE_URL").replace(/\/$/, "")}/rest/v1/${path}`, { ...init, headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", ...(init.headers ?? {}) } }); }
-async function request<T>(path: string, init?: RequestInit): Promise<T> { const response = await api(path, init); if (!response.ok) { const body = await response.json().catch(() => null) as { code?: string } | null; throw new Error(`Supabase lead request failed${body?.code ? ` (${body.code})` : ""}.`); } return response.status === 204 ? undefined as T : response.json() as Promise<T>; }
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await api(path, init);
+  if (!response.ok) {
+    const body = await response.json().catch(() => null) as { code?: string } | null;
+    throw new Error(`Supabase lead request failed${body?.code ? ` (${body.code})` : ""}.`);
+  }
+  // PostgREST returns 201 (not only 204) with an intentionally empty body for
+  // `Prefer: return=minimal`. Treat any successful empty response as void.
+  const body = await response.text();
+  return body ? JSON.parse(body) as T : undefined as T;
+}
 const eq = (value: string) => encodeURIComponent(value);
 export type StoredLead = LeadIntake & { id: string; createdAt: string; updatedAt: string; pipelineStatus: PipelineStatus; analysisStatus: LeadAnalysisStatus };
 
