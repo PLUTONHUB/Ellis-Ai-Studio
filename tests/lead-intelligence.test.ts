@@ -1,4 +1,6 @@
 import { strict as assert } from "node:assert";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { test } from "node:test";
 import { parseLeadInterpretation } from "~/lib/lead-interpretation";
 import { publicLeadResult } from "~/lib/lead-service.server";
@@ -22,4 +24,12 @@ test("lead list uses the server-only Supabase Data API and preserves null analys
   globalThis.fetch = (async (input: URL | RequestInfo) => { const url = String(input); calls.push(url); const body = url.includes("lead_analyses") ? [] : [{ id: "lead-1", created_at: "2026-08-18T00:00:00.000Z", business_name: "Example", first_name: "A", last_name: "B", email: "a@example.com", pipeline_status: "new", analysis_status: "pending" }]; return new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } }); }) as typeof fetch;
   try { const leads = await listLeads(); assert.equal(leads.length, 1); assert.equal(leads[0].opportunity_score, null); assert.equal(leads[0].qualification_class, null); assert.equal(calls.length, 2); assert.ok(calls.every((url) => url.startsWith("https://project.supabase.co/rest/v1/"))); }
   finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+test("lead intelligence service role migration grants only the runtime Data API operations", () => {
+  const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/20260818180141_grant_lead_intelligence_service_role.sql"), "utf8").toLowerCase();
+  assert.match(migration, /grant select, insert, update on table public\.leads to service_role/);
+  assert.match(migration, /grant select, insert on table public\.lead_analyses to service_role/);
+  assert.match(migration, /grant select, insert on table public\.lead_activities to service_role/);
+  assert.doesNotMatch(migration, /to (anon|authenticated|public)/);
+  assert.doesNotMatch(migration, /grant delete/);
 });
