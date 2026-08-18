@@ -109,8 +109,8 @@ export function LeadResult({
           <p className="label label-quiet">Your reference</p>
           <p className="lead-result-reference">{result.id}</p>
           <p className="small">
-            This submission is saved. A written summary is on its way to the email address you
-            gave us, and nothing about your business is shared outside Ellis AI Studio.
+            This submission is saved. Ellis AI Studio will use the email address you provided to
+            follow up, and nothing about your business is shared outside Ellis AI Studio.
           </p>
         </div>
       </section>
