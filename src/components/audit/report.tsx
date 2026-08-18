@@ -19,7 +19,7 @@
  * architecture section between them.
  */
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Section, SectionIntro } from "~/components/layout/page";
 import { byPriority, highPriorityCount, pillarName } from "~/lib/audit-scoring";
 import { studio } from "~/data/links";
@@ -220,7 +220,12 @@ function PillarSection({ report }: { report: AuditReport }) {
 
 function ReportActions({ report, tone }: { report: AuditReport; tone?: "deep" }) {
   const [copied, setCopied] = useState(false);
-  const url = typeof window === "undefined" ? "" : window.location.href;
+  // Read after mount, not during render. `variant="shared"` renders this on the
+  // server too, and reading `window.location.href` inline made the server emit
+  // the fallback URL while the client's first pass emitted the real one — a
+  // text mismatch that failed hydration and threw the whole report tree away.
+  const [url, setUrl] = useState("");
+  useEffect(() => setUrl(window.location.href), []);
 
   const share = async () => {
     try {

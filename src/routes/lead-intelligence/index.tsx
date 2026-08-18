@@ -1,12 +1,34 @@
-import { useState, type FormEvent } from "react";
+/**
+ * /lead-intelligence — the public surface.
+ *
+ * The route owns exactly one thing: the server boundary. `submitLead` and
+ * everything it reaches — validation, the OpenAI interpretation, the
+ * deterministic scoring, the Supabase writes — stay server-side, and the only
+ * thing that crosses back to the browser is `LeadPublicResult`.
+ */
+
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn, useServerFn } from "@tanstack/react-start";
-import { SiteShell } from "~/components/layout/site-shell";
+import { createServerFn } from "@tanstack/react-start";
+import { LeadIntelligencePage } from "~/components/pages/lead-intelligence";
 import { submitLead } from "~/lib/lead-service.server";
-import { auditContextFromSearch } from "~/lib/audit-lead-handoff";
-import type { LeadIntake, LeadPublicResult, LeadUrgency } from "~/types/lead";
-const submit = createServerFn({ method: "POST" }).validator((data: LeadIntake) => data).handler(async ({ data }) => submitLead(data));
-export const Route = createFileRoute("/lead-intelligence/")({ component: Page });
-const initial = (): LeadIntake => { const auditContext = typeof window === "undefined" ? undefined : auditContextFromSearch(window.location.search); return { requestId: typeof crypto === "undefined" ? `lead_${Date.now()}_${Math.random().toString(36).slice(2)}` : crypto.randomUUID(), source: auditContext ? "audit_handoff" : "direct_intake", firstName: "", lastName: "", email: "", phone: "", businessName: auditContext?.businessName ?? "", website: auditContext?.website ?? "", industry: auditContext?.industry ?? "", location: auditContext?.location ?? "", primaryChallenge: auditContext?.topOpportunity ? `The audit identified ${auditContext.topOpportunity.name}.` : "", desiredOutcome: "", urgency: "exploring", additionalContext: "", approximateMonthlyLeadVolume: "", currentTools: "", currentProcess: "", biggestManualBottleneck: "", auditContext }; };
-function Page() { const fn = useServerFn(submit); const [form, setForm] = useState(initial); const [result, setResult] = useState<LeadPublicResult>(); const [error, setError] = useState(""); const update = (key: keyof LeadIntake, value: string) => setForm((current) => ({ ...current, [key]: value })); const onSubmit = (event: FormEvent) => { event.preventDefault(); setError(""); void fn({ data: form }).then(setResult).catch((reason) => setError(reason instanceof Error ? reason.message : "We could not submit this inquiry.")); };
-  return <SiteShell><main className="container" style={{ paddingBlock: "clamp(72px, 10vw, 128px)", maxWidth: 800 }}><p className="label">Ellis Lead Intelligence</p>{result ? <section aria-live="polite"><h1 className="display-l">We understand the problem.</h1><p className="lede">{result.summary}</p><h2 className="display-m">Potential system</h2><p><strong>{result.recommendedSystem.name}</strong> — {result.recommendedSystem.description}</p><h2 className="display-m">What we still need to validate</h2><ul>{result.discoveryQuestions.map((question) => <li key={question}>{question}</li>)}</ul><p className="lede">Recommended next step: review the current workflow with Ellis AI Studio.</p></section> : <><h1 className="display-l">Tell us what is slowing the business down.</h1><p className="lede">We will understand the process before recommending a system. Fields marked required are enough to get started.</p><form onSubmit={onSubmit} className="stack" style={{ marginTop: 32, gap: 16 }}><div className="split"><label>First name<input value={form.firstName} onChange={(e) => update("firstName", e.target.value)} required /></label><label>Last name<input value={form.lastName} onChange={(e) => update("lastName", e.target.value)} required /></label></div><label>Email<input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required /></label><label>Business name<input value={form.businessName} onChange={(e) => update("businessName", e.target.value)} required /></label><label>Website <input type="url" value={form.website} onChange={(e) => update("website", e.target.value)} /></label><label>Primary challenge<textarea value={form.primaryChallenge} onChange={(e) => update("primaryChallenge", e.target.value)} required /></label><label>Desired outcome<textarea value={form.desiredOutcome} onChange={(e) => update("desiredOutcome", e.target.value)} required /></label><label>Urgency<select value={form.urgency} onChange={(e) => update("urgency", e.target.value as LeadUrgency)}>{[["exploring", "Exploring"], ["three_to_six_months", "3–6 months"], ["one_to_three_months", "1–3 months"], ["within_30_days", "Within 30 days"], ["immediate", "Immediate"]].map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label>How are new inquiries handled today? <textarea value={form.currentProcess} onChange={(e) => update("currentProcess", e.target.value)} /></label><label>Approximate monthly inquiry volume <input value={form.approximateMonthlyLeadVolume} onChange={(e) => update("approximateMonthlyLeadVolume", e.target.value)} /></label><button className="button button-rust" type="submit">Understand my opportunity</button>{error && <p role="alert">{error}</p>}</form></>}</main></SiteShell>; }
+import { pageHead } from "~/lib/seo";
+import type { LeadIntake } from "~/types/lead";
+
+const submit = createServerFn({ method: "POST" })
+  .validator((data: LeadIntake) => data)
+  .handler(async ({ data }) => submitLead(data));
+
+export const Route = createFileRoute("/lead-intelligence/")({
+  head: () =>
+    pageHead({
+      title: "Lead Intelligence | Ellis AI Studio",
+      description:
+        "Describe the business problem in your own words. Ellis Lead Intelligence reads it, identifies the system most likely to fit, sets out what still needs validating, and returns a clear next step.",
+      path: "/lead-intelligence",
+    }),
+  component: Page,
+});
+
+function Page() {
+  return <LeadIntelligencePage submit={submit} />;
+}
