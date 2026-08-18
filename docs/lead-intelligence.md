@@ -2,6 +2,8 @@
 
 Lead Intelligence accepts a business inquiry, preserves any AI Opportunity Audit context, asks OpenAI for a validated interpretation, then applies deterministic Ellis scoring and routing rules. It is intentionally separate from the approved Audit presentation.
 
+The Business Bottleneck Audit is a second upstream source. Its operational answers are first-party, user-confirmed context: the adapter stores the original structured answers in the lead's operational context, marks the lead source as `business_bottleneck_audit`, and sends it through the same server-only interpretation, scoring, persistence, and public-result path. It does not use a webhook or a mail-client fallback.
+
 ## Boundaries
 
 - OpenAI receives only problem and operational business context plus optional public Audit context; contact name, email, and phone are not sent. It returns categorization, evidence labels, a canonical system recommendation, uncertainty, and discovery questions. It never returns qualification scores or classes.

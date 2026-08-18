@@ -1,6 +1,6 @@
 import type { EvidenceClass, MaturityStage } from "~/types/audit";
 
-export const LEAD_SOURCES = ["direct_intake", "audit_handoff", "contact_page", "internal_demo"] as const;
+export const LEAD_SOURCES = ["direct_intake", "audit_handoff", "business_bottleneck_audit", "contact_page", "internal_demo"] as const;
 export type LeadSource = (typeof LEAD_SOURCES)[number];
 export const PIPELINE_STATUSES = ["new", "reviewed", "contacted", "discovery", "proposal", "won", "lost", "nurture"] as const;
 export type PipelineStatus = (typeof PIPELINE_STATUSES)[number];
@@ -26,6 +26,22 @@ export type AuditLeadContext = {
   evidence: Array<{ statement: string; evidence: EvidenceClass; source?: string }>;
 };
 
+/**
+ * First-party operational context collected by the Business Bottleneck Audit.
+ * This is intentionally separate from `AuditLeadContext`: it was supplied by
+ * someone inside the business and is therefore user-confirmed, not public-web
+ * audit evidence.
+ */
+export type BottleneckAuditContext = {
+  affectedArea: string;
+  manualWork: string;
+  failureImpact: string;
+  frequency: string;
+  priority: string;
+  readiness: string;
+  foundingInterest: string;
+};
+
 export type LeadIntake = {
   requestId: string;
   source: LeadSource;
@@ -47,6 +63,7 @@ export type LeadIntake = {
   currentProcess?: string;
   biggestManualBottleneck?: string;
   auditContext?: AuditLeadContext;
+  bottleneckAudit?: BottleneckAuditContext;
 };
 
 export type LeadInterpretation = {

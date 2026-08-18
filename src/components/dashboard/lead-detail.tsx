@@ -145,6 +145,7 @@ export function LeadDetail({
   const systemKey = analysis?.recommended_system_key;
   const operational = lead.operational_context ?? {};
   const audit = lead.audit_context;
+  const bottleneck = operational.bottleneckAudit;
 
   const identity = [
     lead.website,
@@ -371,6 +372,28 @@ export function LeadDetail({
               </p>
             </div>
           )}
+        </Brief>
+      )}
+
+      {bottleneck && (
+        <Brief index="05" label="Business Bottleneck Context" title="What the business submitted directly.">
+          <p className="brief-note">These are user-confirmed statements from the Business Bottleneck Audit.</p>
+          <dl className="brief-facts">
+            {[
+              ["Affected area", bottleneck.affectedArea],
+              ["Manual work", bottleneck.manualWork],
+              ["Failure impact", bottleneck.failureImpact],
+              ["Frequency", bottleneck.frequency],
+              ["Priority", bottleneck.priority],
+              ["Readiness", bottleneck.readiness],
+              ["Founding program interest", bottleneck.foundingInterest],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
         </Brief>
       )}
 

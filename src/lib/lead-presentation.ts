@@ -58,6 +58,7 @@ export const PROBLEM_CATEGORY_LABELS: Record<LeadProblemCategory, string> = {
 export const SOURCE_LABELS: Record<LeadSource, string> = {
   direct_intake: "Direct intake",
   audit_handoff: "Audit handoff",
+  business_bottleneck_audit: "Bottleneck Audit",
   contact_page: "Contact page",
   internal_demo: "Internal demo",
 };
@@ -243,6 +244,7 @@ export const ACTIVITY_LABELS: Record<string, string> = {
   analysis_failed: "Analysis failed",
   qualification_completed: "Qualification completed",
   status_changed: "Pipeline status changed",
+  business_bottleneck_audit_submitted: "Business Bottleneck Audit submitted",
 };
 
 export function activityLabel(type: string): string {
