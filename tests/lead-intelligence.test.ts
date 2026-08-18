@@ -3,8 +3,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { test } from "node:test";
 import { parseLeadInterpretation } from "~/lib/lead-interpretation";
+import { interpretationDiagnostic, interpretLead, LeadInterpretationError } from "~/lib/lead-interpretation.server";
 import { bottleneckAuditToLead } from "~/lib/bottleneck-audit-lead-adapter";
-import { publicLeadResult } from "~/lib/lead-service.server";
+import { LEAD_ANALYSIS_FAILURE_MESSAGE, publicLeadResult } from "~/lib/lead-service.server";
 import { classifyLead, recommendNextAction, scoreLead } from "~/lib/lead-scoring";
 import { validateLeadIntake } from "~/lib/lead-validation";
 import { addActivity, createLead, listLeads } from "~/lib/lead-repository.server";
@@ -18,6 +19,31 @@ test("validation normalizes URLs and rejects invalid email", () => { assert.equa
 test("malformed AI output is rejected", () => { assert.throws(() => parseLeadInterpretation({ primaryProblemCategory: "lead_management" })); });
 test("public response omits internal scores and reasoning", () => { const result = publicLeadResult("lead-id", base, interpretation, "strategy_call"); assert.equal("opportunityScore" in result, false); assert.equal("qualificationClass" in result, false); assert.equal("reasoningSummary" in result, false); });
 test("audit inference remains audit inference", () => { const parsed = parseLeadInterpretation({ ...interpretation, identifiedProblems: [{ ...interpretation.identifiedProblems[0], evidenceType: "audit_inferred" }] }); assert.equal(parsed.identifiedProblems[0].evidenceType, "audit_inferred"); });
+test("lead interpretation diagnostics classify provider and parser failures without PII", async () => {
+  const originalFetch = globalThis.fetch; const originalKey = process.env.OPENAI_API_KEY;
+  process.env.OPENAI_API_KEY = "test-openai-key";
+  const privateLead = { ...base, firstName: "PrivateFirst", lastName: "PrivateLast", email: "private.person@example.com", phone: "555-0100", primaryChallenge: "Private challenge that must never be logged." };
+  const responses = [
+    new Response(JSON.stringify({ error: { type: "invalid_request_error", code: "unsupported_parameter" } }), { status: 400, headers: { "x-request-id": "req_safe_123" } }),
+    new Response(JSON.stringify({ output_text: "not-json" }), { status: 200, headers: { "x-request-id": "req_safe_456" } }),
+    new Response(JSON.stringify({ output_text: "{}" }), { status: 200, headers: { "x-request-id": "req_safe_789" } }),
+    new Response(JSON.stringify({ output_text: JSON.stringify(interpretation) }), { status: 200 }),
+  ];
+  let requestBody = "";
+  globalThis.fetch = (async (_url: URL | RequestInfo, init?: RequestInit) => { requestBody = String(init?.body ?? ""); return responses.shift()!; }) as typeof fetch;
+  try {
+    for (const expected of ["openai_http_error", "openai_json_parse_error", "openai_validation_error"] as const) {
+      await assert.rejects(() => interpretLead(privateLead), (error: unknown) => {
+        assert.ok(error instanceof LeadInterpretationError); const diagnostic = interpretationDiagnostic(error);
+        assert.equal(diagnostic?.category, expected); assert.doesNotMatch(JSON.stringify(diagnostic), /PrivateFirst|private\.person@example\.com|555-0100|Private challenge/);
+        return true;
+      });
+    }
+    const valid = await interpretLead(privateLead); assert.equal(valid.summary, interpretation.summary);
+    assert.doesNotMatch(requestBody, /PrivateFirst|PrivateLast|private\.person@example\.com|555-0100/);
+    assert.equal(LEAD_ANALYSIS_FAILURE_MESSAGE, "We received your inquiry, but could not complete the analysis right now. Please try again shortly.");
+  } finally { globalThis.fetch = originalFetch; if (originalKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = originalKey; }
+});
 test("lead list uses the server-only Supabase Data API and preserves null analysis fields", async () => {
   const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
