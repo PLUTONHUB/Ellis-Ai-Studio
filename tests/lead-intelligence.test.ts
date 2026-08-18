@@ -26,7 +26,7 @@ test("lead list uses the server-only Supabase Data API and preserves null analys
   finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
 });
 test("lead intelligence service role migration grants only the runtime Data API operations", () => {
-  const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/20260818180141_grant_lead_intelligence_service_role.sql"), "utf8").toLowerCase();
+  const migration = readFileSync(resolve(process.cwd(), "supabase/migrations/20260818180300_grant_lead_intelligence_service_role.sql"), "utf8").toLowerCase();
   assert.match(migration, /grant select, insert, update on table public\.leads to service_role/);
   assert.match(migration, /grant select, insert on table public\.lead_analyses to service_role/);
   assert.match(migration, /grant select, insert on table public\.lead_activities to service_role/);
