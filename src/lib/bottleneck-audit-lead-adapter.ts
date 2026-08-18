@@ -1,10 +1,6 @@
 import type { AuditApplication } from "~/lib/audit-intake.server";
 import type { LeadIntake, LeadUrgency } from "~/types/lead";
 
-function requestId() {
-  return `bottleneck_${crypto.randomUUID().replace(/-/g, "")}`;
-}
-
 function contactName(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   return {
@@ -25,7 +21,7 @@ function urgencyFor(readiness: string): LeadUrgency {
 export function bottleneckAuditToLead(input: AuditApplication): LeadIntake {
   const contact = contactName(input.name);
   return {
-    requestId: requestId(),
+    requestId: input.requestId,
     source: "business_bottleneck_audit",
     ...contact,
     email: input.email,

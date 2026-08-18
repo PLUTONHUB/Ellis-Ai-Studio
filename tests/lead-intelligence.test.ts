@@ -7,7 +7,7 @@ import { bottleneckAuditToLead } from "~/lib/bottleneck-audit-lead-adapter";
 import { publicLeadResult } from "~/lib/lead-service.server";
 import { classifyLead, recommendNextAction, scoreLead } from "~/lib/lead-scoring";
 import { validateLeadIntake } from "~/lib/lead-validation";
-import { listLeads } from "~/lib/lead-repository.server";
+import { createLead, listLeads } from "~/lib/lead-repository.server";
 import type { LeadIntake, LeadInterpretation } from "~/types/lead";
 const base: LeadIntake = { requestId: "request_123456789", source: "direct_intake", firstName: "Avery", lastName: "Stone", email: "avery@example.com", businessName: "Northwest Roofing", website: "northwestroofing.example", primaryChallenge: "We manually review 60 estimate requests per month and customers can wait hours for a response.", desiredOutcome: "Automatically qualify and route leads within 30 days.", urgency: "within_30_days", approximateMonthlyLeadVolume: "60", currentProcess: "Every inquiry goes to a shared inbox and someone manually assigns it.", biggestManualBottleneck: "Manual review and routing" };
 const interpretation: LeadInterpretation = { summary: "New website inquiries are manually reviewed and routed.", primaryProblemCategory: "lead_management", secondaryProblemCategories: ["conversion"], identifiedProblems: [{ title: "Manual routing", description: "The team assigns inquiries manually.", evidence: ["shared inbox"], evidenceType: "user_confirmed" }], recommendedSystem: { key: "lead_response", name: "Lead Response + Qualification System", rationale: "The process needs qualification and immediate routing." }, intentSignals: ["within 30 days", "automatically"], impactSignals: ["60 estimate requests", "response delay"], urgencySignals: ["within 30 days"], implementationSignals: ["shared inbox"], uncertainty: ["Current CRM is unknown"], discoveryQuestions: ["What happens immediately after a form is submitted?"], reasoningSummary: "The user confirmed a lead-management workflow with delays." };
@@ -37,6 +37,7 @@ test("lead intelligence service role migration grants only the runtime Data API 
 
 test("Business Bottleneck Audit maps first-party operations into the canonical lead intake", () => {
   const lead = bottleneckAuditToLead({
+    requestId: "bottleneck_1234567890abcdef",
     name: "Avery Stone", businessName: "Northwest Roofing", email: "avery@example.com",
     challenge: "Estimate requests wait in a shared inbox.", affectedArea: "Lead follow-up",
     currentProcess: "Someone reads every new message and assigns it by hand.", manualWork: "Manual review and assignment",
@@ -51,6 +52,31 @@ test("Business Bottleneck Audit maps first-party operations into the canonical l
   assert.match(lead.additionalContext ?? "", /Affected area: Lead follow-up/);
 });
 
+test("Bottleneck Audit retries retain one idempotency key and resolve to one lead", async () => {
+  const application = {
+    requestId: "bottleneck_1234567890abcdef", name: "Avery Stone", businessName: "Northwest Roofing", email: "avery@example.com",
+    challenge: "Estimate requests wait in a shared inbox.", affectedArea: "Lead follow-up",
+    currentProcess: "Someone reads every new message and assigns it by hand.", manualWork: "Manual review and assignment",
+    failureImpact: "Interested customers wait too long.", frequency: "Daily", desiredOutcome: "Every inquiry gets a timely response.",
+    priority: "Respond faster", readiness: "Yes", foundingInterest: "No",
+  };
+  const firstInput = bottleneckAuditToLead(application);
+  const retryInput = bottleneckAuditToLead(application);
+  assert.equal(firstInput.requestId, retryInput.requestId);
+
+  const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+  let posts = 0;
+  globalThis.fetch = (async (_url: URL | RequestInfo, init?: RequestInit) => {
+    if (init?.method === "POST") { posts += 1; return new Response(JSON.stringify(posts === 1 ? [{ id: "lead-1", created_at: "2026-08-18T00:00:00.000Z", updated_at: "2026-08-18T00:00:00.000Z", pipeline_status: "new", analysis_status: "pending" }] : []), { status: 201, headers: { "Content-Type": "application/json" } }); }
+    return new Response(JSON.stringify([{ id: "lead-1", created_at: "2026-08-18T00:00:00.000Z", updated_at: "2026-08-18T00:00:00.000Z", pipeline_status: "new", analysis_status: "pending" }]), { status: 200, headers: { "Content-Type": "application/json" } });
+  }) as typeof fetch;
+  try {
+    const first = await createLead(firstInput); const retry = await createLead(retryInput);
+    assert.equal(first.duplicate, false); assert.equal(retry.duplicate, true); assert.equal(first.lead.id, retry.lead.id);
+  } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+
 test("Bottleneck Audit preserves user-confirmed source context and removes mail-client handoff", () => {
   const form = readFileSync(resolve(process.cwd(), "src/components/forms/audit-form.tsx"), "utf8");
   const adapter = readFileSync(resolve(process.cwd(), "src/lib/bottleneck-audit-lead-adapter.ts"), "utf8");
@@ -58,6 +84,8 @@ test("Bottleneck Audit preserves user-confirmed source context and removes mail-
   assert.doesNotMatch(form, /mailto:/i);
   assert.doesNotMatch(legacySubmission, /AUDIT_FORM_WEBHOOK_URL/);
   assert.match(form, /<LeadResult/);
+  assert.match(form, /const \[requestId\] = useState\(newSubmissionId\)/);
+  assert.match(form, /requestId,/);
   assert.match(adapter, /source: "business_bottleneck_audit"/);
   assert.match(adapter, /bottleneckAudit:/);
 });

@@ -10,6 +10,11 @@ import "~/styles/system/lead.css";
 
 type Tone = "success" | "error" | "notice" | undefined;
 
+function newSubmissionId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return `bottleneck_${crypto.randomUUID().replace(/-/g, "")}`;
+  return `bottleneck_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
 function Field({ field }: { field: AuditField }) {
   const id = `f-${field.name}`;
   const wide = field.kind !== "text";
@@ -40,6 +45,9 @@ export function AuditForm() {
   const [status, setStatus] = useState("");
   const [tone, setTone] = useState<Tone>();
   const [busy, setBusy] = useState(false);
+  // This is created once for the mounted form. A failed or ambiguous request
+  // retries with the same idempotency key; a new visit starts a new attempt.
+  const [requestId] = useState(newSubmissionId);
   const [result, setResult] = useState<LeadPublicResult>();
   const [businessName, setBusinessName] = useState("");
 
@@ -50,6 +58,7 @@ export function AuditForm() {
     const url = new URL(window.location.href);
     const payload = {
       ...data,
+      requestId,
       source: url.searchParams.get("utm_source") ?? "direct",
       campaign: url.searchParams.get("utm_campaign") ?? "",
       landingPage: window.location.pathname,
