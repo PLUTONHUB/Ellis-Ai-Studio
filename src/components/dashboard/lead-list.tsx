@@ -27,6 +27,7 @@ import {
   ACTIVE_PIPELINE_STATUSES,
   ANALYSIS_STATUS_LABELS,
   PIPELINE_LABELS,
+  SOURCE_LABELS,
   formatDate,
   systemName,
 } from "~/lib/lead-presentation";
@@ -242,6 +243,7 @@ export function LeadList({ leads }: { leads: readonly LeadListRow[] }) {
                   <p className="lead-row-contact">
                     {row.first_name} {row.last_name} · {row.email}
                   </p>
+                  <p className="lead-row-system">{SOURCE_LABELS[row.source]}</p>
                   {row.recommended_system_key && (
                     <p className="lead-row-system">{systemName(row.recommended_system_key)}</p>
                   )}

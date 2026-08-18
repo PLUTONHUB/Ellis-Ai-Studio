@@ -1,11 +1,19 @@
 import { useState, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { submitAudit, auditEmailBody } from "~/lib/audit-submit";
+import { submitAudit } from "~/lib/audit-submit";
 import { auditFieldsets, type AuditField } from "~/data/audit-form";
-import { emails } from "~/data/links";
 import type { AuditApplication } from "~/lib/audit-intake.server";
+import type { LeadPublicResult } from "~/types/lead";
+import { LeadResult } from "~/components/lead/result";
+import "~/styles/system/audit.css";
+import "~/styles/system/lead.css";
 
 type Tone = "success" | "error" | "notice" | undefined;
+
+function newSubmissionId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return `bottleneck_${crypto.randomUUID().replace(/-/g, "")}`;
+  return `bottleneck_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
 
 function Field({ field }: { field: AuditField }) {
   const id = `f-${field.name}`;
@@ -37,6 +45,11 @@ export function AuditForm() {
   const [status, setStatus] = useState("");
   const [tone, setTone] = useState<Tone>();
   const [busy, setBusy] = useState(false);
+  // This is created once for the mounted form. A failed or ambiguous request
+  // retries with the same idempotency key; a new visit starts a new attempt.
+  const [requestId] = useState(newSubmissionId);
+  const [result, setResult] = useState<LeadPublicResult>();
+  const [businessName, setBusinessName] = useState("");
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,6 +58,7 @@ export function AuditForm() {
     const url = new URL(window.location.href);
     const payload = {
       ...data,
+      requestId,
       source: url.searchParams.get("utm_source") ?? "direct",
       campaign: url.searchParams.get("utm_campaign") ?? "",
       landingPage: window.location.pathname,
@@ -52,26 +66,19 @@ export function AuditForm() {
 
     setBusy(true);
     try {
-      const result = await submit({ data: payload });
-      if (result.delivered) {
-        form.reset();
-        setTone("success");
-        setStatus("Thank you — your audit request was sent. We'll be in touch shortly.");
-        return;
-      }
-      // No webhook configured: hand the completed application to the visitor's
-      // mail client rather than claiming a delivery that did not happen.
-      const subject = `Business Bottleneck Audit — ${data.businessName ?? ""}`.trim();
-      window.location.href = `mailto:${emails.jake}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(auditEmailBody(payload as unknown as Record<string, string>))}`;
-      setTone("notice");
-      setStatus(`Your email app is opening with the completed application — press send and it reaches ${emails.jake}.`);
+      const response = await submit({ data: payload });
+      setBusinessName(data.businessName ?? "Your business");
+      setResult(response);
+      window.scrollTo({ top: 0, behavior: "auto" });
     } catch (error) {
       setTone("error");
-      setStatus(error instanceof Error ? error.message : `We couldn't send that. Please email ${emails.jake} directly.`);
+      setStatus(error instanceof Error && error.message.length < 140 ? error.message : "We could not complete the audit just now. Please try again in a moment.");
     } finally {
       setBusy(false);
     }
   };
+
+  if (result) return <LeadResult result={result} businessName={businessName} />;
 
   return (
     <form className="form" onSubmit={onSubmit} noValidate={false}>
@@ -86,7 +93,7 @@ export function AuditForm() {
       ))}
       <div className="form-actions">
         <button className="button button-solid" type="submit" disabled={busy}>
-          {busy ? "Sending…" : "Request my audit"}
+          {busy ? "Analyzing…" : "Understand my bottleneck"}
         </button>
         {status && <p className="form-status" data-tone={tone} role="status" aria-live="polite">{status}</p>}
       </div>

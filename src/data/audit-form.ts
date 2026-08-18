@@ -3,8 +3,8 @@
  *
  * Extracted verbatim from the legacy acquisition site so the form's actual
  * content survives the frontend reset. Field names must keep matching
- * `AuditApplication` in ~/lib/audit-intake.server, which is what the webhook
- * and the mailto fallback both serialise.
+ * `AuditApplication` in ~/lib/audit-intake.server, which the Bottleneck Audit
+ * adapter maps into the canonical Lead Intelligence intake.
  */
 
 export type AuditField =

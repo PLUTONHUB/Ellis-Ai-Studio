@@ -11,7 +11,7 @@ export function publicLeadResult(id: string, _input: LeadIntake, interpretation:
 }
 export async function submitLead(raw: LeadIntake): Promise<LeadPublicResult> {
   const input = validateLeadIntake(raw); const created = await createLead(input); if (created.duplicate) throw new Error("This submission has already been received.");
-  await addActivity(created.lead.id, "lead_created", { source: input.source }); if (input.auditContext) await addActivity(created.lead.id, "audit_attached", { auditId: input.auditContext.auditId });
+  await addActivity(created.lead.id, "lead_created", { source: input.source }); if (input.auditContext) await addActivity(created.lead.id, "audit_attached", { auditId: input.auditContext.auditId }); if (input.bottleneckAudit) await addActivity(created.lead.id, "business_bottleneck_audit_submitted");
   try { await updateAnalysisStatus(created.lead.id, "analyzing"); await addActivity(created.lead.id, "analysis_started"); const interpretation = await interpretLead(input); const scores = scoreLead(input, interpretation); const action = recommendNextAction(scores); await saveAnalysis(created.lead.id, interpretation, scores, action); await addActivity(created.lead.id, "qualification_completed", { recommendedNextAction: action }); return publicLeadResult(created.lead.id, input, interpretation, action); }
   catch (error) { await updateAnalysisStatus(created.lead.id, "failed"); await addActivity(created.lead.id, "analysis_failed"); throw new Error("We received your inquiry, but could not complete the analysis right now. Please try again shortly."); }
 }

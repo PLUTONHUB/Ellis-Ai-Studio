@@ -11,7 +11,7 @@
  * should not care about.
  */
 
-import type { AuditLeadContext, LeadAnalysisStatus, LeadInterpretation, LeadSource, LeadUrgency, PipelineStatus, QualificationClass, RecommendedNextAction } from "~/types/lead";
+import type { AuditLeadContext, BottleneckAuditContext, LeadAnalysisStatus, LeadInterpretation, LeadSource, LeadUrgency, PipelineStatus, QualificationClass, RecommendedNextAction } from "~/types/lead";
 
 export type Timestamp = string | Date;
 
@@ -23,6 +23,7 @@ export type LeadListRow = {
   first_name: string;
   last_name: string;
   email: string;
+  source: LeadSource;
   pipeline_status: PipelineStatus;
   analysis_status: LeadAnalysisStatus;
   opportunity_score: number | null;
@@ -38,6 +39,7 @@ export type OperationalContext = {
   currentTools?: string | null;
   currentProcess?: string | null;
   biggestManualBottleneck?: string | null;
+  bottleneckAudit?: BottleneckAuditContext | null;
 };
 
 /** A full `public.leads` row. */
