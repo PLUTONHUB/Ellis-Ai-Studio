@@ -34,6 +34,7 @@ import {
 import { OpportunityCard } from "~/components/audit/opportunity-card";
 import { ArchitectureView, AutomationRoadmap } from "~/components/audit/diagrams";
 import { RoadmapUnlock, UnlockConfirmation } from "~/components/audit/unlock";
+import { auditHandoffHref } from "~/lib/audit-lead-handoff";
 
 /* ---------------------------------------------------------------- header */
 
@@ -376,6 +377,9 @@ export function AuditResults({
                   usually one or two things surface that no external analysis could have seen.
                 </p>
                 <div className="hero-actions">
+                  <a className="button button-rust" href={auditHandoffHref(report)}>
+                    Have Ellis AI Studio validate this opportunity
+                  </a>
                   <a className="button button-rust" href={studio.booking} target="_blank" rel="noreferrer">
                     Review my results with Ellis AI Studio
                   </a>
