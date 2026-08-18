@@ -546,8 +546,10 @@
   text-transform: uppercase;
   color: var(--text-muted);
 }
-.score-breakdown-track { height: 3px; border-radius: 2px; background: var(--border-subtle); overflow: hidden; }
-.score-breakdown-fill { height: 100%; border-radius: 2px; background: var(--green-500); width: calc(var(--value, 0) * 1%); }
+/* The fills are <span>s, and an inline box ignores width and height — without
+   `display: block` every meter in the report paints as an empty track. */
+.score-breakdown-track { display: block; height: 3px; border-radius: 2px; background: var(--border-subtle); overflow: hidden; }
+.score-breakdown-fill { display: block; height: 100%; border-radius: 2px; background: var(--green-500); width: calc(var(--value, 0) * 1%); }
 .score-breakdown-value { font-family: var(--font-mono); font-size: var(--type-small); color: var(--text-secondary); font-variant-numeric: tabular-nums; text-align: right; }
 .score-formula {
   font-family: var(--font-mono);
@@ -584,8 +586,8 @@
   white-space: nowrap;
 }
 .pillar-cell[data-empty="true"] .pillar-cell-count { color: var(--text-faint); }
-.pillar-meter { height: 3px; border-radius: 2px; background: var(--border-subtle); overflow: hidden; }
-.pillar-meter-fill { height: 100%; border-radius: 2px; background: var(--green-500); width: calc(var(--value, 0) * 1%); }
+.pillar-meter { display: block; height: 3px; border-radius: 2px; background: var(--border-subtle); overflow: hidden; }
+.pillar-meter-fill { display: block; height: 100%; border-radius: 2px; background: var(--green-500); width: calc(var(--value, 0) * 1%); }
 .pillar-cell[data-empty="true"] .pillar-meter-fill { background: var(--border-strong); }
 .pillar-cell p { font-size: var(--type-small); color: var(--text-secondary); line-height: 1.5; }
 

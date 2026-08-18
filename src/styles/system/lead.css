@@ -1,0 +1,520 @@
+/*
+ * Ellis Lead Intelligence — the public surface.
+ *
+ * Deliberately built on the audit's vocabulary rather than beside it: the
+ * marginal index rail, the mono register for anything systemic, hairline
+ * separators instead of boxes, and green carrying the systemic work with rust
+ * reserved for the one CTA that matters. A visitor arriving from /audit should
+ * not be able to tell where one product ended and the other began.
+ *
+ * Three decisions worth stating:
+ *
+ *  1. The handoff band is a band, not a second report. It carries the audit's
+ *     own primitives — evidence badges, confidence meter — at report scale, so
+ *     the continuity is literal rather than merely thematic.
+ *  2. The intake is a rail with four stops, drawn with the same bar-and-label
+ *     grammar as the audit's maturity ladder. Progress is always visible and
+ *     never a percentage.
+ *  3. No score, band, class or confidence figure appears anywhere on this
+ *     surface. There is no CSS here for one, which is a second line of defence
+ *     behind the component contracts.
+ */
+
+/* ================================================================= surface */
+
+.lead-surface {
+  padding-block: clamp(88px, 11vw, 148px) var(--section-y);
+  position: relative;
+  overflow: hidden;
+}
+.lead-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 420px;
+  pointer-events: none;
+  background: radial-gradient(62% 100% at 50% 0%, var(--green-dim), transparent 72%);
+}
+.lead-surface > .container-narrow { position: relative; z-index: 1; }
+
+/* ================================================================== opener */
+
+.lead-opener { display: grid; gap: var(--space-7); margin-bottom: var(--space-8); }
+.lead-opener-copy { display: grid; gap: var(--space-4); }
+.lead-opener-copy .display-l { max-width: 20ch; }
+.lead-opener-copy .lede { max-width: 56ch; }
+
+.lead-opener-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.lead-opener-meta li::before { content: "— "; color: var(--green-500); }
+
+/* ================================================================= handoff
+ * The visible seam between the two products. The rail on the left is a
+ * two-node chain: the audit, complete; this step, current.
+ */
+
+.handoff {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid var(--green-700);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgba(33, 30, 26, 0.03), 0 20px 44px -34px rgba(33, 30, 26, 0.3);
+}
+.handoff-rail { display: grid; justify-items: center; gap: 0; padding-top: 6px; align-content: start; }
+.handoff-rail-node { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.handoff-rail-node[data-state="done"] { background: var(--green-700); }
+.handoff-rail-node[data-state="current"] {
+  background: var(--rust-500);
+  box-shadow: 0 0 0 4px var(--rust-dim);
+}
+.handoff-rail-line { width: 1px; flex: 1; min-height: 34px; background: var(--border-strong); margin-block: var(--space-2); }
+
+.handoff-body { display: grid; gap: var(--space-5); min-width: 0; }
+.handoff-identity { display: grid; gap: var(--space-2); }
+.handoff-business {
+  font-size: var(--type-display-m);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: var(--tracking-heading);
+}
+
+.handoff-opportunity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.handoff-opportunity-main { display: grid; gap: var(--space-3); min-width: 0; flex: 1 1 260px; }
+.handoff-opportunity-name {
+  font-size: var(--type-heading);
+  font-weight: 600;
+  letter-spacing: var(--tracking-heading);
+  color: var(--text-primary);
+}
+.handoff-opportunity-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
+
+.handoff-priority { display: grid; justify-items: end; gap: var(--space-1); flex: none; text-align: right; }
+.handoff-priority-value {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--green-700);
+}
+.handoff-priority-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.handoff-note { font-size: var(--type-small); color: var(--text-secondary); max-width: 64ch; }
+
+.handoff-evidence { border-top: 1px solid var(--border-subtle); padding-top: var(--space-4); }
+.handoff-evidence > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.handoff-evidence > summary::-webkit-details-marker { display: none; }
+.handoff-evidence > summary:hover { color: var(--green-700); }
+.handoff-evidence-toggle::after { content: "+"; }
+.handoff-evidence[open] .handoff-evidence-toggle::after { content: "–"; }
+
+.handoff-evidence-list { display: grid; gap: var(--space-3); margin-top: var(--space-4); }
+.handoff-evidence-list li {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: baseline;
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+}
+.handoff-evidence-class {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+/* An inference never reads as an established fact, here or anywhere else. */
+.handoff-evidence-list li[data-evidence="inferred"] > span:last-child { color: var(--text-muted); font-style: italic; }
+.handoff-evidence-list li[data-evidence="unknown"] > span:last-child { color: var(--text-faint); }
+
+/* ================================================================== intake */
+
+.intake { margin-top: var(--space-8); }
+
+/* Four stops, drawn with the audit's maturity-ladder grammar. */
+.intake-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-7);
+}
+.intake-progress-step { display: grid; gap: var(--space-3); align-content: start; }
+.intake-progress-bar { height: 3px; border-radius: 2px; background: var(--border-subtle); transition: background var(--dur) var(--ease-out); }
+.intake-progress-step[data-state="done"] .intake-progress-bar { background: var(--green-300); }
+.intake-progress-step[data-state="current"] .intake-progress-bar { background: var(--green-700); }
+.intake-progress-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  line-height: 1.4;
+}
+.intake-progress-index { color: var(--text-faint); }
+.intake-progress-step[data-state="done"] .intake-progress-label { color: var(--text-muted); }
+.intake-progress-step[data-state="current"] .intake-progress-label { color: var(--green-700); font-weight: 600; }
+.intake-progress-step[data-state="current"] .intake-progress-index { color: var(--green-500); }
+
+.intake-form {
+  display: grid;
+  gap: var(--space-6);
+  padding: clamp(var(--space-5), 3vw, var(--space-7));
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 2px rgba(33, 30, 26, 0.03), 0 24px 56px -40px rgba(33, 30, 26, 0.3);
+}
+.intake-step { display: grid; gap: var(--space-6); }
+.intake-step-title {
+  font-size: var(--type-display-m);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: var(--tracking-heading);
+  max-width: 24ch;
+}
+.lead-step-note {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+  padding: var(--space-3) var(--space-4);
+  background: var(--green-dim);
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .intake-step { animation: enter-up var(--dur) var(--ease-out) both; }
+}
+
+/* --------------------------------------------------------------- fields */
+
+.lead-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+.lead-field label { font-size: var(--type-small); font-weight: 500; color: var(--text-primary); }
+.lead-field-optional {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  font-weight: 400;
+}
+.lead-field input,
+.lead-field textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+.lead-field textarea { min-height: 0; resize: vertical; line-height: 1.6; padding-block: var(--space-4); }
+.lead-field input::placeholder,
+.lead-field textarea::placeholder { color: var(--text-faint); }
+.lead-field input:hover,
+.lead-field textarea:hover { border-color: var(--border-strong); }
+.lead-field input:focus,
+.lead-field textarea:focus {
+  outline: none;
+  background: var(--surface-raised);
+  border-color: var(--green-700);
+  box-shadow: 0 0 0 4px var(--green-dim);
+}
+/* Only after the browser has actually evaluated the field, never on first paint. */
+.lead-field input:user-invalid,
+.lead-field textarea:user-invalid { border-color: var(--status-error); }
+.lead-field-hint { font-size: var(--type-small); color: var(--text-muted); line-height: 1.5; text-wrap: pretty; }
+
+/* ------------------------------------------------------------- urgency */
+
+.urgency { border: 0; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+.urgency legend { padding: 0; }
+/* Sized so all five land on one row where there is room: the options are a
+   spectrum from Exploring to Immediate, and a wrapped fifth reads as an
+   afterthought rather than the end of a scale. */
+.urgency-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: var(--space-3); }
+.urgency-option {
+  position: relative;
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+.urgency-option:hover { border-color: var(--border-strong); }
+.urgency-option input { position: absolute; opacity: 0; width: 0; height: 0; }
+.urgency-option:has(input:focus-visible) { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.urgency-option[data-selected="true"] {
+  border-color: var(--green-700);
+  background: var(--green-dim);
+}
+.urgency-option-label { font-size: var(--type-small); font-weight: 600; color: var(--text-primary); }
+.urgency-option-detail { font-size: var(--type-small); color: var(--text-muted); line-height: 1.45; }
+.urgency-option[data-selected="true"] .urgency-option-label { color: var(--green-900); }
+
+/* ------------------------------------------------------------- actions */
+
+.intake-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+.intake-back {
+  background: none;
+  border: 0;
+  padding: var(--space-2) 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--type-small);
+  color: var(--text-muted);
+  border-bottom: 1px solid transparent;
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.intake-back:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.intake-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.lead-alert {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--type-small);
+  color: var(--status-error);
+  background: var(--rust-dim);
+  border-radius: var(--radius-sm);
+  text-wrap: pretty;
+}
+
+/* ================================================================ analysis
+ * One indeterminate indicator, and a list of what is happening. Nothing here
+ * ticks a stage off, because the server reports nothing until it is done.
+ */
+
+.lead-analysis { display: grid; gap: var(--space-6); min-height: min(62vh, 560px); align-content: center; }
+.lead-analysis-head { display: grid; gap: var(--space-3); }
+.lead-analysis-target { font-family: var(--font-mono); font-size: var(--type-small); color: var(--text-primary); word-break: break-word; }
+
+.lead-analysis-rail { position: relative; height: 2px; border-radius: 2px; background: var(--border-subtle); overflow: hidden; max-width: 460px; }
+.lead-analysis-rail-run { position: absolute; inset-block: 0; width: 38%; border-radius: 2px; background: var(--green-700); }
+@media (prefers-reduced-motion: no-preference) {
+  .lead-analysis-rail-run { animation: rail-run 1600ms var(--ease-in-out) infinite; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lead-analysis-rail-run { left: 0; width: 100%; opacity: 0.4; }
+}
+@keyframes rail-run {
+  0% { left: -38%; }
+  100% { left: 100%; }
+}
+
+.lead-analysis-work { display: grid; gap: var(--space-3); max-width: 52ch; }
+.lead-analysis-work li {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--type-small);
+  color: var(--text-secondary);
+}
+.lead-analysis-work li::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  margin-top: 0.6em;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+.lead-analysis-foot {
+  font-size: var(--type-small);
+  color: var(--text-muted);
+  max-width: 62ch;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+  text-wrap: pretty;
+}
+
+/* ================================================================== result */
+
+.lead-result { display: grid; gap: var(--space-8); }
+.lead-result-head { display: grid; gap: var(--space-4); }
+.lead-result-head .display-l { max-width: 18ch; }
+.lead-result-head .lede { max-width: 60ch; }
+
+.lead-result-section {
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--border-subtle);
+}
+.lead-result-marker {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  align-content: start;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--text-faint);
+}
+.lead-result-marker .tick { width: 1px; height: 30px; background: var(--border-strong); }
+.lead-result-body { grid-column: 2; display: grid; gap: var(--space-4); min-width: 0; }
+.lead-result-body .lede { max-width: 58ch; }
+.lead-result-body > .small { color: var(--text-muted); max-width: 56ch; }
+
+.lead-result-flow {
+  margin-top: var(--space-2);
+  padding: var(--space-5);
+  background: var(--surface-canvas-alt);
+  border-radius: var(--radius-md);
+}
+
+.lead-questions { display: grid; margin-top: var(--space-2); border-top: 1px solid var(--border-subtle); }
+.lead-question {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: baseline;
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.lead-question-index {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--green-500);
+  font-variant-numeric: tabular-nums;
+}
+.lead-question p { font-size: var(--type-small); color: var(--text-secondary); line-height: 1.55; max-width: 60ch; }
+
+/* ------------------------------------------------------------ next step */
+
+.lead-result-next {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(var(--space-6), 5vw, var(--space-8));
+  align-items: start;
+  padding: clamp(var(--space-6), 4vw, var(--space-8));
+  background: var(--surface-ink);
+  color: var(--text-inverse);
+  border-radius: var(--radius-lg);
+}
+.lead-result-next .label { color: var(--green-300); }
+.lead-result-next .lede { color: var(--text-inverse-muted); max-width: 48ch; }
+.lead-result-next .display-m { max-width: 20ch; }
+.lead-result-next-copy { display: grid; gap: var(--space-4); }
+.lead-result-next .link { color: var(--text-inverse); border-color: var(--border-inverse); }
+.lead-result-next .link::after { color: var(--green-300); }
+.lead-result-next .link:hover { color: var(--green-300); border-color: var(--green-300); }
+
+.lead-result-receipt {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface-ink-raised);
+  border-radius: var(--radius-md);
+}
+.lead-result-receipt .label { color: var(--text-inverse-muted); }
+.lead-result-receipt .small { color: var(--text-inverse-muted); }
+.lead-result-reference {
+  font-family: var(--font-mono);
+  font-size: var(--type-small);
+  color: var(--text-inverse);
+  word-break: break-all;
+}
+
+/* =================================================================== state */
+
+.lead-state { display: grid; gap: var(--space-4); max-width: 60ch; min-height: min(48vh, 420px); align-content: center; }
+.lead-state .small { color: var(--text-muted); }
+.lead-inline-link { color: var(--green-700); border-bottom: 1px solid var(--green-300); }
+.lead-inline-link:hover { border-color: var(--green-700); }
+
+/* ============================================================= breakpoints */
+
+@media (max-width: 900px) {
+  .lead-result-next { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 760px) {
+  /* Four stacked labels do not fit on a phone. The bars keep carrying the
+     progress; the step title and the "Step n of 4" counter carry the name. */
+  .intake-progress { gap: var(--space-2); }
+  .intake-progress-label { display: none; }
+
+  .lead-field-grid { grid-template-columns: minmax(0, 1fr); }
+  .lead-result-section { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+  .lead-result-marker { grid-column: 1; flex-direction: row; grid-auto-flow: column; justify-content: start; align-items: center; gap: var(--space-3); }
+  .lead-result-marker .tick { width: 28px; height: 1px; }
+  .lead-result-body { grid-column: 1; }
+  .lead-question { grid-template-columns: 32px minmax(0, 1fr); gap: var(--space-3); }
+}
+
+@media (max-width: 620px) {
+  .handoff { grid-template-columns: minmax(0, 1fr); padding: var(--space-5); }
+  .handoff-rail { display: none; }
+  .handoff-opportunity { flex-direction: column; }
+  .handoff-priority { justify-items: start; text-align: left; }
+  .handoff-evidence-list li { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+  .intake-form { padding: var(--space-5) var(--space-4); border-radius: var(--radius-md); }
+  .intake-actions { gap: var(--space-4); }
+  .intake-actions .button { width: 100%; }
+  .intake-count { margin-left: 0; }
+  .urgency-options { grid-template-columns: minmax(0, 1fr); }
+}
