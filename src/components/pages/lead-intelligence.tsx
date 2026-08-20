@@ -28,6 +28,7 @@ import { LeadAnalysisState } from "~/components/lead/analysis";
 import { LeadIntakeFlow, initialIntake } from "~/components/lead/intake";
 import { LeadResult } from "~/components/lead/result";
 import { auditContextFromSearch } from "~/lib/audit-lead-handoff";
+import { publicLeadSubmissionMessage } from "~/lib/lead-public-errors";
 import { routes, studio } from "~/data/links";
 import type { AuditLeadContext, LeadIntake, LeadPublicResult } from "~/types/lead";
 import "~/styles/system/content.css";
@@ -40,22 +41,8 @@ type Phase =
   | { name: "result"; result: LeadPublicResult; businessName: string }
   | { name: "error"; message: string };
 
-/**
- * A submission failure is never shown as the raw thrown message. The service
- * distinguishes two kinds — something the visitor can fix, and something on
- * our side — and only the first is worth repeating back to them verbatim.
- */
 function readableError(reason: unknown): string {
-  const message = reason instanceof Error ? reason.message.trim() : "";
-  if (!message) return "We could not send that just now. Please try again in a moment.";
-  if (message.startsWith("This submission has already been received")) {
-    return "We already have this submission — there is no need to send it again. Check your email for the summary.";
-  }
-  // Validation messages are short, end in a full stop and describe a field.
-  if (message.length < 140 && !/fetch|network|undefined|null|token|api|sql|pg|http/i.test(message)) {
-    return message;
-  }
-  return "We could not complete the analysis just now. Your details were not lost — please try again in a moment.";
+  return publicLeadSubmissionMessage(reason);
 }
 
 /* --------------------------------------------------------------- opener */

@@ -3,8 +3,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { submitAudit } from "~/lib/audit-submit";
 import { auditFieldsets, type AuditField } from "~/data/audit-form";
 import type { AuditApplication } from "~/lib/audit-intake.server";
-import type { LeadPublicResult } from "~/types/lead";
-import { LeadResult } from "~/components/lead/result";
+import { publicLeadSubmissionMessage } from "~/lib/lead-public-errors";
+import { routes } from "~/data/links";
 import "~/styles/system/audit.css";
 import "~/styles/system/lead.css";
 
@@ -48,8 +48,6 @@ export function AuditForm() {
   // This is created once for the mounted form. A failed or ambiguous request
   // retries with the same idempotency key; a new visit starts a new attempt.
   const [requestId] = useState(newSubmissionId);
-  const [result, setResult] = useState<LeadPublicResult>();
-  const [businessName, setBusinessName] = useState("");
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -66,19 +64,15 @@ export function AuditForm() {
 
     setBusy(true);
     try {
-      const response = await submit({ data: payload });
-      setBusinessName(data.businessName ?? "Your business");
-      setResult(response);
-      window.scrollTo({ top: 0, behavior: "auto" });
+      await submit({ data: payload });
+      window.location.assign(routes.auditReceived);
     } catch (error) {
       setTone("error");
-      setStatus(error instanceof Error && error.message.length < 140 ? error.message : "We could not complete the audit just now. Please try again in a moment.");
+      setStatus(publicLeadSubmissionMessage(error));
     } finally {
       setBusy(false);
     }
   };
-
-  if (result) return <LeadResult result={result} businessName={businessName} />;
 
   return (
     <form className="form" onSubmit={onSubmit} noValidate={false}>

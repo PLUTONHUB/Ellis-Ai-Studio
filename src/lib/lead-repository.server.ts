@@ -2,6 +2,7 @@ import type { LeadActivity, LeadAnalysisStatus, LeadIntake, LeadInterpretation, 
 import type { LeadAnalysisRow, LeadListRow, LeadRow } from "~/types/lead-record";
 
 type Row = Record<string, unknown>;
+type SupabaseError = { code?: string; message?: string };
 function required(name: string) { const value = process.env[name]; if (!value) throw new Error(`${name} is not configured.`); return value; }
 function api(path: string, init: RequestInit = {}) { const key = required("SUPABASE_SERVICE_ROLE_KEY"); return fetch(`${required("SUPABASE_URL").replace(/\/$/, "")}/rest/v1/${path}`, { ...init, headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", ...(init.headers ?? {}) } }); }
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -16,12 +17,32 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return body ? JSON.parse(body) as T : undefined as T;
 }
 const eq = (value: string) => encodeURIComponent(value);
+const isIdempotencyConflict = (response: Response, error: SupabaseError | null) =>
+  response.status === 409 && error?.code === "23505" && error.message?.includes("leads_idempotency_key_key");
+async function leadByRequestId(requestId: string) {
+  return (await request<Row[]>(`leads?select=id,created_at,updated_at,pipeline_status,analysis_status&idempotency_key=eq.${eq(requestId)}&limit=1`))[0];
+}
 export type StoredLead = LeadIntake & { id: string; createdAt: string; updatedAt: string; pipelineStatus: PipelineStatus; analysisStatus: LeadAnalysisStatus };
 
 export async function createLead(input: LeadIntake): Promise<{ lead: StoredLead; duplicate: boolean }> {
   const payload = { source: input.source, first_name: input.firstName, last_name: input.lastName, email: input.email, phone: input.phone ?? null, business_name: input.businessName, website: input.website ?? null, industry: input.industry ?? null, location: input.location ?? null, primary_challenge: input.primaryChallenge, desired_outcome: input.desiredOutcome, urgency: input.urgency, additional_context: input.additionalContext ?? null, operational_context: { businessSize: input.businessSize, approximateMonthlyLeadVolume: input.approximateMonthlyLeadVolume, currentTools: input.currentTools, currentProcess: input.currentProcess, biggestManualBottleneck: input.biggestManualBottleneck, bottleneckAudit: input.bottleneckAudit ?? null }, audit_context: input.auditContext ?? null, idempotency_key: input.requestId };
-  const created = await api("leads", { method: "POST", headers: { Prefer: "return=representation,resolution=ignore-duplicates" }, body: JSON.stringify(payload) }); if (!created.ok) throw new Error("Supabase lead request failed."); const rows = await created.json() as Row[];
-  const row = rows[0] ?? (await request<Row[]>(`leads?select=id,created_at,updated_at,pipeline_status,analysis_status&idempotency_key=eq.${eq(input.requestId)}&limit=1`))[0]; if (!row) throw new Error("Lead could not be created."); return { duplicate: rows.length === 0, lead: { ...input, id: String(row.id), createdAt: String(row.created_at), updatedAt: String(row.updated_at), pipelineStatus: row.pipeline_status as PipelineStatus, analysisStatus: row.analysis_status as LeadAnalysisStatus } };
+  const created = await api("leads?on_conflict=idempotency_key", { method: "POST", headers: { Prefer: "return=representation,resolution=ignore-duplicates" }, body: JSON.stringify(payload) });
+  if (!created.ok) {
+    const error = await created.json().catch(() => null) as SupabaseError | null;
+    if (isIdempotencyConflict(created, error)) {
+      const existing = await leadByRequestId(input.requestId);
+      if (existing) return { duplicate: true, lead: storedLead(input, existing) };
+    }
+    throw new Error("Supabase lead request failed.");
+  }
+  const text = await created.text();
+  const rows = text ? JSON.parse(text) as Row[] : [];
+  const row = rows[0] ?? await leadByRequestId(input.requestId);
+  if (!row) throw new Error("Lead could not be created.");
+  return { duplicate: rows.length === 0, lead: storedLead(input, row) };
+}
+function storedLead(input: LeadIntake, row: Row): StoredLead {
+  return { ...input, id: String(row.id), createdAt: String(row.created_at), updatedAt: String(row.updated_at), pipelineStatus: row.pipeline_status as PipelineStatus, analysisStatus: row.analysis_status as LeadAnalysisStatus };
 }
 export async function updateAnalysisStatus(leadId: string, status: LeadAnalysisStatus) { await request(`leads?id=eq.${eq(leadId)}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ analysis_status: status, updated_at: new Date().toISOString() }) }); }
 export async function addActivity(leadId: string, type: string, metadata?: Record<string, unknown>) { await request("lead_activities", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ lead_id: leadId, type, metadata: metadata ?? null }) }); }

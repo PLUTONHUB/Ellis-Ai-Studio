@@ -25,6 +25,8 @@ export const routes = {
   systems: "/systems",
   /** The AI Opportunity Audit — the site's interactive product. */
   audit: "/audit",
+  /** Confirmation after the Business Bottleneck Audit is captured. */
+  auditReceived: "/audit/received",
   apply: "/apply",
   founding: "/founding",
   howItWorks: "/how-it-works",
