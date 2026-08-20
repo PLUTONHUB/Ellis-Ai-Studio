@@ -3,21 +3,27 @@ import { interpretationDiagnostic, interpretLead } from "~/lib/lead-interpretati
 import { addActivity, createLead, saveAnalysis, updateAnalysisStatus } from "~/lib/lead-repository.server";
 import { recommendNextAction, scoreLead } from "~/lib/lead-scoring";
 import { validateLeadIntake } from "~/lib/lead-validation";
+import { LEAD_ANALYSIS_FAILURE_CODE, LEAD_DUPLICATE_RECEIVED_CODE } from "~/lib/lead-public-errors";
 import type { LeadIntake, LeadPublicResult } from "~/types/lead";
 
-export const LEAD_ANALYSIS_FAILURE_MESSAGE = "We received your inquiry, but could not complete the analysis right now. Please try again shortly.";
+export { LEAD_ANALYSIS_FAILURE_MESSAGE } from "~/lib/lead-public-errors";
 
 export function publicLeadResult(id: string, _input: LeadIntake, interpretation: Awaited<ReturnType<typeof interpretLead>>, action: ReturnType<typeof recommendNextAction>): LeadPublicResult {
   void _input; const system = isEllisSystemKey(interpretation.recommendedSystem.key) ? interpretation.recommendedSystem.key : "custom_system";
   return { id, summary: interpretation.summary, primaryProblemCategory: interpretation.primaryProblemCategory, recommendedSystem: { key: system, name: ELLIS_SYSTEMS[system].name, description: ELLIS_SYSTEMS[system].description }, discoveryQuestions: interpretation.discoveryQuestions, nextStep: action, validationNeeded: interpretation.uncertainty };
 }
 export async function submitLead(raw: LeadIntake): Promise<LeadPublicResult> {
-  const input = validateLeadIntake(raw); const created = await createLead(input); if (created.duplicate) throw new Error("This submission has already been received.");
+  const input = validateLeadIntake(raw); const created = await createLead(input);
+  // A browser retry is not a new business event: preserve the original record
+  // and analysis state, but do not create activities or restart interpretation.
+  if (created.duplicate) {
+    throw new Error(created.lead.analysisStatus === "failed" ? LEAD_ANALYSIS_FAILURE_CODE : LEAD_DUPLICATE_RECEIVED_CODE);
+  }
   await addActivity(created.lead.id, "lead_created", { source: input.source }); if (input.auditContext) await addActivity(created.lead.id, "audit_attached", { auditId: input.auditContext.auditId }); if (input.bottleneckAudit) await addActivity(created.lead.id, "business_bottleneck_audit_submitted");
   try { await updateAnalysisStatus(created.lead.id, "analyzing"); await addActivity(created.lead.id, "analysis_started"); const interpretation = await interpretLead(input); const scores = scoreLead(input, interpretation); const action = recommendNextAction(scores); await saveAnalysis(created.lead.id, interpretation, scores, action); await addActivity(created.lead.id, "qualification_completed", { recommendedNextAction: action }); return publicLeadResult(created.lead.id, input, interpretation, action); }
   catch (error) {
     const diagnostic = interpretationDiagnostic(error);
     if (diagnostic) console.error("lead_intelligence_interpretation_failed", { event: "lead_intelligence_interpretation_failed", leadId: created.lead.id, ...diagnostic });
-    await updateAnalysisStatus(created.lead.id, "failed"); await addActivity(created.lead.id, "analysis_failed"); throw new Error(LEAD_ANALYSIS_FAILURE_MESSAGE);
+    await updateAnalysisStatus(created.lead.id, "failed"); await addActivity(created.lead.id, "analysis_failed"); throw new Error(LEAD_ANALYSIS_FAILURE_CODE);
   }
 }

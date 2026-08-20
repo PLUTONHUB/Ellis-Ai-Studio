@@ -5,7 +5,8 @@ import { test } from "node:test";
 import { parseLeadInterpretation } from "~/lib/lead-interpretation";
 import { interpretationDiagnostic, interpretLead, LeadInterpretationError } from "~/lib/lead-interpretation.server";
 import { bottleneckAuditToLead } from "~/lib/bottleneck-audit-lead-adapter";
-import { LEAD_ANALYSIS_FAILURE_MESSAGE, publicLeadResult } from "~/lib/lead-service.server";
+import { LEAD_ANALYSIS_FAILURE_MESSAGE, publicLeadResult, submitLead } from "~/lib/lead-service.server";
+import { LEAD_ANALYSIS_FAILURE_CODE, LEAD_DUPLICATE_RECEIVED_CODE, LEAD_SUBMISSION_FAILURE_MESSAGE, publicLeadSubmissionMessage } from "~/lib/lead-public-errors";
 import { classifyLead, recommendNextAction, scoreLead } from "~/lib/lead-scoring";
 import { validateLeadIntake } from "~/lib/lead-validation";
 import { addActivity, createLead, listLeads } from "~/lib/lead-repository.server";
@@ -108,6 +109,67 @@ test("Bottleneck Audit retries retain one idempotency key and resolve to one lea
     const first = await createLead(firstInput); const retry = await createLead(retryInput);
     assert.equal(first.duplicate, false); assert.equal(retry.duplicate, true); assert.equal(first.lead.id, retry.lead.id);
   } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+
+test("idempotency-key conflict resolves the original lead without duplicate activities", async () => {
+  const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+  const calls: Array<{ url: string; method?: string }> = [];
+  globalThis.fetch = (async (url: URL | RequestInfo, init?: RequestInit) => {
+    const path = String(url); calls.push({ url: path, method: init?.method });
+    if (init?.method === "POST" && path.includes("/rest/v1/leads?")) {
+      return new Response(JSON.stringify({ code: "23505", message: "duplicate key value violates unique constraint \\\"leads_idempotency_key_key\\\"" }), { status: 409, headers: { "Content-Type": "application/json" } });
+    }
+    if (!init?.method && path.includes("idempotency_key=eq.")) {
+      return new Response(JSON.stringify([{ id: "lead-1", created_at: "2026-08-18T00:00:00.000Z", updated_at: "2026-08-18T00:00:00.000Z", pipeline_status: "new", analysis_status: "failed" }]), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    throw new Error(`Unexpected request ${init?.method ?? "GET"} ${path}`);
+  }) as typeof fetch;
+  try {
+    const duplicate = await createLead(base);
+    assert.equal(duplicate.duplicate, true);
+    assert.equal(duplicate.lead.id, "lead-1");
+    assert.equal(calls.filter((call) => call.url.includes("lead_activities")).length, 0);
+    assert.match(calls[0].url, /on_conflict=idempotency_key/);
+  } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+
+test("only the canonical idempotency conflict becomes a duplicate", async () => {
+  const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+  globalThis.fetch = (async () => new Response(JSON.stringify({ code: "23505", message: "duplicate key value violates unique constraint \\\"leads_email_key\\\"" }), { status: 409, headers: { "Content-Type": "application/json" } })) as typeof fetch;
+  try { await assert.rejects(() => createLead(base), /Supabase lead request failed/); }
+  finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+
+test("duplicate submission does not restart analysis or write duplicate activities", async () => {
+  const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+  const calls: string[] = [];
+  globalThis.fetch = (async (url: URL | RequestInfo, init?: RequestInit) => {
+    const path = String(url); calls.push(path);
+    if (init?.method === "POST" && path.includes("/rest/v1/leads?")) return new Response(JSON.stringify({ code: "23505", message: "duplicate key value violates unique constraint \\\"leads_idempotency_key_key\\\"" }), { status: 409, headers: { "Content-Type": "application/json" } });
+    if (path.includes("idempotency_key=eq.")) return new Response(JSON.stringify([{ id: "lead-1", created_at: "2026-08-18T00:00:00.000Z", updated_at: "2026-08-18T00:00:00.000Z", pipeline_status: "new", analysis_status: "analyzing" }]), { status: 200, headers: { "Content-Type": "application/json" } });
+    throw new Error(`Unexpected request ${path}`);
+  }) as typeof fetch;
+  try {
+    await assert.rejects(() => submitLead(base), (error: unknown) => error instanceof Error && error.message === LEAD_DUPLICATE_RECEIVED_CODE);
+    assert.equal(calls.filter((path) => path.includes("lead_activities")).length, 0);
+    assert.equal(calls.filter((path) => path.includes("api.openai.com")).length, 0);
+  } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+
+test("public lead submission errors are an explicit allowlist", () => {
+  assert.equal(publicLeadSubmissionMessage(new Error(LEAD_ANALYSIS_FAILURE_CODE)), LEAD_ANALYSIS_FAILURE_MESSAGE);
+  assert.match(publicLeadSubmissionMessage(new Error(LEAD_DUPLICATE_RECEIVED_CODE)), /already received/i);
+  for (const internal of ["Supabase lead request failed.", "23505", "leads_idempotency_key_key", "OpenAI provider unavailable"]) {
+    assert.equal(publicLeadSubmissionMessage(new Error(internal)), LEAD_SUBMISSION_FAILURE_MESSAGE);
+  }
+  const bottleneckForm = readFileSync(resolve(process.cwd(), "src/components/forms/audit-form.tsx"), "utf8");
+  const directIntake = readFileSync(resolve(process.cwd(), "src/components/pages/lead-intelligence.tsx"), "utf8");
+  assert.match(bottleneckForm, /setStatus\(publicLeadSubmissionMessage\(error\)\)/);
+  assert.match(directIntake, /return publicLeadSubmissionMessage\(reason\)/);
+  assert.doesNotMatch(bottleneckForm, /error\.message/);
 });
 
 test("Bottleneck Audit preserves user-confirmed source context and removes mail-client handoff", () => {

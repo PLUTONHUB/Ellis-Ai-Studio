@@ -4,6 +4,7 @@ import { submitAudit } from "~/lib/audit-submit";
 import { auditFieldsets, type AuditField } from "~/data/audit-form";
 import type { AuditApplication } from "~/lib/audit-intake.server";
 import type { LeadPublicResult } from "~/types/lead";
+import { publicLeadSubmissionMessage } from "~/lib/lead-public-errors";
 import { LeadResult } from "~/components/lead/result";
 import "~/styles/system/audit.css";
 import "~/styles/system/lead.css";
@@ -72,7 +73,7 @@ export function AuditForm() {
       window.scrollTo({ top: 0, behavior: "auto" });
     } catch (error) {
       setTone("error");
-      setStatus(error instanceof Error && error.message.length < 140 ? error.message : "We could not complete the audit just now. Please try again in a moment.");
+      setStatus(publicLeadSubmissionMessage(error));
     } finally {
       setBusy(false);
     }
