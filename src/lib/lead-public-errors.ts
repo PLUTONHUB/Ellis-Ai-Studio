@@ -8,6 +8,11 @@ export const LEAD_DUPLICATE_RECEIVED_MESSAGE =
 export const LEAD_SUBMISSION_FAILURE_MESSAGE =
   "We could not complete your submission right now. Please try again in a moment.";
 
+export function isCapturedLeadFollowupError(reason: unknown): boolean {
+  const code = reason instanceof Error ? reason.message : "";
+  return code === LEAD_ANALYSIS_FAILURE_CODE || code === LEAD_DUPLICATE_RECEIVED_CODE;
+}
+
 /** Server functions throw codes, never visitor copy. Clients map only this allowlist. */
 export function publicLeadSubmissionMessage(reason: unknown): string {
   const code = reason instanceof Error ? reason.message : "";

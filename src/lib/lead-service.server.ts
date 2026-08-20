@@ -3,7 +3,7 @@ import { interpretationDiagnostic, interpretLead } from "~/lib/lead-interpretati
 import { addActivity, createLead, saveAnalysis, updateAnalysisStatus } from "~/lib/lead-repository.server";
 import { recommendNextAction, scoreLead } from "~/lib/lead-scoring";
 import { validateLeadIntake } from "~/lib/lead-validation";
-import { LEAD_ANALYSIS_FAILURE_CODE, LEAD_DUPLICATE_RECEIVED_CODE } from "~/lib/lead-public-errors";
+import { isCapturedLeadFollowupError, LEAD_ANALYSIS_FAILURE_CODE, LEAD_DUPLICATE_RECEIVED_CODE } from "~/lib/lead-public-errors";
 import type { LeadIntake, LeadPublicResult } from "~/types/lead";
 
 export { LEAD_ANALYSIS_FAILURE_MESSAGE } from "~/lib/lead-public-errors";
@@ -12,6 +12,22 @@ export function publicLeadResult(id: string, _input: LeadIntake, interpretation:
   void _input; const system = isEllisSystemKey(interpretation.recommendedSystem.key) ? interpretation.recommendedSystem.key : "custom_system";
   return { id, summary: interpretation.summary, primaryProblemCategory: interpretation.primaryProblemCategory, recommendedSystem: { key: system, name: ELLIS_SYSTEMS[system].name, description: ELLIS_SYSTEMS[system].description }, discoveryQuestions: interpretation.discoveryQuestions, nextStep: action, validationNeeded: interpretation.uncertainty };
 }
+
+export type CapturedLeadConfirmation = { received: true };
+
+/**
+ * The Bottleneck Audit is an inquiry capture flow. Analysis remains valuable
+ * enrichment, but a completed write must never look unsuccessful to a visitor.
+ */
+export async function submitLeadForConfirmation(raw: LeadIntake): Promise<CapturedLeadConfirmation> {
+  try {
+    await submitLead(raw);
+  } catch (error) {
+    if (!isCapturedLeadFollowupError(error)) throw error;
+  }
+  return { received: true };
+}
+
 export async function submitLead(raw: LeadIntake): Promise<LeadPublicResult> {
   const input = validateLeadIntake(raw); const created = await createLead(input);
   // A browser retry is not a new business event: preserve the original record

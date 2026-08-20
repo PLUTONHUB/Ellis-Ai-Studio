@@ -5,7 +5,7 @@ import { test } from "node:test";
 import { parseLeadInterpretation } from "~/lib/lead-interpretation";
 import { interpretationDiagnostic, interpretLead, LeadInterpretationError } from "~/lib/lead-interpretation.server";
 import { bottleneckAuditToLead } from "~/lib/bottleneck-audit-lead-adapter";
-import { LEAD_ANALYSIS_FAILURE_MESSAGE, publicLeadResult, submitLead } from "~/lib/lead-service.server";
+import { LEAD_ANALYSIS_FAILURE_MESSAGE, publicLeadResult, submitLead, submitLeadForConfirmation } from "~/lib/lead-service.server";
 import { LEAD_ANALYSIS_FAILURE_CODE, LEAD_DUPLICATE_RECEIVED_CODE, LEAD_SUBMISSION_FAILURE_MESSAGE, publicLeadSubmissionMessage } from "~/lib/lead-public-errors";
 import { classifyLead, recommendNextAction, scoreLead } from "~/lib/lead-scoring";
 import { validateLeadIntake } from "~/lib/lead-validation";
@@ -159,6 +159,53 @@ test("duplicate submission does not restart analysis or write duplicate activiti
   } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
 });
 
+test("a captured lead still resolves to confirmation when analysis fails", async () => {
+  const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY; const originalOpenAIKey = process.env.OPENAI_API_KEY;
+  process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key"; process.env.OPENAI_API_KEY = "test-openai-key";
+  const calls: Array<{ url: string; method?: string; body?: string }> = [];
+  globalThis.fetch = (async (url: URL | RequestInfo, init?: RequestInit) => {
+    const path = String(url); calls.push({ url: path, method: init?.method, body: String(init?.body ?? "") });
+    if (path.includes("/rest/v1/leads?") && init?.method === "POST") return new Response(JSON.stringify([{ id: "lead-1", created_at: "2026-08-18T00:00:00.000Z", updated_at: "2026-08-18T00:00:00.000Z", pipeline_status: "new", analysis_status: "pending" }]), { status: 201, headers: { "Content-Type": "application/json" } });
+    if (path.includes("api.openai.com")) return new Response(JSON.stringify({ error: { type: "invalid_request_error", code: "unsupported_parameter" } }), { status: 400, headers: { "Content-Type": "application/json" } });
+    if (path.includes("/rest/v1/lead_activities") || path.includes("/rest/v1/leads?")) return new Response(null, { status: 204 });
+    throw new Error(`Unexpected request ${path}`);
+  }) as typeof fetch;
+  try {
+    assert.deepEqual(await submitLeadForConfirmation(base), { received: true });
+    assert.equal(calls.filter((call) => call.url.includes("/rest/v1/leads?") && call.method === "POST").length, 1);
+    assert.equal(calls.filter((call) => call.url.includes("api.openai.com")).length, 1);
+    const activityTypes = calls.filter((call) => call.url.includes("lead_activities")).map((call) => JSON.parse(call.body ?? "{}").type);
+    assert.deepEqual(activityTypes, ["lead_created", "analysis_started", "analysis_failed"]);
+  } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; if (originalOpenAIKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = originalOpenAIKey; }
+});
+
+test("a duplicate Bottleneck Audit resolves to confirmation without new work", async () => {
+  const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+  const calls: string[] = [];
+  globalThis.fetch = (async (url: URL | RequestInfo, init?: RequestInit) => {
+    const path = String(url); calls.push(path);
+    if (path.includes("/rest/v1/leads?") && init?.method === "POST") return new Response(JSON.stringify({ code: "23505", message: "duplicate key value violates unique constraint \\\"leads_idempotency_key_key\\\"" }), { status: 409, headers: { "Content-Type": "application/json" } });
+    if (path.includes("idempotency_key=eq.")) return new Response(JSON.stringify([{ id: "lead-1", created_at: "2026-08-18T00:00:00.000Z", updated_at: "2026-08-18T00:00:00.000Z", pipeline_status: "new", analysis_status: "complete" }]), { status: 200, headers: { "Content-Type": "application/json" } });
+    throw new Error(`Unexpected request ${path}`);
+  }) as typeof fetch;
+  try {
+    assert.deepEqual(await submitLeadForConfirmation(base), { received: true });
+    assert.equal(calls.filter((path) => path.includes("lead_activities")).length, 0);
+    assert.equal(calls.filter((path) => path.includes("api.openai.com")).length, 0);
+  } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+
+test("a pre-persistence failure remains a safe public form error", async () => {
+  const originalFetch = globalThis.fetch; const originalUrl = process.env.SUPABASE_URL; const originalKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.SUPABASE_URL = "https://project.supabase.co"; process.env.SUPABASE_SERVICE_ROLE_KEY = "test-key";
+  globalThis.fetch = (async () => new Response(JSON.stringify({ code: "XX000" }), { status: 500, headers: { "Content-Type": "application/json" } })) as typeof fetch;
+  try {
+    await assert.rejects(() => submitLeadForConfirmation(base), /Supabase lead request failed/);
+    assert.equal(publicLeadSubmissionMessage(new Error("Supabase lead request failed.")), LEAD_SUBMISSION_FAILURE_MESSAGE);
+  } finally { globalThis.fetch = originalFetch; if (originalUrl === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = originalUrl; if (originalKey === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY; else process.env.SUPABASE_SERVICE_ROLE_KEY = originalKey; }
+});
+
 test("public lead submission errors are an explicit allowlist", () => {
   assert.equal(publicLeadSubmissionMessage(new Error(LEAD_ANALYSIS_FAILURE_CODE)), LEAD_ANALYSIS_FAILURE_MESSAGE);
   assert.match(publicLeadSubmissionMessage(new Error(LEAD_DUPLICATE_RECEIVED_CODE)), /already received/i);
@@ -178,11 +225,23 @@ test("Bottleneck Audit preserves user-confirmed source context and removes mail-
   const legacySubmission = readFileSync(resolve(process.cwd(), "src/lib/audit-intake.server.ts"), "utf8");
   assert.doesNotMatch(form, /mailto:/i);
   assert.doesNotMatch(legacySubmission, /AUDIT_FORM_WEBHOOK_URL/);
-  assert.match(form, /<LeadResult/);
+  assert.match(form, /window\.location\.assign\(routes\.auditReceived\)/);
   assert.match(form, /const \[requestId\] = useState\(newSubmissionId\)/);
   assert.match(form, /requestId,/);
   assert.match(adapter, /source: "business_bottleneck_audit"/);
   assert.match(adapter, /bottleneckAudit:/);
+});
+
+test("Bottleneck Audit confirmation route is static, safe to refresh, and uses approved copy", () => {
+  const route = readFileSync(resolve(process.cwd(), "src/routes/audit/received.tsx"), "utf8");
+  const page = readFileSync(resolve(process.cwd(), "src/components/pages/audit-received.tsx"), "utf8");
+  const submit = readFileSync(resolve(process.cwd(), "src/lib/audit-submit.ts"), "utf8");
+  assert.match(route, /createFileRoute\("\/audit\/received"\)/);
+  assert.match(page, /Inquiry received/);
+  assert.match(page, /There’s no need to submit the form again\./);
+  assert.match(page, /What happens next/);
+  assert.match(submit, /submitLeadForConfirmation/);
+  assert.doesNotMatch(page, /Supabase|OpenAI|retry|idempotency|duplicate/i);
 });
 
 test("Bottleneck Audit source migration adds only the canonical source key", () => {

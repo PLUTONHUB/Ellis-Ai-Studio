@@ -8,8 +8,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import type { AuditApplication } from "~/lib/audit-intake.server";
 import { bottleneckAuditToLead } from "~/lib/bottleneck-audit-lead-adapter";
-import { submitLead } from "~/lib/lead-service.server";
+import { submitLeadForConfirmation } from "~/lib/lead-service.server";
 
 export const submitAudit = createServerFn({ method: "POST" })
   .validator((data: AuditApplication) => data)
-  .handler(async ({ data }) => submitLead(bottleneckAuditToLead(data)));
+  .handler(async ({ data }) => submitLeadForConfirmation(bottleneckAuditToLead(data)));
