@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Craigslist — concept redesign</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ===========================================================================
+   Craigslist — unsolicited concept redesign
+   Direction: "Fast, and finally legible". The mistake every craigslist
+   redesign makes is treating plainness as the problem. Plainness is the
+   product: no ads, no tracking pixels, no infinite scroll. What is actually
+   broken is density — a 400-link wall with no hierarchy and 11px hit targets.
+   So: keep the link-first page, keep it under a second, but give it a scale,
+   a grid, and touch targets a human can hit.
+   Type: Lexend (headings) + Source Sans 3 (body) — the DB's accessibility-led
+   pairing; Lexend is literally designed for reading-proficiency.
+   =========================================================================== */
+@font-face{font-family:"Lexend";src:url("_assets/fonts/lexend.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Source Sans 3";src:url("_assets/fonts/source-sans-3.woff2") format("woff2");font-weight:200 900;font-display:block}
+
+:root{
+  --bg:#FCFCFD;
+  --bg-alt:#F5F4F8;
+  --card:#FFFFFF;
+  --ink:#16141C;
+  --ink-2:#55516A;
+  --ink-3:#8C87A0;
+  --rule:#E5E3EC;
+  --purple:#5B3AA6;      /* the mark everyone already knows */
+  --purple-dark:#432880;
+  --purple-dim:#F1ECFB;
+  --green:#166F49;       /* post / transact */
+  --green-dim:#E6F4ED;
+  --amber-dim:#FDF3E2;
+  --amber-ink:#7A4E0B;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Source Sans 3",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-family:"Lexend",system-ui,sans-serif;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0}ul{margin:0;padding:0;list-style:none}a{color:inherit;text-decoration:none}
+.wrap{width:1200px;max-width:calc(100% - 80px);margin-inline:auto}
+.label{font-family:"Lexend";font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+
+.ribbon{background:#16141C;color:#C9C4D8;font-size:11.5px;padding:9px 0}
+.ribbon .wrap{display:flex;gap:16px;justify-content:space-between;align-items:center}
+.ribbon strong{color:#fff;font-family:"Lexend";font-weight:600;letter-spacing:.13em;text-transform:uppercase;font-size:10.5px}
+
+/* ---- header ---- */
+header{background:var(--card);border-bottom:1px solid var(--rule);position:relative}
+header .wrap{display:flex;align-items:center;gap:32px;height:76px}
+.brand{display:flex;align-items:center;gap:11px;font-family:"Lexend";font-weight:600;font-size:21px;letter-spacing:-.03em}
+.peace{width:32px;height:32px}
+.hnav{display:flex;gap:28px;margin-left:12px;font-size:15px;color:var(--ink-2)}
+.hnav a:first-child{color:var(--ink);font-weight:600}
+.hspace{margin-left:auto;display:flex;align-items:center;gap:12px}
+.city{display:flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:1px solid var(--rule);
+  border-radius:999px;font-size:14.5px;font-weight:600;background:var(--bg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:44px;padding:0 20px;
+  border-radius:999px;font-family:"Lexend";font-size:14.5px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.btn-post{background:var(--green);color:#fff}
+.btn-line{border-color:var(--rule);background:var(--card)}
+
+/* ---- hero: the search field IS the call to action ---- */
+.hero{padding:76px 0 64px;text-align:center;background:
+  radial-gradient(1100px 340px at 50% -60px,var(--purple-dim),transparent 70%),var(--bg)}
+h1{font-size:52px;line-height:1.08;letter-spacing:-.035em}
+.hero .sub{margin:18px auto 0;font-size:18.5px;color:var(--ink-2);max-width:56ch}
+.searchbar{margin:38px auto 0;max-width:760px;display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1.5px solid var(--rule);border-radius:999px;padding:8px 8px 8px 22px;
+  box-shadow:0 2px 4px rgba(22,20,28,.03),0 16px 40px -24px rgba(67,40,128,.5)}
+.searchbar svg{flex:none;color:var(--ink-3)}
+.searchbar .q{flex:1;text-align:left;font-size:17px;color:var(--ink-3)}
+.searchbar .divider{width:1px;height:26px;background:var(--rule)}
+.searchbar .scope{font-size:15px;font-weight:600;color:var(--ink-2);padding:0 6px;display:flex;align-items:center;gap:7px}
+.searchbar .go{height:48px;width:48px;border-radius:999px;background:var(--purple);color:#fff;display:grid;place-items:center;flex:none}
+.chips{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.chip{padding:7px 15px;border-radius:999px;background:var(--card);border:1px solid var(--rule);
+  font-size:14px;color:var(--ink-2)}
+
+/* ---- categories: the wall of links, given a grid ---- */
+.cats{padding:72px 0 84px;background:var(--bg-alt);border-block:1px solid var(--rule)}
+.cat-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:32px}
+.cat-head h2{font-size:30px}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.cat{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:24px 24px 22px;display:grid;gap:14px;align-content:start}
+.cat-top{display:flex;align-items:center;gap:11px}
+.cat-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--purple-dim);color:var(--purple)}
+.cat h3{font-size:17px;letter-spacing:-.01em}
+.cat ul{display:grid;gap:2px}
+.cat li a{display:block;padding:6px 0;font-size:14.5px;color:var(--ink-2);border-bottom:1px solid transparent}
+.cat li a:hover{color:var(--purple)}
+.cat .all{font-family:"Lexend";font-size:13px;font-weight:600;color:var(--purple);padding-top:6px}
+
+/* ---- safety ---- */
+.safety{padding:84px 0}
+.safety .wrap{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.safety h2{font-size:38px;line-height:1.12}
+.safety p{margin-top:18px;color:var(--ink-2);font-size:17px;max-width:46ch}
+.rules{display:grid;gap:14px;margin-top:30px}
+.rule{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--rule);
+  border-radius:12px;padding:18px 20px}
+.rule .tick{width:24px;height:24px;border-radius:999px;background:var(--green-dim);color:var(--green);
+  display:grid;place-items:center;flex:none;margin-top:2px}
+.rule b{display:block;font-family:"Lexend";font-size:15.5px;font-weight:600;margin-bottom:3px}
+.rule span{font-size:14.5px;color:var(--ink-2);line-height:1.55}
+/* a plain-spoken notice, the way craigslist actually talks */
+.note{background:var(--amber-dim);border:1px solid #F2E2C4;border-radius:14px;padding:26px 28px}
+.note b{font-family:"Lexend";display:block;font-size:16px;color:var(--amber-ink);margin-bottom:8px}
+.note p{font-size:15px;color:#6B4A16;max-width:none}
+
+/* ---- post CTA ---- */
+.post{background:var(--purple);color:#fff;padding:80px 0;text-align:center;position:relative;overflow:hidden}
+.post h2{font-size:42px;color:#fff;letter-spacing:-.03em}
+.post p{margin:16px auto 0;max-width:52ch;color:#DDD2F5;font-size:17.5px}
+.post .acts{display:flex;gap:12px;justify-content:center;margin-top:34px}
+.post .btn-white{background:#fff;color:var(--purple-dark)}
+.post .btn-outline{border-color:rgba(255,255,255,.4);color:#fff}
+.post .fine{margin-top:22px;font-size:13.5px;color:#BFB0E4}
+
+/* ---- footer ---- */
+footer{background:var(--card);border-top:1px solid var(--rule);padding:64px 0 34px;font-size:14.5px}
+.fgrid{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:44px;padding-bottom:44px;border-bottom:1px solid var(--rule)}
+footer h4{font-family:"Lexend";font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+footer li{padding:5px 0;color:var(--ink-2)}
+.fbrand p{margin-top:14px;max-width:32ch;color:var(--ink-2);line-height:1.6}
+.fbot{padding-top:24px;display:flex;justify-content:space-between;gap:20px;color:var(--ink-3);font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="ribbon"><div class="wrap">
+  <span><strong>Concept redesign</strong> &nbsp;·&nbsp; An unsolicited design study by Ellis AI Studio. Not affiliated with, sponsored by, or endorsed by craigslist, Inc.</span>
+  <span>Listings shown are illustrative placeholders.</span>
+</div></div>
+
+<header><div class="wrap">
+  <a class="brand" href="#">
+    <svg class="peace" viewBox="0 0 32 32" aria-hidden="true">
+      <circle cx="16" cy="16" r="15" fill="#5B3AA6"/>
+      <g stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+        <path d="M16 5v22M16 16 7.5 24.5M16 16l8.5 8.5"/>
+      </g>
+    </svg>
+    craigslist
+  </a>
+  <nav class="hnav"><a href="#">Browse</a><a href="#">Search</a><a href="#">My account</a><a href="#">Help</a></nav>
+  <div class="hspace">
+    <span class="city">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 14s5-4.2 5-8A5 5 0 0 0 3 6c0 3.8 5 8 5 8Z" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="6" r="1.9" stroke="currentColor" stroke-width="1.5"/></svg>
+      Seattle
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </span>
+    <a class="btn btn-post" href="#">Post a listing</a>
+  </div>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <h1>Everything nearby,<br>from the people nearby.</h1>
+  <p class="sub">Local classifieds for jobs, housing, things for sale, services and community. No feed, no algorithm, no tracking — the same craigslist, easier to read.</p>
+
+  <div class="searchbar">
+    <svg width="21" height="21" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6.2" stroke="currentColor" stroke-width="1.8"/><path d="m13.6 13.6 3.4 3.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span class="q">Search listings — “desk”, “studio apartment”, “bike”…</span>
+    <span class="divider"></span>
+    <span class="scope">
+      All categories
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </span>
+    <span class="go">
+      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11M11 6l4 4-4 4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+  </div>
+
+  <div class="chips">
+    <span class="chip">apartments</span><span class="chip">free stuff</span><span class="chip">cars &amp; trucks</span>
+    <span class="chip">furniture</span><span class="chip">part-time jobs</span><span class="chip">bikes</span><span class="chip">tools</span>
+  </div>
+</div></section>
+
+<section class="cats"><div class="wrap">
+  <div class="cat-head">
+    <h2>Browse by category</h2>
+    <span class="label">Seattle · updated continuously</span>
+  </div>
+  <div class="cat-grid">
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 9l7-5.5L17 9v7.5a1 1 0 0 1-1 1h-3.5V13h-5v4.5H4a1 1 0 0 1-1-1V9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+        <h3>Housing</h3>
+      </div>
+      <ul>
+        <li><a href="#">Apartments / housing</a></li>
+        <li><a href="#">Rooms &amp; shares</a></li>
+        <li><a href="#">Sublets &amp; temporary</a></li>
+        <li><a href="#">Housing wanted</a></li>
+        <li><a href="#">Parking &amp; storage</a></li>
+      </ul>
+      <span class="all">All housing →</span>
+    </article>
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.8" y="6" width="14.4" height="10.5" rx="1.6" stroke="currentColor" stroke-width="1.6"/><path d="M7.2 6V4.6A1.6 1.6 0 0 1 8.8 3h2.4a1.6 1.6 0 0 1 1.6 1.6V6" stroke="currentColor" stroke-width="1.6"/></svg></span>
+        <h3>Jobs</h3>
+      </div>
+      <ul>
+        <li><a href="#">Full-time</a></li>
+        <li><a href="#">Part-time</a></li>
+        <li><a href="#">Skilled trades</a></li>
+        <li><a href="#">Food &amp; hospitality</a></li>
+        <li><a href="#">Admin &amp; office</a></li>
+      </ul>
+      <span class="all">All jobs →</span>
+    </article>
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 7h14l-1.2 9.2a1.4 1.4 0 0 1-1.4 1.2H5.6a1.4 1.4 0 0 1-1.4-1.2L3 7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="1.6"/></svg></span>
+        <h3>For sale</h3>
+      </div>
+      <ul>
+        <li><a href="#">Furniture</a></li>
+        <li><a href="#">Cars &amp; trucks</a></li>
+        <li><a href="#">Electronics</a></li>
+        <li><a href="#">Bikes</a></li>
+        <li><a href="#">Free stuff</a></li>
+      </ul>
+      <span class="all">All for sale →</span>
+    </article>
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="7.2" cy="6.6" r="2.6" stroke="currentColor" stroke-width="1.6"/><circle cx="13.4" cy="7.6" r="2" stroke="currentColor" stroke-width="1.6"/><path d="M2.6 16.4c0-2.5 2-4.2 4.6-4.2s4.6 1.7 4.6 4.2M13 12.4c2.4 0 4.4 1.4 4.4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        <h3>Community</h3>
+      </div>
+      <ul>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Volunteers</a></li>
+        <li><a href="#">Groups &amp; classes</a></li>
+        <li><a href="#">Lost &amp; found</a></li>
+        <li><a href="#">Rideshare</a></li>
+      </ul>
+      <span class="all">All community →</span>
+    </article>
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.4 3.6 4 4-8.2 8.2-4.6.6.6-4.6 8.2-8.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+        <h3>Services</h3>
+      </div>
+      <ul>
+        <li><a href="#">Skilled trades</a></li>
+        <li><a href="#">Automotive</a></li>
+        <li><a href="#">Household</a></li>
+        <li><a href="#">Computer &amp; tech</a></li>
+        <li><a href="#">Lessons &amp; tutoring</a></li>
+      </ul>
+      <span class="all">All services →</span>
+    </article>
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5.5h12M4 10h12M4 14.5h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+        <h3>Gigs</h3>
+      </div>
+      <ul>
+        <li><a href="#">Labor &amp; moving</a></li>
+        <li><a href="#">Creative</a></li>
+        <li><a href="#">Event</a></li>
+        <li><a href="#">Computer</a></li>
+        <li><a href="#">Talent</a></li>
+      </ul>
+      <span class="all">All gigs →</span>
+    </article>
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="1.8" stroke="currentColor" stroke-width="1.6"/><path d="M6.4 8.4h7.2M6.4 11.6h4.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        <h3>Discussion</h3>
+      </div>
+      <ul>
+        <li><a href="#">Apartments</a></li>
+        <li><a href="#">Bikes</a></li>
+        <li><a href="#">Local politics</a></li>
+        <li><a href="#">Pets</a></li>
+        <li><a href="#">Open forum</a></li>
+      </ul>
+      <span class="all">All forums →</span>
+    </article>
+
+    <article class="cat">
+      <div class="cat-top">
+        <span class="cat-ico"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h14M10 3c1.9 2 2.9 4.4 2.9 7s-1 5-2.9 7c-1.9-2-2.9-4.4-2.9-7s1-5 2.9-7Z" stroke="currentColor" stroke-width="1.6"/></svg></span>
+        <h3>Nearby cities</h3>
+      </div>
+      <ul>
+        <li><a href="#">Tacoma</a></li>
+        <li><a href="#">Everett</a></li>
+        <li><a href="#">Bellingham</a></li>
+        <li><a href="#">Olympia</a></li>
+        <li><a href="#">Spokane</a></li>
+      </ul>
+      <span class="all">All of Washington →</span>
+    </article>
+
+  </div>
+</div></section>
+
+<section class="safety"><div class="wrap">
+  <div>
+    <span class="label">Dealing safely</span>
+    <h2>Deal locally, face to face.</h2>
+    <p>Nearly every scam can be avoided by meeting the other person. That advice has been on craigslist for two decades — it should be impossible to miss, not buried in a help article.</p>
+    <div class="rules">
+      <div class="rule">
+        <span class="tick"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.4 5.8 10 11 4.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span><b>Meet in a public place</b><span>Many police departments offer a monitored exchange zone. Bring someone with you.</span></span>
+      </div>
+      <div class="rule">
+        <span class="tick"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.4 5.8 10 11 4.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span><b>Never wire money</b><span>No legitimate buyer or seller asks for a wire transfer, gift cards or a payment app to a stranger.</span></span>
+      </div>
+      <div class="rule">
+        <span class="tick"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.4 5.8 10 11 4.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span><b>Inspect before you pay</b><span>See the item, or the apartment, in person. Do not pay a deposit for something you have not stood in.</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>Why this site still looks simple</b>
+    <p>No banner ads. No behavioural tracking. No recommendation engine deciding what you see. The redesign changes the typography, spacing and touch targets — it does not add any of that back. The homepage still ships as a single, small, fast document.</p>
+  </div>
+</div></section>
+
+<section class="post"><div class="wrap">
+  <h2>Post a listing in about a minute.</h2>
+  <p>Choose a category, write a few honest lines, add photos if you have them. Most categories are free.</p>
+  <div class="acts">
+    <a class="btn btn-white" href="#">Post a listing</a>
+    <a class="btn btn-line btn-outline" href="#">See posting fees</a>
+  </div>
+  <p class="fine">Fees apply to some job and broker categories. Every fee is shown before you publish, never after.</p>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div class="fbrand">
+      <a class="brand" href="#">
+        <svg class="peace" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#5B3AA6"/><g stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M16 5v22M16 16 7.5 24.5M16 16l8.5 8.5"/></g></svg>
+        craigslist
+      </a>
+      <p>Local classifieds and forums, community moderated and largely free.</p>
+    </div>
+    <div><h4>craigslist</h4><ul><li>About</li><li>Help</li><li>Terms of use</li><li>Privacy</li></ul></div>
+    <div><h4>Browse</h4><ul><li>Housing</li><li>Jobs</li><li>For sale</li><li>Services</li></ul></div>
+    <div><h4>Safety</h4><ul><li>Avoiding scams</li><li>Personal safety</li><li>Report a listing</li></ul></div>
+    <div><h4>Everywhere</h4><ul><li>US cities</li><li>Canada</li><li>Europe</li><li>All sites</li></ul></div>
+  </div>
+  <div class="fbot">
+    <span>Concept redesign by Ellis AI Studio · Not affiliated with craigslist, Inc.</span>
+    <span>All marks are the property of their respective owners.</span>
+  </div>
+</div></footer>
+
+</body>
+</html>

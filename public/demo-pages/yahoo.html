@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Yahoo — concept redesign</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ===========================================================================
+   Yahoo — unsolicited concept redesign
+   Direction: "Signal over inventory". A portal homepage fails when every
+   module competes at the same volume and ad slots outrank the journalism.
+   The redesign asserts a real hierarchy: one lead story at editorial scale,
+   a readable three-column river beneath it, and the utility modules people
+   genuinely open a portal for — markets, weather, scores — condensed into a
+   single rail instead of scattered between promos.
+   Type: Newsreader (headlines) + Roboto (interface) — the DB's editorial
+   pairing. Headlines below are self-describing placeholders, not news.
+   =========================================================================== */
+@font-face{font-family:"Newsreader";src:url("_assets/fonts/newsreader.woff2") format("woff2");font-weight:200 800;font-display:block}
+@font-face{font-family:"Roboto";src:url("_assets/fonts/roboto.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+:root{
+  --purple:#5E2AAE;
+  --purple-deep:#3B1774;
+  --purple-wash:#F4EFFC;
+  --ink:#0F0E13;
+  --ink-2:#4B4956;
+  --ink-3:#7D7A89;
+  --card:#FFFFFF;
+  --bg:#FBFAFC;
+  --rule:#E6E3EC;
+  --rule-2:#D6D2E0;
+  --up:#12734B;
+  --down:#B32323;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Roboto",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-family:"Newsreader",Georgia,serif;font-weight:600;letter-spacing:-.015em;text-wrap:balance}
+p{margin:0}ul{margin:0;padding:0;list-style:none}a{color:inherit;text-decoration:none}
+.wrap{width:1260px;max-width:calc(100% - 72px);margin-inline:auto}
+.label{font-family:"Roboto";font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--purple)}
+.label-mute{color:var(--ink-3)}
+
+.ribbon{background:#0F0E13;color:#BEB9CC;font-size:11.5px;padding:9px 0}
+.ribbon .wrap{display:flex;gap:16px;justify-content:space-between;align-items:center}
+.ribbon strong{color:#fff;font-weight:700;letter-spacing:.13em;text-transform:uppercase;font-size:10.5px}
+
+/* ---- header ---- */
+header{background:var(--card);border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:5}
+.h-top{display:flex;align-items:center;gap:28px;height:70px}
+.brand{font-family:"Newsreader";font-size:31px;font-weight:700;color:var(--purple);letter-spacing:-.03em;line-height:1}
+.search{flex:1;max-width:520px;display:flex;align-items:center;gap:11px;background:var(--bg);
+  border:1px solid var(--rule);border-radius:8px;padding:10px 16px;color:var(--ink-3);font-size:15px}
+.h-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:8px;
+  font-size:14.5px;font-weight:500;border:1px solid transparent;white-space:nowrap}
+.btn-solid{background:var(--purple);color:#fff;font-weight:600}
+.btn-line{border-color:var(--rule-2);color:var(--ink)}
+.h-nav{display:flex;gap:26px;height:46px;align-items:center;font-size:14.5px;font-weight:500;color:var(--ink-2);
+  border-top:1px solid var(--rule)}
+.h-nav a.on{color:var(--purple);font-weight:700}
+
+/* ---- lead ---- */
+.lead{padding:44px 0 40px}
+.lead .wrap{display:grid;grid-template-columns:1.45fr 1fr;gap:52px;align-items:start}
+.lead-art{aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:var(--purple-deep)}
+.lead h1{font-size:50px;line-height:1.05;letter-spacing:-.028em;margin-top:22px}
+.lead .dek{margin-top:16px;font-size:18.5px;color:var(--ink-2);line-height:1.55;max-width:52ch}
+.byline{margin-top:18px;display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-3)}
+.byline .dot{width:3px;height:3px;border-radius:99px;background:var(--rule-2)}
+
+/* secondary stories stacked beside the lead */
+.side{display:grid;gap:0}
+.side-item{display:grid;grid-template-columns:1fr 96px;gap:18px;padding:20px 0;border-bottom:1px solid var(--rule);align-items:start}
+.side-item:first-child{padding-top:0}
+.side-item h3{font-size:19.5px;line-height:1.25}
+.side-item .m{margin-top:8px;font-size:12.5px;color:var(--ink-3)}
+.thumb{width:96px;height:72px;border-radius:8px;overflow:hidden;flex:none}
+
+/* ---- utility rail: the reason people keep a portal ---- */
+.rail{background:var(--card);border-block:1px solid var(--rule);padding:26px 0}
+.rail .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.rail-cell{padding:0 32px;border-right:1px solid var(--rule)}
+.rail-cell:first-child{padding-left:0}
+.rail-cell:last-child{border-right:0;padding-right:0}
+.rail-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tick{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;font-size:14.5px}
+.tick .sym{font-weight:600;letter-spacing:.02em}
+.tick .px{font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.tick .ch{font-variant-numeric:tabular-nums;font-weight:600;min-width:66px;text-align:right}
+.up{color:var(--up)}.down{color:var(--down)}
+.wx{display:flex;align-items:center;gap:16px;padding-top:4px}
+.wx .deg{font-family:"Newsreader";font-size:46px;font-weight:500;letter-spacing:-.03em;line-height:1}
+.wx .meta{font-size:14px;color:var(--ink-2)}
+.wx-days{display:flex;gap:18px;margin-top:14px;font-size:13px;color:var(--ink-3)}
+.wx-days b{display:block;color:var(--ink);font-weight:600;font-size:14px;margin-top:3px}
+.score{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14.5px}
+.score .tm{display:flex;align-items:center;gap:9px}
+.score .sq{width:22px;height:22px;border-radius:5px;flex:none}
+.score .pts{font-weight:700;font-variant-numeric:tabular-nums}
+
+/* ---- river ---- */
+.river{padding:56px 0 72px}
+.r-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:26px;
+  border-bottom:2px solid var(--ink);padding-bottom:12px}
+.r-head h2{font-size:28px}
+.r-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px}
+.story{display:grid;gap:12px;align-content:start}
+.story .art{aspect-ratio:16/9;border-radius:10px;overflow:hidden}
+.story h3{font-size:21px;line-height:1.24}
+.story p{font-size:14.5px;color:var(--ink-2);line-height:1.55}
+.story .m{font-size:12.5px;color:var(--ink-3);display:flex;gap:8px;align-items:center}
+
+/* ---- newsletter ---- */
+.news{background:var(--purple);color:#fff;padding:66px 0}
+.news .wrap{display:flex;align-items:center;justify-content:space-between;gap:56px}
+.news h2{font-size:36px;color:#fff;line-height:1.1}
+.news p{margin-top:12px;color:#D6C8F0;font-size:17px;max-width:44ch}
+.news-form{display:flex;gap:10px;flex:none}
+.news-form .f{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:8px;
+  padding:13px 20px;color:#DCD0F3;font-size:15px;min-width:290px}
+.news-form .btn-white{background:#fff;color:var(--purple-deep);font-weight:700;height:auto}
+
+/* ---- footer ---- */
+footer{background:var(--card);border-top:1px solid var(--rule);padding:56px 0 30px;font-size:14px}
+.fgrid{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:44px;padding-bottom:40px;border-bottom:1px solid var(--rule)}
+footer h4{font-family:"Roboto";font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:15px}
+footer li{padding:5px 0;color:var(--ink-2)}
+.fbot{padding-top:22px;display:flex;justify-content:space-between;gap:20px;color:var(--ink-3);font-size:12.5px}
+</style>
+</head>
+<body>
+
+<div class="ribbon"><div class="wrap">
+  <span><strong>Concept redesign</strong> &nbsp;·&nbsp; An unsolicited design study by Ellis AI Studio. Not affiliated with, sponsored by, or endorsed by Yahoo Inc.</span>
+  <span>Headlines, quotes and figures are self-describing placeholders — not real news.</span>
+</div></div>
+
+<header><div class="wrap">
+  <div class="h-top">
+    <span class="brand">Yahoo!</span>
+    <span class="search">
+      <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.7"/><path d="m12.2 12.2 3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      Search news, symbols, anything
+    </span>
+    <span class="h-right">
+      <a class="btn btn-line" href="#">Mail</a>
+      <a class="btn btn-solid" href="#">Sign in</a>
+    </span>
+  </div>
+  <nav class="h-nav">
+    <a class="on" href="#">Today</a><a href="#">News</a><a href="#">Finance</a><a href="#">Sports</a>
+    <a href="#">Entertainment</a><a href="#">Life</a><a href="#">Weather</a><a href="#">Shopping</a>
+  </nav>
+</div></header>
+
+<section class="lead"><div class="wrap">
+  <article>
+    <div class="lead-art">
+      <svg viewBox="0 0 720 450" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#5E2AAE"/><stop offset="1" stop-color="#221049"/>
+          </linearGradient>
+        </defs>
+        <rect width="720" height="450" fill="url(#lg)"/>
+        <g fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1.4">
+          <circle cx="250" cy="230" r="60"/><circle cx="250" cy="230" r="112"/><circle cx="250" cy="230" r="164"/>
+        </g>
+        <g fill="#fff" fill-opacity=".14">
+          <rect x="430" y="120" width="200" height="12" rx="6"/><rect x="430" y="152" width="150" height="12" rx="6"/>
+          <rect x="430" y="184" width="176" height="12" rx="6"/>
+        </g>
+        <circle cx="250" cy="230" r="22" fill="#fff" fill-opacity=".9"/>
+      </svg>
+    </div>
+    <span class="label" style="display:block;margin-top:20px">The lead story</span>
+    <h1>One story gets the top of the page, at a size that says it matters.</h1>
+    <p class="dek">This is placeholder copy standing in for a lead article. The point of the layout is that a reader's eye lands here first, and nothing on the fold competes with it for attention.</p>
+    <div class="byline"><span>By a staff writer</span><span class="dot"></span><span>7 min read</span><span class="dot"></span><span>Updated 12 minutes ago</span></div>
+  </article>
+
+  <div class="side">
+    <article class="side-item">
+      <div><span class="label label-mute">Finance</span><h3>The second story runs at roughly half the weight of the lead.</h3><div class="m">32 minutes ago</div></div>
+      <div class="thumb"><svg viewBox="0 0 96 72" width="100%" height="100%" aria-hidden="true"><rect width="96" height="72" fill="#3B1774"/><path d="M0 54l20-12 18 8 22-20 36 14v28H0z" fill="#5E2AAE"/></svg></div>
+    </article>
+    <article class="side-item">
+      <div><span class="label label-mute">Politics</span><h3>Three or four of these fill the column, no more.</h3><div class="m">1 hour ago</div></div>
+      <div class="thumb"><svg viewBox="0 0 96 72" width="100%" height="100%" aria-hidden="true"><rect width="96" height="72" fill="#1E4079"/><circle cx="48" cy="36" r="19" fill="#4B7BC8" fill-opacity=".8"/></svg></div>
+    </article>
+    <article class="side-item">
+      <div><span class="label label-mute">Science</span><h3>Every headline is a full sentence a reader can act on.</h3><div class="m">2 hours ago</div></div>
+      <div class="thumb"><svg viewBox="0 0 96 72" width="100%" height="100%" aria-hidden="true"><rect width="96" height="72" fill="#0E4A46"/><path d="M20 58c14-30 42-30 56 0z" fill="#2E8F86" fill-opacity=".85"/></svg></div>
+    </article>
+    <article class="side-item">
+      <div><span class="label label-mute">Health</span><h3>No module in this column is an advertisement in disguise.</h3><div class="m">3 hours ago</div></div>
+      <div class="thumb"><svg viewBox="0 0 96 72" width="100%" height="100%" aria-hidden="true"><rect width="96" height="72" fill="#7A2540"/><rect x="26" y="18" width="44" height="36" rx="6" fill="#C4587A" fill-opacity=".85"/></svg></div>
+    </article>
+  </div>
+</div></section>
+
+<section class="rail"><div class="wrap">
+  <div class="rail-cell">
+    <div class="rail-hd"><span class="label">Markets</span><span class="label label-mute">Delayed · illustrative</span></div>
+    <div class="tick"><span class="sym">S&amp;P 500</span><span class="px">—</span><span class="ch up">▲ —</span></div>
+    <div class="tick"><span class="sym">Nasdaq</span><span class="px">—</span><span class="ch up">▲ —</span></div>
+    <div class="tick"><span class="sym">Dow 30</span><span class="px">—</span><span class="ch down">▼ —</span></div>
+    <div class="tick"><span class="sym">Crude oil</span><span class="px">—</span><span class="ch down">▼ —</span></div>
+  </div>
+  <div class="rail-cell">
+    <div class="rail-hd"><span class="label">Weather</span><span class="label label-mute">Seattle, WA</span></div>
+    <div class="wx">
+      <svg width="52" height="52" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="19" cy="19" r="8" fill="#E8A317"/>
+        <path d="M14 34a7 7 0 0 1 1.4-13.9A10 10 0 0 1 34 23.4 6.3 6.3 0 0 1 33 36H14Z" fill="#B9C3D4"/>
+      </svg>
+      <span><span class="deg">54°</span><div class="meta">Partly cloudy · feels 51°</div></span>
+    </div>
+    <div class="wx-days">
+      <span>Thu<b>57°</b></span><span>Fri<b>60°</b></span><span>Sat<b>58°</b></span><span>Sun<b>55°</b></span>
+    </div>
+  </div>
+  <div class="rail-cell">
+    <div class="rail-hd"><span class="label">Scores</span><span class="label label-mute">Illustrative</span></div>
+    <div class="score"><span class="tm"><span class="sq" style="background:#12734B"></span>Home team</span><span class="pts">—</span></div>
+    <div class="score"><span class="tm"><span class="sq" style="background:#B32323"></span>Away team</span><span class="pts">—</span></div>
+    <div class="score" style="border-top:1px solid var(--rule);margin-top:6px;padding-top:12px;color:var(--ink-3);font-size:13px">
+      <span>Final · full box score</span><span>→</span>
+    </div>
+  </div>
+</div></section>
+
+<section class="river"><div class="wrap">
+  <div class="r-head"><h2>Today’s stories</h2><span class="label label-mute">Updated continuously</span></div>
+  <div class="r-grid">
+    <article class="story">
+      <div class="art"><svg viewBox="0 0 400 225" width="100%" height="100%" aria-hidden="true"><rect width="400" height="225" fill="#243A6B"/><g fill="#5C82CE" fill-opacity=".8"><rect x="40" y="120" width="46" height="70" rx="4"/><rect x="102" y="86" width="46" height="104" rx="4"/><rect x="164" y="140" width="46" height="50" rx="4"/><rect x="226" y="62" width="46" height="128" rx="4"/><rect x="288" y="104" width="46" height="86" rx="4"/></g></svg></div>
+      <span class="label label-mute">Business</span>
+      <h3>Cards in the river share one column width and one type scale.</h3>
+      <p>Placeholder standfirst. Consistent card geometry is what lets a reader scan nine stories without re-learning the layout at each one.</p>
+      <div class="m">4 hours ago · 5 min read</div>
+    </article>
+    <article class="story">
+      <div class="art"><svg viewBox="0 0 400 225" width="100%" height="100%" aria-hidden="true"><rect width="400" height="225" fill="#14503F"/><path d="M0 170c60-40 120 10 200-20s140 20 200-10v85H0z" fill="#2F8C6E" fill-opacity=".85"/><circle cx="316" cy="58" r="26" fill="#8FD3B8" fill-opacity=".7"/></svg></div>
+      <span class="label label-mute">Climate</span>
+      <h3>Images are the same ratio everywhere, so nothing jumps.</h3>
+      <p>Placeholder standfirst. Fixed aspect ratios also reserve space before the image loads, which keeps the page from shifting under the reader.</p>
+      <div class="m">5 hours ago · 3 min read</div>
+    </article>
+    <article class="story">
+      <div class="art"><svg viewBox="0 0 400 225" width="100%" height="100%" aria-hidden="true"><rect width="400" height="225" fill="#5A1E52"/><g fill="#B26AA8" fill-opacity=".8"><circle cx="140" cy="112" r="58"/><circle cx="244" cy="112" r="58"/></g></svg></div>
+      <span class="label label-mute">Entertainment</span>
+      <h3>Sponsored items would sit here, labelled, at the same size.</h3>
+      <p>Placeholder standfirst. Advertising is not removed in this concept — it is made honest, boxed and labelled rather than dressed as editorial.</p>
+      <div class="m">6 hours ago · 4 min read</div>
+    </article>
+  </div>
+</div></section>
+
+<section class="news"><div class="wrap">
+  <div>
+    <h2>The morning brief, once a day.</h2>
+    <p>One email, sent early, that makes the homepage optional. That is the point of it.</p>
+  </div>
+  <div class="news-form">
+    <span class="f">you@example.com</span>
+    <span class="btn btn-white">Subscribe</span>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div>
+      <span class="brand">Yahoo!</span>
+      <p style="margin-top:14px;max-width:32ch;color:var(--ink-2)">News, finance, sports, mail and search — a portal, edited.</p>
+    </div>
+    <div><h4>News</h4><ul><li>US</li><li>World</li><li>Politics</li><li>Science</li></ul></div>
+    <div><h4>Finance</h4><ul><li>Markets</li><li>Watchlists</li><li>Portfolio</li><li>Screeners</li></ul></div>
+    <div><h4>More</h4><ul><li>Sports</li><li>Entertainment</li><li>Life</li><li>Weather</li></ul></div>
+    <div><h4>Company</h4><ul><li>About</li><li>Careers</li><li>Advertising</li><li>Privacy</li></ul></div>
+  </div>
+  <div class="fbot">
+    <span>Concept redesign by Ellis AI Studio · Not affiliated with Yahoo Inc.</span>
+    <span>All marks are the property of their respective owners.</span>
+  </div>
+</div></footer>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ryanair — concept redesign</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ===========================================================================
+   Ryanair — unsolicited concept redesign
+   Direction: "One number, told the truth". A low-fare airline's homepage has
+   exactly one job — get a date pair and two airports into the funnel. Every
+   pixel that is not the search widget, or the honest total next to it, is
+   costing a booking. The redesign puts the widget on the fold, then answers
+   the question the funnel usually defers: what will this actually cost me
+   with a bag?
+   Type: Rubik (headings) + Nunito Sans (body) — the DB's e-commerce /
+   conversion pairing. Palette: the airline's navy and yellow, with the yellow
+   demoted to an accent so it stops competing with the CTA.
+   =========================================================================== */
+@font-face{font-family:"Rubik";src:url("_assets/fonts/rubik.woff2") format("woff2");font-weight:300 900;font-display:block}
+@font-face{font-family:"Nunito Sans";src:url("_assets/fonts/nunito-sans.woff2") format("woff2");font-weight:200 1000;font-display:block}
+
+:root{
+  --navy:#0A2A6B;
+  --navy-deep:#061C4A;
+  --navy-soft:#1E4497;
+  --sky:#EEF3FC;
+  --sky-line:#D3DEF3;
+  --yellow:#F5C518;
+  --yellow-soft:#FFF6D6;
+  --ink:#101728;
+  --ink-2:#4C5567;
+  --ink-3:#828B9C;
+  --card:#FFFFFF;
+  --bg:#FBFCFE;
+  --rule:#E4E8F0;
+  --go:#0F7A4A;         /* the single conversion colour */
+  --go-dim:#E7F5EE;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Nunito Sans",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-family:"Rubik",system-ui,sans-serif;font-weight:600;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0}ul{margin:0;padding:0;list-style:none}a{color:inherit;text-decoration:none}
+.wrap{width:1220px;max-width:calc(100% - 80px);margin-inline:auto}
+.label{font-family:"Rubik";font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+
+.ribbon{background:#101728;color:#B9C2D4;font-size:11.5px;padding:9px 0}
+.ribbon .wrap{display:flex;gap:16px;justify-content:space-between;align-items:center}
+.ribbon strong{color:#fff;font-family:"Rubik";font-weight:600;letter-spacing:.13em;text-transform:uppercase;font-size:10.5px}
+
+/* ---- header ---- */
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;align-items:center;gap:34px;height:74px}
+.brand{display:flex;align-items:center;gap:11px;font-family:"Rubik";font-weight:700;font-size:21px;letter-spacing:-.02em}
+.hnav{display:flex;gap:26px;margin-left:16px;font-size:15px;color:#C6D2EA}
+.hnav a.on{color:#fff;font-weight:700}
+.hright{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:14.5px}
+.pill{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 15px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.24);color:#fff}
+.pill-solid{background:#fff;color:var(--navy);border-color:#fff;font-weight:700}
+
+/* ---- hero + booking widget ---- */
+.hero{background:linear-gradient(178deg,var(--navy) 0%,var(--navy-soft) 62%,#2C56AE 100%);
+  color:#fff;padding:64px 0 132px;position:relative;overflow:hidden}
+.hero .sky{position:absolute;inset:0;opacity:.5;pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero-copy{max-width:660px}
+.hero h1{font-size:56px;line-height:1.04;letter-spacing:-.035em;color:#fff}
+.hero h1 span{color:var(--yellow)}
+.hero .sub{margin-top:18px;font-size:19px;color:#C9D6F0;max-width:50ch}
+
+.widget{margin-top:44px;background:var(--card);border-radius:18px;padding:10px;color:var(--ink);
+  box-shadow:0 3px 6px rgba(6,28,74,.12),0 34px 70px -30px rgba(6,28,74,.75)}
+.tabs{display:flex;gap:4px;padding:4px 4px 10px}
+.tab{padding:9px 18px;border-radius:999px;font-family:"Rubik";font-size:14px;font-weight:500;color:var(--ink-2)}
+.tab.on{background:var(--sky);color:var(--navy);font-weight:600}
+.fields{display:grid;grid-template-columns:1.25fr 1.25fr 1fr .85fr auto;gap:8px;align-items:stretch}
+.field{background:var(--bg);border:1px solid var(--rule);border-radius:12px;padding:12px 16px;display:grid;gap:3px;align-content:center;min-height:74px}
+.field .k{font-family:"Rubik";font-size:10.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.field .v{font-family:"Rubik";font-size:19px;font-weight:500;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.field .v small{font-family:"Nunito Sans";font-size:13px;font-weight:400;color:var(--ink-3);letter-spacing:0}
+.field.swap{position:relative}
+.swap-btn{position:absolute;right:-17px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:999px;
+  background:#fff;border:1px solid var(--rule);display:grid;place-items:center;color:var(--navy);z-index:2}
+.search-btn{background:var(--go);color:#fff;border-radius:12px;min-width:150px;display:grid;place-items:center;
+  font-family:"Rubik";font-size:16.5px;font-weight:600;gap:2px;padding:0 26px}
+.widget-foot{display:flex;align-items:center;gap:20px;padding:12px 8px 6px;font-size:13.5px;color:var(--ink-2)}
+.widget-foot .chk{display:flex;align-items:center;gap:8px}
+.box{width:17px;height:17px;border-radius:5px;border:1.6px solid var(--rule);display:grid;place-items:center;background:#fff}
+.box.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* ---- honesty strip: the actual differentiator ---- */
+.honest{margin-top:-64px;position:relative;z-index:2;padding-bottom:84px}
+.honest .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.hcard{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:26px 26px 24px;
+  box-shadow:0 1px 3px rgba(16,23,40,.05),0 20px 40px -32px rgba(16,23,40,.5);display:grid;gap:10px;align-content:start}
+.hcard .ico{width:40px;height:40px;border-radius:11px;background:var(--yellow-soft);color:#8A6A00;display:grid;place-items:center}
+.hcard h3{font-size:18px}
+.hcard p{font-size:14.5px;color:var(--ink-2);line-height:1.58}
+
+/* ---- fare grid ---- */
+.fares{padding:86px 0;background:var(--sky);border-block:1px solid var(--sky-line)}
+.f-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:34px;gap:40px}
+.f-head h2{font-size:38px}
+.f-head p{color:var(--ink-2);font-size:16.5px;max-width:44ch;margin-top:10px}
+.f-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.fare{background:var(--card);border:1px solid var(--sky-line);border-radius:14px;overflow:hidden}
+.fare-top{padding:20px 22px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.fare .route{font-family:"Rubik";font-size:17.5px;font-weight:600;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.fare .route svg{color:var(--ink-3)}
+.fare .when{font-size:13px;color:var(--ink-3);margin-top:4px}
+.fare-price{padding:0 22px 20px;display:flex;align-items:baseline;justify-content:space-between}
+.fare-price .amt{font-family:"Rubik";font-size:30px;font-weight:600;letter-spacing:-.03em}
+.fare-price .amt sup{font-size:16px;font-weight:500;margin-right:2px;top:-.5em}
+.fare-price .inc{font-size:12.5px;color:var(--go);font-weight:700;background:var(--go-dim);padding:5px 10px;border-radius:999px}
+.fare-bar{height:5px;background:linear-gradient(90deg,var(--navy),var(--navy-soft))}
+.fare-note{padding:12px 22px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);display:flex;justify-content:space-between}
+
+/* ---- network map ---- */
+.net{padding:88px 0}
+.net .wrap{display:grid;grid-template-columns:1fr 1.12fr;gap:76px;align-items:center}
+.net h2{font-size:40px;line-height:1.1}
+.net p{margin-top:18px;color:var(--ink-2);font-size:17px;max-width:44ch}
+.stats{display:flex;gap:46px;margin-top:34px}
+.stat .v{font-family:"Rubik";font-size:34px;font-weight:600;letter-spacing:-.03em;color:var(--navy)}
+.stat .k{font-size:13.5px;color:var(--ink-2);margin-top:2px}
+.map{background:var(--navy-deep);border-radius:20px;overflow:hidden;aspect-ratio:4/3}
+
+/* ---- app CTA ---- */
+.app{background:var(--navy-deep);color:#fff;padding:74px 0}
+.app .wrap{display:flex;align-items:center;justify-content:space-between;gap:60px}
+.app h2{font-size:36px;color:#fff}
+.app p{margin-top:14px;color:#AEBEDD;font-size:17px;max-width:46ch}
+.app-acts{display:flex;gap:12px;flex:none}
+.store{display:flex;align-items:center;gap:12px;background:#fff;color:var(--navy-deep);
+  border-radius:12px;padding:13px 22px}
+.store .st{display:grid;line-height:1.2}
+.store .st small{font-size:11px;color:#5A6785}
+.store .st b{font-family:"Rubik";font-size:16px;font-weight:600}
+
+/* ---- footer ---- */
+footer{background:var(--navy);color:#B9C8E4;padding:66px 0 34px;font-size:14.5px}
+.fgrid{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:44px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.14)}
+footer h4{color:#fff;font-family:"Rubik";font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;margin-bottom:16px}
+footer li{padding:5px 0}
+.fbrand p{margin-top:14px;max-width:32ch;line-height:1.6;color:#9FB1D2}
+.fbot{padding-top:24px;display:flex;justify-content:space-between;gap:20px;color:#8B9DC0;font-size:12.5px}
+</style>
+</head>
+<body>
+
+<div class="ribbon"><div class="wrap">
+  <span><strong>Concept redesign</strong> &nbsp;·&nbsp; An unsolicited design study by Ellis AI Studio. Not affiliated with, sponsored by, or endorsed by Ryanair DAC.</span>
+  <span>All fares, routes and figures shown are illustrative placeholders.</span>
+</div></div>
+
+<header><div class="wrap">
+  <a class="brand" href="#">
+    <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+      <circle cx="16" cy="16" r="15" fill="#F5C518"/>
+      <path d="M8 20.5 24 8.5l-4.6 15.2-3.4-5.6-7.9 2.4Z" fill="#0A2A6B"/>
+    </svg>
+    Ryanair
+  </a>
+  <nav class="hnav"><a class="on" href="#">Book</a><a href="#">Check-in</a><a href="#">My bookings</a><a href="#">Travel info</a><a href="#">Help</a></nav>
+  <div class="hright">
+    <span class="pill">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.2" stroke="currentColor" stroke-width="1.5"/><path d="M2 8h12M8 2c1.7 1.7 2.6 3.9 2.6 6S9.7 12.3 8 14c-1.7-1.7-2.6-3.9-2.6-6S6.3 3.7 8 2Z" stroke="currentColor" stroke-width="1.3"/></svg>
+      UK · English · GBP
+    </span>
+    <span class="pill pill-solid">Log in</span>
+  </div>
+</div></header>
+
+<section class="hero">
+  <svg class="sky" viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g stroke="#fff" stroke-opacity=".16" fill="none" stroke-width="1.2">
+      <path d="M-40 470C220 400 380 470 640 400s420 40 700-40"/>
+      <path d="M-40 530C240 470 420 530 700 460s440 30 820-50"/>
+    </g>
+    <g fill="#fff" fill-opacity=".07">
+      <circle cx="1180" cy="130" r="180"/><circle cx="300" cy="80" r="120"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <div class="hero-copy">
+      <h1>Two airports, two dates.<br><span>That is the whole homepage.</span></h1>
+      <p class="sub">Search once and see the fare with the bag, the seat and the taxes already in it. Nothing gets added at step four.</p>
+    </div>
+
+    <div class="widget">
+      <div class="tabs"><span class="tab on">Return</span><span class="tab">One way</span><span class="tab">Multi-city</span></div>
+      <div class="fields">
+        <div class="field swap">
+          <span class="k">From</span>
+          <span class="v">London STN <small>Stansted</small></span>
+          <span class="swap-btn">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6h8M9.5 3.5 12 6 9.5 8.5M12 10H4M6.5 7.5 4 10l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="field"><span class="k">To</span><span class="v">Dublin DUB <small>Ireland</small></span></div>
+        <div class="field"><span class="k">Dates</span><span class="v">12 – 19 Sep</span></div>
+        <div class="field"><span class="k">Travellers</span><span class="v">2 adults</span></div>
+        <div class="field search-btn">
+          Search fares
+        </div>
+      </div>
+      <div class="widget-foot">
+        <span class="chk"><span class="box on"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.3 4.8 8.5 9.5 3.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Show prices including a 10 kg bag</span>
+        <span class="chk"><span class="box"></span> My dates are flexible (±3 days)</span>
+        <span style="margin-left:auto;color:var(--ink-3)">Prices shown are the total per traveller. No card fee.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="honest"><div class="wrap"><div class="grid">
+  <article class="hcard">
+    <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="4" y="6.5" width="12" height="9.5" rx="1.6" stroke="currentColor" stroke-width="1.7"/><path d="M7.6 6.5V5a1.4 1.4 0 0 1 1.4-1.4h2a1.4 1.4 0 0 1 1.4 1.4v1.5" stroke="currentColor" stroke-width="1.7"/></svg></span>
+    <h3>The bag is in the price</h3>
+    <p>Cabin bag allowance is chosen at search, not at checkout. The number you compare is the number you pay.</p>
+  </article>
+  <article class="hcard">
+    <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3.2 12.1 7.5l4.7.7-3.4 3.3.8 4.7L10 14l-4.2 2.2.8-4.7L3.2 8.2l4.7-.7L10 3.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+    <h3>Extras are opt-in, once</h3>
+    <p>Seats, priority and insurance are offered on a single screen with a visible “no thanks”. They are never pre-ticked.</p>
+  </article>
+  <article class="hcard">
+    <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="6.8" stroke="currentColor" stroke-width="1.7"/><path d="M10 6.2V10l2.6 1.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+    <h3>No countdown timers</h3>
+    <p>Manufactured urgency costs more in abandoned baskets than it wins in conversions. The fare holds while you decide.</p>
+  </article>
+</div></div></section>
+
+<section class="fares"><div class="wrap">
+  <div class="f-head">
+    <div>
+      <span class="label">Fare finder</span>
+      <h2>Cheapest days to fly from Stansted.</h2>
+      <p>The same grid the airline already computes — surfaced before the funnel instead of three steps inside it.</p>
+    </div>
+    <span class="label">Illustrative placeholder fares</span>
+  </div>
+  <div class="f-grid">
+    <article class="fare"><div class="fare-bar"></div>
+      <div class="fare-top"><div><span class="route">STN <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> DUB</span><span class="when">Tue 12 Sep · 07:15</span></div></div>
+      <div class="fare-price"><span class="amt"><sup>£</sup>24</span><span class="inc">Bag included</span></div>
+      <div class="fare-note"><span>1 h 25 m · Direct</span><span>Seats left: many</span></div>
+    </article>
+    <article class="fare"><div class="fare-bar"></div>
+      <div class="fare-top"><div><span class="route">STN <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> BCN</span><span class="when">Wed 13 Sep · 06:40</span></div></div>
+      <div class="fare-price"><span class="amt"><sup>£</sup>31</span><span class="inc">Bag included</span></div>
+      <div class="fare-note"><span>2 h 10 m · Direct</span><span>Seats left: many</span></div>
+    </article>
+    <article class="fare"><div class="fare-bar"></div>
+      <div class="fare-top"><div><span class="route">STN <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> MXP</span><span class="when">Thu 14 Sep · 11:05</span></div></div>
+      <div class="fare-price"><span class="amt"><sup>£</sup>29</span><span class="inc">Bag included</span></div>
+      <div class="fare-note"><span>2 h 00 m · Direct</span><span>Seats left: some</span></div>
+    </article>
+    <article class="fare"><div class="fare-bar"></div>
+      <div class="fare-top"><div><span class="route">STN <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M9 5l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> KRK</span><span class="when">Fri 15 Sep · 14:30</span></div></div>
+      <div class="fare-price"><span class="amt"><sup>£</sup>27</span><span class="inc">Bag included</span></div>
+      <div class="fare-note"><span>2 h 25 m · Direct</span><span>Seats left: some</span></div>
+    </article>
+  </div>
+</div></section>
+
+<section class="net"><div class="wrap">
+  <div>
+    <span class="label">The network</span>
+    <h2>Point to point, across Europe.</h2>
+    <p>A route map is the one piece of marketing a low-fare airline genuinely needs — it answers “can I get there from here” faster than any paragraph.</p>
+    <div class="stats">
+      <div class="stat"><div class="v">230+</div><div class="k">Airports served</div></div>
+      <div class="stat"><div class="v">37</div><div class="k">Countries</div></div>
+      <div class="stat"><div class="v">90+</div><div class="k">Bases</div></div>
+    </div>
+  </div>
+  <div class="map">
+    <svg viewBox="0 0 560 420" width="100%" height="100%" aria-hidden="true">
+      <rect width="560" height="420" fill="#061C4A"/>
+      <g stroke="#F5C518" stroke-opacity=".55" fill="none" stroke-width="1.1">
+        <path d="M188 150C150 190 140 240 168 296"/>
+        <path d="M188 150C250 130 330 150 392 196"/>
+        <path d="M188 150C230 210 300 250 372 268"/>
+        <path d="M188 150C160 120 130 108 96 112"/>
+        <path d="M188 150C246 176 288 214 300 300"/>
+        <path d="M188 150C264 122 340 118 428 132"/>
+      </g>
+      <g fill="#7FA0DC" fill-opacity=".5">
+        <circle cx="168" cy="296" r="4"/><circle cx="392" cy="196" r="4"/><circle cx="372" cy="268" r="4"/>
+        <circle cx="96" cy="112" r="4"/><circle cx="300" cy="300" r="4"/><circle cx="428" cy="132" r="4"/>
+        <circle cx="240" cy="352" r="3"/><circle cx="460" cy="300" r="3"/><circle cx="120" cy="220" r="3"/>
+        <circle cx="330" cy="90" r="3"/><circle cx="470" cy="220" r="3"/><circle cx="210" cy="90" r="3"/>
+      </g>
+      <circle cx="188" cy="150" r="9" fill="#F5C518"/>
+      <circle cx="188" cy="150" r="17" fill="none" stroke="#F5C518" stroke-opacity=".45" stroke-width="1.4"/>
+    </svg>
+  </div>
+</div></section>
+
+<section class="app"><div class="wrap">
+  <div>
+    <h2>Boarding pass, in your pocket.</h2>
+    <p>Check in, store the pass offline, and get a push the moment a gate changes. The app does the parts a homepage should not try to.</p>
+  </div>
+  <div class="app-acts">
+    <span class="store">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.7c0-2 1.6-3 1.7-3-.9-1.4-2.4-1.5-2.9-1.6-1.2-.1-2.4.7-3 .7s-1.6-.7-2.6-.7c-1.3 0-2.6.8-3.3 2-1.4 2.4-.4 6 1 8 .7 1 1.5 2 2.5 2s1.3-.6 2.5-.6 1.5.6 2.6.6 1.7-.9 2.4-1.9c.7-1.1 1-2.2 1-2.2s-1.9-.8-1.9-3.3ZM14.5 6.3c.5-.7.9-1.6.8-2.5-.8 0-1.8.5-2.4 1.2-.5.6-1 1.6-.8 2.5.9.1 1.8-.4 2.4-1.2Z"/></svg>
+      <span class="st"><small>Download on the</small><b>App Store</b></span>
+    </span>
+    <span class="store">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 3.2v17.6c0 .5.3.8.6.9l9.3-9.7L4.6 2.3c-.3.1-.6.4-.6.9Zm12.3 5.6L6.2 2.6l8.6 9 1.5-1.6-.0-.2Zm3.3 1.9-2.3-1.3-1.7 1.8 1.7 1.8 2.3-1.3c.6-.4.6-1 0-1.4v.4ZM6.2 21.4l10.1-6.2-1.5-1.6-8.6 7.8Z"/></svg>
+      <span class="st"><small>Get it on</small><b>Google Play</b></span>
+    </span>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div class="fbrand">
+      <a class="brand" href="#" style="color:#fff">
+        <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#F5C518"/><path d="M8 20.5 24 8.5l-4.6 15.2-3.4-5.6-7.9 2.4Z" fill="#0A2A6B"/></svg>
+        Ryanair
+      </a>
+      <p>Europe’s point-to-point low-fare network. Fares shown include taxes and charges.</p>
+    </div>
+    <div><h4>Plan</h4><ul><li>Fare finder</li><li>Route map</li><li>Timetable</li><li>Car hire</li></ul></div>
+    <div><h4>Travel</h4><ul><li>Bags</li><li>Check-in</li><li>Airports</li><li>Special assistance</li></ul></div>
+    <div><h4>Help</h4><ul><li>Contact</li><li>Refunds</li><li>Disruption</li><li>Complaints</li></ul></div>
+    <div><h4>Company</h4><ul><li>About</li><li>Investors</li><li>Careers</li><li>Sustainability</li></ul></div>
+  </div>
+  <div class="fbot">
+    <span>Concept redesign by Ellis AI Studio · Not affiliated with Ryanair DAC.</span>
+    <span>All marks are the property of their respective owners.</span>
+  </div>
+</div></footer>
+
+</body>
+</html>

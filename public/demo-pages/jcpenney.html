@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>JCPenney — concept redesign</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ===========================================================================
+   JCPenney — unsolicited concept redesign
+   Direction: "Department store, edited". Mid-market retail sites drown their
+   own merchandise: stacked promo banners, four competing discount messages,
+   and product photography reduced to thumbnails between them. The redesign
+   inverts that — one editorial statement, then the departments at a size you
+   can actually shop, with the value message stated once and believed.
+   Type: Playfair Display (display) + DM Sans (interface) — the DB's
+   "Classic Elegant" luxury/editorial pairing, pulled toward warm mid-market
+   rather than luxury by the cream palette and a softer red.
+   Note: no photography is available offline, so merchandise is represented by
+   colour-blocked plates. In production these are product shots.
+   =========================================================================== */
+@font-face{font-family:"Playfair Display";src:url("_assets/fonts/playfair-display.woff2") format("woff2");font-weight:400 900;font-display:block}
+@font-face{font-family:"DM Sans";src:url("_assets/fonts/dm-sans.woff2") format("woff2");font-weight:100 1000;font-display:block}
+
+:root{
+  --cream:#FBF7F2;
+  --cream-2:#F3ECE2;
+  --card:#FFFFFF;
+  --ink:#1A1613;
+  --ink-2:#5A5149;
+  --ink-3:#8C8177;
+  --rule:#E5DCD0;
+  --red:#A8202E;        /* the mark, desaturated so it can be used sparingly */
+  --red-deep:#7C1622;
+  --red-wash:#FBEEEF;
+  --gold:#9A7B3F;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);
+  font-family:"DM Sans",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-family:"Playfair Display",Georgia,serif;font-weight:500;letter-spacing:-.015em;text-wrap:balance}
+p{margin:0}ul{margin:0;padding:0;list-style:none}a{color:inherit;text-decoration:none}
+.wrap{width:1260px;max-width:calc(100% - 76px);margin-inline:auto}
+.label{font-family:"DM Sans";font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+
+.ribbon{background:#1A1613;color:#C3B8AC;font-size:11.5px;padding:9px 0}
+.ribbon .wrap{display:flex;gap:16px;justify-content:space-between;align-items:center}
+.ribbon strong{color:#fff;font-weight:700;letter-spacing:.13em;text-transform:uppercase;font-size:10.5px}
+
+/* ---- one promo line, stated once ---- */
+.promo{background:var(--red);color:#fff;text-align:center;font-size:13.5px;letter-spacing:.03em;padding:11px 0}
+.promo b{font-weight:700}
+
+/* ---- header ---- */
+header{background:var(--cream);border-bottom:1px solid var(--rule)}
+.h-top{display:flex;align-items:center;gap:30px;height:88px}
+.brand{font-family:"Playfair Display";font-size:27px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.brand em{font-style:normal;color:var(--red)}
+.search{flex:1;max-width:440px;display:flex;align-items:center;gap:11px;background:var(--card);
+  border:1px solid var(--rule);border-radius:999px;padding:11px 20px;color:var(--ink-3);font-size:14.5px}
+.h-right{margin-left:auto;display:flex;align-items:center;gap:24px;font-size:14px}
+.h-right a{display:flex;align-items:center;gap:8px}
+.h-nav{display:flex;gap:32px;height:52px;align-items:center;font-size:14.5px;font-weight:500;
+  border-top:1px solid var(--rule);letter-spacing:.01em}
+.h-nav a.sale{color:var(--red);font-weight:700}
+
+/* ---- editorial hero ---- */
+.hero{padding:0}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.08fr;gap:0;align-items:stretch;min-height:560px}
+.hero-copy{padding:96px 72px 96px 0;display:grid;align-content:center;gap:24px}
+.hero h1{font-size:70px;line-height:1.02;letter-spacing:-.03em}
+.hero h1 em{font-style:italic;color:var(--red-deep)}
+.hero p{font-size:18.5px;color:var(--ink-2);max-width:40ch}
+.acts{display:flex;gap:12px;margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:52px;padding:0 30px;
+  font-family:"DM Sans";font-size:14.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  border:1.5px solid transparent;border-radius:2px;white-space:nowrap}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-line{border-color:var(--ink);color:var(--ink)}
+.hero-art{position:relative;overflow:hidden}
+
+/* ---- departments ---- */
+.depts{padding:96px 0}
+.d-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:42px}
+.d-head h2{font-size:42px}
+.d-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.dept{display:grid;gap:0;background:var(--card);border:1px solid var(--rule);overflow:hidden}
+.dept .plate{aspect-ratio:4/3;position:relative;overflow:hidden}
+.dept .body{padding:24px 26px 26px;display:grid;gap:7px}
+.dept h3{font-size:25px}
+.dept p{font-size:14.5px;color:var(--ink-2)}
+.dept .go{margin-top:8px;font-family:"DM Sans";font-size:12px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:8px}
+
+/* ---- value promise ---- */
+.value{background:var(--ink);color:#F2EBE1;padding:84px 0}
+.value .wrap{display:grid;grid-template-columns:1fr 1fr;gap:76px;align-items:center}
+.value h2{font-size:42px;color:#fff;line-height:1.1}
+.value h2 em{font-style:italic;color:#D8A96B}
+.value > .wrap > div > p{margin-top:18px;color:#BCB0A2;font-size:17.5px;max-width:42ch}
+.vlist{display:grid;gap:1px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.14)}
+.vrow{background:var(--ink);padding:26px 28px;display:grid;gap:6px}
+.vrow b{font-family:"Playfair Display";font-size:22px;font-weight:500;color:#fff}
+.vrow span{font-size:14.5px;color:#B5A899;line-height:1.55}
+
+/* ---- services ---- */
+.svc{padding:92px 0;background:var(--cream-2);border-block:1px solid var(--rule)}
+.s-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:38px}
+.svc-card{background:var(--card);border:1px solid var(--rule);padding:32px 28px;display:grid;gap:12px;align-content:start}
+.svc-card .ico{width:44px;height:44px;border-radius:999px;background:var(--red-wash);color:var(--red);display:grid;place-items:center}
+.svc-card h3{font-size:21px}
+.svc-card p{font-size:14px;color:var(--ink-2);line-height:1.6}
+
+/* ---- footer ---- */
+footer{background:var(--cream);padding:70px 0 34px;font-size:14.5px;border-top:1px solid var(--rule)}
+.fgrid{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:48px;padding-bottom:46px;border-bottom:1px solid var(--rule)}
+footer h4{font-family:"DM Sans";font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+footer li{padding:5px 0;color:var(--ink-2)}
+.fbrand p{margin-top:14px;max-width:32ch;color:var(--ink-2);line-height:1.6}
+.fbot{padding-top:24px;display:flex;justify-content:space-between;gap:20px;color:var(--ink-3);font-size:12.5px}
+</style>
+</head>
+<body>
+
+<div class="ribbon"><div class="wrap">
+  <span><strong>Concept redesign</strong> &nbsp;·&nbsp; An unsolicited design study by Ellis AI Studio. Not affiliated with, sponsored by, or endorsed by JCPenney.</span>
+  <span>Offers, prices and merchandise shown are illustrative placeholders.</span>
+</div></div>
+
+<div class="promo">Free shipping on orders over $49 &nbsp;·&nbsp; <b>Rewards members always ship free</b></div>
+
+<header><div class="wrap">
+  <div class="h-top">
+    <a class="brand" href="#">JC<em>Penney</em></a>
+    <span class="search">
+      <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.6" stroke="currentColor" stroke-width="1.7"/><path d="m12.2 12.2 3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      Search for a product, brand or department
+    </span>
+    <span class="h-right">
+      <a href="#"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 17s6-4.9 6-9.3A6 6 0 0 0 4 7.7C4 12.1 10 17 10 17Z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="7.6" r="2.2" stroke="currentColor" stroke-width="1.5"/></svg> Find a store</a>
+      <a href="#"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="6.6" r="3.2" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 17c0-3.2 2.8-5.2 6.2-5.2s6.2 2 6.2 5.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Account</a>
+      <a href="#"><svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 6.4h12l-1 9.2a1.3 1.3 0 0 1-1.3 1.2H6.3A1.3 1.3 0 0 1 5 15.6L4 6.4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M7.4 6.4a2.6 2.6 0 0 1 5.2 0" stroke="currentColor" stroke-width="1.5"/></svg> Bag</a>
+    </span>
+  </div>
+  <nav class="h-nav">
+    <a href="#">Women</a><a href="#">Men</a><a href="#">Kids</a><a href="#">Home</a>
+    <a href="#">Beauty</a><a href="#">Jewelry</a><a href="#">Shoes</a><a class="sale" href="#">Sale</a>
+  </nav>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <div class="hero-copy">
+    <span class="label">The autumn edit</span>
+    <h1>Everything for the family, <em>chosen well</em>.</h1>
+    <p>Nine departments under one roof, and one clear price on every ticket. No decoding four overlapping offers at the register.</p>
+    <div class="acts">
+      <a class="btn btn-dark" href="#">Shop the edit</a>
+      <a class="btn btn-line" href="#">New arrivals</a>
+    </div>
+  </div>
+  <div class="hero-art">
+    <svg viewBox="0 0 660 560" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="660" height="560" fill="#F3ECE2"/>
+      <!-- three colour plates standing in for a styled editorial photograph -->
+      <rect x="40" y="60" width="180" height="440" fill="#A8202E" fill-opacity=".88"/>
+      <rect x="238" y="120" width="180" height="380" fill="#2E4A44"/>
+      <rect x="436" y="30" width="180" height="470" fill="#1A1613"/>
+      <g fill="#F3ECE2" fill-opacity=".2">
+        <circle cx="130" cy="180" r="44"/><circle cx="328" cy="260" r="44"/><circle cx="526" cy="150" r="44"/>
+      </g>
+      <g fill="#D8A96B">
+        <rect x="40" y="500" width="180" height="6"/><rect x="238" y="500" width="180" height="6"/><rect x="436" y="500" width="180" height="6"/>
+      </g>
+    </svg>
+  </div>
+</div></section>
+
+<section class="depts"><div class="wrap">
+  <div class="d-head">
+    <div><span class="label">Shop by department</span><h2>Six doors, not sixty banners.</h2></div>
+    <span class="label">Illustrative merchandise</span>
+  </div>
+  <div class="d-grid">
+
+    <article class="dept">
+      <div class="plate"><svg viewBox="0 0 400 300" width="100%" height="100%" aria-hidden="true"><rect width="400" height="300" fill="#8E4257"/><path d="M200 62c34 0 46 26 46 58s-10 60-46 60-46-28-46-60 12-58 46-58Z" fill="#C97F92" fill-opacity=".9"/><rect x="120" y="212" width="160" height="60" rx="6" fill="#F3D9DF" fill-opacity=".55"/></svg></div>
+      <div class="body"><h3>Women</h3><p>Apparel, dresses, outerwear and the brands people come back for.</p><span class="go">Shop women →</span></div>
+    </article>
+
+    <article class="dept">
+      <div class="plate"><svg viewBox="0 0 400 300" width="100%" height="100%" aria-hidden="true"><rect width="400" height="300" fill="#28405E"/><rect x="126" y="70" width="148" height="160" rx="8" fill="#5D7FAC"/><rect x="160" y="230" width="80" height="46" rx="6" fill="#B9CBE2" fill-opacity=".7"/></svg></div>
+      <div class="body"><h3>Men</h3><p>Suiting, workwear, denim and a big-and-tall range that is actually stocked.</p><span class="go">Shop men →</span></div>
+    </article>
+
+    <article class="dept">
+      <div class="plate"><svg viewBox="0 0 400 300" width="100%" height="100%" aria-hidden="true"><rect width="400" height="300" fill="#2E4A44"/><g fill="#7FB39F" fill-opacity=".9"><circle cx="150" cy="130" r="52"/><circle cx="256" cy="168" r="72"/></g><rect x="80" y="248" width="240" height="20" rx="10" fill="#CFE3D9" fill-opacity=".5"/></svg></div>
+      <div class="body"><h3>Home</h3><p>Bedding, bath, window and kitchen — the department that quietly carries the store.</p><span class="go">Shop home →</span></div>
+    </article>
+
+    <article class="dept">
+      <div class="plate"><svg viewBox="0 0 400 300" width="100%" height="100%" aria-hidden="true"><rect width="400" height="300" fill="#6B4A8E"/><g fill="#B392D4"><rect x="104" y="96" width="40" height="140" rx="20"/><rect x="164" y="76" width="40" height="160" rx="20"/><rect x="224" y="110" width="40" height="126" rx="20"/><rect x="284" y="90" width="40" height="146" rx="20"/></g></svg></div>
+      <div class="body"><h3>Beauty</h3><p>Cosmetics, skincare and fragrance, with in-store consultations.</p><span class="go">Shop beauty →</span></div>
+    </article>
+
+    <article class="dept">
+      <div class="plate"><svg viewBox="0 0 400 300" width="100%" height="100%" aria-hidden="true"><rect width="400" height="300" fill="#1A1613"/><g fill="none" stroke="#D8A96B" stroke-width="3"><circle cx="200" cy="150" r="66"/><circle cx="200" cy="150" r="40"/></g><path d="m200 66 12 26h-24z" fill="#D8A96B"/></svg></div>
+      <div class="body"><h3>Jewelry</h3><p>Fine and fashion jewelry, plus watch and ring sizing at the counter.</p><span class="go">Shop jewelry →</span></div>
+    </article>
+
+    <article class="dept">
+      <div class="plate"><svg viewBox="0 0 400 300" width="100%" height="100%" aria-hidden="true"><rect width="400" height="300" fill="#A8202E"/><path d="M96 200c0-46 34-84 78-84h60c26 0 44 18 44 40 0 30-26 44-60 44H96Z" fill="#E8909A" fill-opacity=".9"/><rect x="96" y="204" width="182" height="18" rx="9" fill="#F6D2D6" fill-opacity=".7"/></svg></div>
+      <div class="body"><h3>Shoes</h3><p>Every size on the floor, and free returns to any store within 60 days.</p><span class="go">Shop shoes →</span></div>
+    </article>
+
+  </div>
+</div></section>
+
+<section class="value"><div class="wrap">
+  <div>
+    <span class="label" style="color:#8C8177">The promise</span>
+    <h2>One price. <em>No decoder ring.</em></h2>
+    <p>A ticket price, a rewards price, a card price and a coupon stacked on top of each other is not a bargain — it is a maths problem. The concept states value once and holds it.</p>
+  </div>
+  <div class="vlist">
+    <div class="vrow"><b>The ticket is the price</b><span>What is printed is what is charged. Member pricing is shown on the same line, not discovered at checkout.</span></div>
+    <div class="vrow"><b>Rewards without arithmetic</b><span>Points show as a dollar value you can spend today, not a balance you have to convert.</span></div>
+    <div class="vrow"><b>Returns to any store</b><span>Sixty days, in store or by post, with the receipt kept on your account automatically.</span></div>
+  </div>
+</div></section>
+
+<section class="svc"><div class="wrap">
+  <div class="d-head" style="margin-bottom:0">
+    <div><span class="label">In store</span><h2>The things a website cannot ship.</h2></div>
+  </div>
+  <div class="s-grid">
+    <article class="svc-card">
+      <span class="ico"><svg width="21" height="21" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="m6 4 4.2 6.4M16 4l-4.2 6.4M11 10.4V18M7.4 18h7.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+      <h3>Salon</h3><p>Cut, colour and styling by appointment, in most stores.</p>
+    </article>
+    <article class="svc-card">
+      <span class="ico"><svg width="21" height="21" viewBox="0 0 22 22" fill="none" aria-hidden="true"><rect x="3" y="6" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.7"/><circle cx="11" cy="12" r="3.4" stroke="currentColor" stroke-width="1.7"/><path d="M8 6l1.4-2h3.2L14 6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      <h3>Portraits</h3><p>Family and school sittings, with digital delivery.</p>
+    </article>
+    <article class="svc-card">
+      <span class="ico"><svg width="21" height="21" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="6.6" cy="11" r="3.6" stroke="currentColor" stroke-width="1.7"/><circle cx="15.4" cy="11" r="3.6" stroke="currentColor" stroke-width="1.7"/><path d="M10.2 11h1.6M3 8.6 5 7.4M19 8.6 17 7.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+      <h3>Optical</h3><p>Eye exams, frames and same-week lens fitting.</p>
+    </article>
+    <article class="svc-card">
+      <span class="ico"><svg width="21" height="21" viewBox="0 0 22 22" fill="none" aria-hidden="true"><path d="M4 17V7.5L11 4l7 3.5V17" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8.4 17v-5h5.2v5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+      <h3>Order pickup</h3><p>Buy online, collect at the counter, usually the same day.</p>
+    </article>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div class="fbrand">
+      <a class="brand" href="#">JC<em>Penney</em></a>
+      <p>A department store for the whole family, in stores nationwide and online.</p>
+    </div>
+    <div><h4>Shop</h4><ul><li>Women</li><li>Men</li><li>Home</li><li>Beauty</li></ul></div>
+    <div><h4>Services</h4><ul><li>Salon</li><li>Portraits</li><li>Optical</li><li>Registry</li></ul></div>
+    <div><h4>Customer care</h4><ul><li>Order status</li><li>Shipping</li><li>Returns</li><li>Contact us</li></ul></div>
+    <div><h4>Company</h4><ul><li>About</li><li>Careers</li><li>Credit card</li><li>Rewards</li></ul></div>
+  </div>
+  <div class="fbot">
+    <span>Concept redesign by Ellis AI Studio · Not affiliated with JCPenney.</span>
+    <span>All marks are the property of their respective owners.</span>
+  </div>
+</div></footer>
+
+</body>
+</html>
