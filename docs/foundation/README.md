@@ -22,3 +22,7 @@ This directory is the authoritative business operating system for Ellis AI Studi
 ### Platform design
 
 - [Knowledge graph](knowledge-graph.md), [AI worker contracts](ai-worker-contracts.md), [Platform flywheels](platform-flywheels.md), [Service blueprints](service-blueprints.md)
+
+### Design system
+
+- [Brand design system](BRAND_DESIGN_SYSTEM.md), [Design prompt library](DESIGN_PROMPT_LIBRARY.md), [Design resource stack](DESIGN_RESOURCE_STACK.md)
