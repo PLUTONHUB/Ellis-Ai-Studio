@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import tokensCss from "~/styles/system/tokens.css?url";
 import baseCss from "~/styles/system/base.css?url";
 import dashboardCss from "~/styles/system/dashboard.css?url";
-import { jsonLd, organizationSchema, siteUrl } from "~/lib/seo";
+import { organizationSchema, siteUrl } from "~/lib/seo";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -35,7 +35,6 @@ export const Route = createRootRoute({
       { rel: "icon", type: "image/png", sizes: "32x32", href: "/logo/ellis-favicon-32.png" },
       { rel: "apple-touch-icon", sizes: "180x180", href: "/logo/ellis-apple-touch-icon.png" },
     ],
-    scripts: jsonLd(organizationSchema),
   }),
   notFoundComponent: () => (
     <main className="container" style={{ paddingBlock: "clamp(120px,18vw,220px)" }}>
@@ -47,6 +46,23 @@ export const Route = createRootRoute({
   component: () => <RootDocument><Outlet /></RootDocument>,
 });
 
+/*
+ * Ellis AI Studio's Organization/WebSite graph, emitted on Ellis's own pages
+ * only.
+ *
+ * It used to live in the root route's static `head`, which meant every route
+ * inherited it — including the Zone 8 preview under /preview/. A page whose
+ * visible content is a Seattle plumber should not carry machine-readable markup
+ * declaring it to be Ellis AI Studio's website (founders and contact emails
+ * included). Rendering it from the router state instead lets the preview opt out
+ * while every Ellis page keeps exactly the markup it had before.
+ */
+function OrganizationJsonLd() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  if (pathname.startsWith("/preview/")) return null;
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />;
+}
+
 function CanonicalUrl() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   return <link rel="canonical" href={`${siteUrl}${pathname === "/" ? "/" : pathname.replace(/\/$/, "")}`} />;
@@ -55,7 +71,7 @@ function CanonicalUrl() {
 function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head><HeadContent /><CanonicalUrl /></head>
+      <head><HeadContent /><CanonicalUrl /><OrganizationJsonLd /></head>
       <body>{children}<Scripts /></body>
     </html>
   );
