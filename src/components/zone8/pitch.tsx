@@ -12,9 +12,8 @@
  * and inventing it is how a credible pitch becomes a dishonest one.
  */
 
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { business, expiredSiteScreenshot, expiredSiteUrl, verificationItems } from "~/data/zone8";
+import { business, expiredSiteScreenshot, verificationItems } from "~/data/zone8";
 import { Icon } from "~/components/zone8/primitives";
 
 function Flow({ nodes }: { nodes: { label: string; tone?: "fail" | "win" }[] }) {
@@ -34,51 +33,30 @@ function Flow({ nodes }: { nodes: { label: string; tone?: "fail" | "win" }[] }) 
 }
 
 /*
- * Proof of the broken customer journey: Zone 8's current website as a customer
- * finds it.
+ * Proof of the broken customer journey: Zone 8's current website, as captured.
  *
- * Renders the real captured screenshot when one is supplied
- * (`expiredSiteScreenshot` in ~/data/zone8 — drop the file at
- * public/preview/zone8-expired-site.png and point the constant at it). The
- * capture is shown unmodified inside browser chrome: framed, never retouched,
- * because its entire value is being exactly what the customer sees.
- *
- * With no capture supplied this falls back to a clearly-labelled reconstruction
- * so the pitch still reads — and says so, rather than passing a drawing off as
- * evidence. The <img> also falls back on load error, so a missing or misnamed
- * file degrades instead of showing a broken image mid-presentation.
+ * This renders the real supplied screenshot and nothing else. It is not cropped,
+ * retouched, or placed inside a drawn browser frame — the capture already
+ * carries its own Safari UI, and synthesising chrome around it would both
+ * duplicate that and imply a domain the capture only partially shows. The whole
+ * point of this panel is that it is exactly what a customer sees, so the image
+ * is presented whole and unaltered; only its display size is constrained so it
+ * sits inside the before/after columns.
  *
  * Appears ONLY on this route — never on the consumer-facing preview.
  */
 function ExpiredShot() {
-  const [failed, setFailed] = useState(false);
-  const showReal = Boolean(expiredSiteScreenshot) && !failed;
-
   return (
     <figure className="z8-expired" style={{ margin: 0 }}>
-      <div className="z8-expired-chrome">
-        <span className="z8-expired-dot" /><span className="z8-expired-dot" /><span className="z8-expired-dot" />
-        <span className="z8-expired-url">{expiredSiteUrl}</span>
-      </div>
-
-      {showReal ? (
-        <img
-          src={expiredSiteScreenshot as string}
-          alt="Screenshot of Zone 8 Plumbing & Sewer's current website showing an expired-website notice"
-          style={{ width: "100%", display: "block" }}
-          onError={() => setFailed(true)}
-        />
-      ) : (
-        <div className="z8-expired-body">
-          <h4>Website Expired</h4>
-          <p>This website has expired. If you are the site owner, please renew.</p>
-        </div>
-      )}
-
-      <figcaption className="z8-xs" style={{ padding: "10px 12px", borderTop: "1px solid #E4E4E4", color: "#6B6B6B" }}>
-        {showReal
-          ? "Zone 8's live website, captured from the link on its Google Business Profile."
-          : "Reconstruction — no capture supplied with this build. Drop the real screenshot in before presenting."}
+      <img
+        className="z8-expired-shot"
+        src={expiredSiteScreenshot}
+        alt="Screenshot of Zone 8 Plumbing & Sewer's website on a phone, showing a Squarespace notice reading “Website Expired — This account has expired. If you are the site owner, click below to login.”"
+        width={1179}
+        height={2556}
+      />
+      <figcaption className="z8-expired-caption">
+        Zone 8’s website today, on the phone a customer is holding.
       </figcaption>
     </figure>
   );

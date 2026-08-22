@@ -675,25 +675,25 @@ a.z8-card:hover .z8-card-cta .z8-arrow { transform: translateX(3px); }
 .z8-metric-num { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.025em; color: #fff; line-height: 1.1; }
 .z8-metric-label { font-size: var(--z8-xs); color: var(--z8-inverse-muted); }
 
-/* The expired-site proof shot. Rendered, never screenshot-scraped — it stands in
-   for the real capture on the pitch deck and appears nowhere on the consumer site. */
-.z8-expired {
-  border-radius: var(--z8-r-md); overflow: hidden; border: 1px solid var(--z8-line-inverse);
-  background: #fff; color: #333;
+/* The expired-site proof shot: the real mobile capture, shown whole and
+   unaltered. Only the display size is constrained — no crop, no drawn browser
+   frame, no reconstruction. Appears on the pitch route only. */
+.z8-expired { display: grid; justify-items: center; gap: 10px; }
+.z8-expired-shot {
+  width: auto; height: auto;
+  /* Sized so the "Website Expired" message stays legible in a screen share —
+     this panel is the evidence the whole pitch turns on. Capped so the column
+     does not run away from the one beside it. */
+  max-width: min(100%, 332px);
+  max-height: 720px;
+  border-radius: var(--z8-r-md);
+  border: 1px solid var(--z8-line-inverse);
+  box-shadow: var(--z8-shadow-lg);
+  background: #fff;
 }
-.z8-expired-chrome {
-  display: flex; align-items: center; gap: 8px; padding: 9px 12px;
-  background: #EDEDED; border-bottom: 1px solid #DADADA;
+.z8-expired-caption {
+  font-size: var(--z8-xs); color: var(--z8-inverse-muted); text-align: center; max-width: 40ch;
 }
-.z8-expired-dot { width: 9px; height: 9px; border-radius: 50%; background: #C8C8C8; flex: none; }
-.z8-expired-url {
-  flex: 1; padding: 4px 9px; border-radius: 4px; background: #fff; border: 1px solid #DCDCDC;
-  font-family: var(--z8-mono); font-size: 0.625rem; color: #767676; overflow: hidden;
-  white-space: nowrap; text-overflow: ellipsis;
-}
-.z8-expired-body { display: grid; gap: 9px; place-items: center; text-align: center; padding: clamp(30px, 5vw, 54px) 20px; }
-.z8-expired-body h4 { font-size: 1.05rem; font-weight: 600; color: #222; }
-.z8-expired-body p { font-size: var(--z8-xs); color: #6B6B6B; max-width: 40ch; }
 
 /* ------------------------------------------------------------ preview ribbon */
 

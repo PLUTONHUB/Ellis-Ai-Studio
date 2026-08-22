@@ -433,26 +433,22 @@ export const verificationItems: VerificationItem[] = [
   { area: "Review themes", detail: "Theme summaries are Ellis's paraphrase of public feedback. Individual review text was not captured, and no reviewer is named or quoted." },
   { area: "Rating currency", detail: "4.9 from 62 reviews was accurate at audit time. Re-check before presenting — the count moves." },
   { area: "Google Business Profile URL", detail: "Review links point at a Maps search for the business; the canonical GBP short link was not captured." },
+  { area: "Expired-site domain", detail: "The address bar in the supplied capture is clipped by the Safari UI and reads only \"…dsewer.com\". The full domain is not asserted anywhere in the build — confirm it with Zone 8 if it needs to appear in the pitch narrative." },
   { area: "Hero imagery", detail: "The hero uses a designed dispatch panel, not photography. Commissioned photography of Zone 8's own work should replace it at production." },
   { area: "Licensing & credentials", detail: "Deliberately absent. No licence number, bonding, insurance, certification, warranty, guarantee, award, response time or years-in-business claim appears anywhere — add only what Zone 8 can evidence." },
   { area: "Intake destination", detail: "The request form is inert by design. Before launch it needs a real destination, an owner, and a response commitment." },
 ];
 
 /*
- * Path to the captured screenshot of Zone 8's current expired website, used on
- * the pitch page as proof of the broken customer journey.
+ * The captured screenshot of Zone 8's current website — the proof of the broken
+ * customer journey, used on the pitch route.
  *
- * NOT SUPPLIED as of this build — no capture file was provided, so the pitch
- * renders a clearly-labelled reconstruction instead. To use the real capture:
- * drop the image at `public/preview/zone8-expired-site.png` and set this to
- * "/preview/zone8-expired-site.png". Nothing else needs to change; the
- * component swaps automatically and falls back if the file is missing.
+ * This is a real mobile capture supplied by Ellis, shown unmodified: no crop, no
+ * retouching, no redrawn browser frame. Its entire evidentiary value is that it
+ * is exactly what a customer sees after tapping "Website" on the Google listing,
+ * so it must never be stylised or reconstructed.
  *
- * Do not retouch or edit the capture — its evidentiary value is that it is
- * exactly what a customer sees.
+ * The capture carries its own Safari UI, including the address bar, so the page
+ * renders it as-is rather than wrapping it in a synthetic browser chrome.
  */
-export const expiredSiteScreenshot: string | null = null;
-
-/** The URL Zone 8's Google listing currently points at, shown in the mock chrome.
- *  VERIFY: the exact domain was not captured during the audit. */
-export const expiredSiteUrl = "zone8plumbing.com";
+export const expiredSiteScreenshot = "/preview/zone8-expired-site.png";
