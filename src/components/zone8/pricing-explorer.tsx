@@ -43,7 +43,7 @@ export function PricingExplorer({
     <div className="z8-price-shell">
       <div className="z8-panel-head">
         <span className="z8-panel-title">Upfront pricing</span>
-        <span className="z8-verify">Preview pricing placeholder</span>
+        <span className="z8-price-sample">Sample — not a live price</span>
       </div>
 
       <div className="z8-price-search">
@@ -81,7 +81,7 @@ export function PricingExplorer({
               <span className="z8-price-value">
                 {/* Deliberately unreadable: there is no real figure behind this. */}
                 <span className="z8-price-blur" aria-hidden>$000</span>
-                <span className="z8-price-note">Placeholder</span>
+                <span className="z8-price-note">Sample</span>
               </span>
             </button>
           ))
@@ -100,8 +100,8 @@ export function PricingExplorer({
           <div className="z8-stack z8-g2">
             <p className="z8-panel-title">{active.name}</p>
             <p className="z8-small" style={{ color: "var(--z8-inverse-muted)" }}>
-              In production this shows Zone 8’s upfront price for this service. For the preview it stays
-              blank on purpose — no price is published without the business confirming it.
+              Your price for this work is confirmed before anything starts — no figure here is a live quote.
+              Call or send a request and you will have the real number in hand first.
             </p>
           </div>
           <div className="z8-hero-ctas" style={{ marginTop: 0 }}>
@@ -111,7 +111,7 @@ export function PricingExplorer({
         </div>
       ) : (
         <p className="z8-xs" style={{ marginTop: 14, color: "var(--z8-inverse-muted)" }}>
-          Select a service to see how the upfront price is presented. Transparent pricing — confirm with Zone 8.
+          Pick the closest match to see how your price is confirmed. Figures shown are samples, not live quotes.
         </p>
       )}
     </div>

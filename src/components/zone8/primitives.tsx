@@ -11,6 +11,7 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import type { IconName } from "~/data/zone8";
 import { business } from "~/data/zone8";
+import { useInternalMode } from "~/components/zone8/internal";
 
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
@@ -104,7 +105,14 @@ export function SectionHead({ label, title, lede, action, id }: { label?: string
   );
 }
 
-/** Renders a visible, unmissable marker on content Zone 8 has not confirmed. */
+/*
+ * Marker for content Zone 8 has not confirmed.
+ *
+ * Hidden from the prospect-facing presentation and shown only in internal mode
+ * (?internal=1). The content it marks is still tracked in `verificationItems`
+ * and rendered in full on the pitch page, so hiding the badge cannot lose it.
+ */
 export function VerifyBadge({ children = "Verify with client" }: { children?: ReactNode }) {
+  if (!useInternalMode()) return null;
   return <span className="z8-verify">{children}</span>;
 }

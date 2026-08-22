@@ -12,8 +12,9 @@
  * and inventing it is how a credible pitch becomes a dishonest one.
  */
 
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { business } from "~/data/zone8";
+import { business, expiredSiteScreenshot, expiredSiteUrl, verificationItems } from "~/data/zone8";
 import { Icon } from "~/components/zone8/primitives";
 
 function Flow({ nodes }: { nodes: { label: string; tone?: "fail" | "win" }[] }) {
@@ -32,24 +33,81 @@ function Flow({ nodes }: { nodes: { label: string; tone?: "fail" | "win" }[] }) 
   );
 }
 
-/* A rendered stand-in for the captured "Website Expired" screenshot. It is drawn
-   rather than embedded because no capture file ships with this build — drop the
-   real screenshot in here before presenting. It appears ONLY on this route. */
+/*
+ * Proof of the broken customer journey: Zone 8's current website as a customer
+ * finds it.
+ *
+ * Renders the real captured screenshot when one is supplied
+ * (`expiredSiteScreenshot` in ~/data/zone8 — drop the file at
+ * public/preview/zone8-expired-site.png and point the constant at it). The
+ * capture is shown unmodified inside browser chrome: framed, never retouched,
+ * because its entire value is being exactly what the customer sees.
+ *
+ * With no capture supplied this falls back to a clearly-labelled reconstruction
+ * so the pitch still reads — and says so, rather than passing a drawing off as
+ * evidence. The <img> also falls back on load error, so a missing or misnamed
+ * file degrades instead of showing a broken image mid-presentation.
+ *
+ * Appears ONLY on this route — never on the consumer-facing preview.
+ */
 function ExpiredShot() {
+  const [failed, setFailed] = useState(false);
+  const showReal = Boolean(expiredSiteScreenshot) && !failed;
+
   return (
     <figure className="z8-expired" style={{ margin: 0 }}>
       <div className="z8-expired-chrome">
         <span className="z8-expired-dot" /><span className="z8-expired-dot" /><span className="z8-expired-dot" />
-        <span className="z8-expired-url">zone8plumbing.com</span>
+        <span className="z8-expired-url">{expiredSiteUrl}</span>
       </div>
-      <div className="z8-expired-body">
-        <h4>Website Expired</h4>
-        <p>This website has expired. If you are the site owner, please renew.</p>
-      </div>
+
+      {showReal ? (
+        <img
+          src={expiredSiteScreenshot as string}
+          alt="Screenshot of Zone 8 Plumbing & Sewer's current website showing an expired-website notice"
+          style={{ width: "100%", display: "block" }}
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <div className="z8-expired-body">
+          <h4>Website Expired</h4>
+          <p>This website has expired. If you are the site owner, please renew.</p>
+        </div>
+      )}
+
       <figcaption className="z8-xs" style={{ padding: "10px 12px", borderTop: "1px solid #E4E4E4", color: "#6B6B6B" }}>
-        Reconstruction of the page Zone 8's Google listing currently links to. Replace with the live capture before presenting.
+        {showReal
+          ? "Zone 8's live website, captured from the link on its Google Business Profile."
+          : "Reconstruction — no capture supplied with this build. Drop the real screenshot in before presenting."}
       </figcaption>
     </figure>
+  );
+}
+
+/* The verification register, always visible on the internal route. The inline
+   badges are hidden from the prospect view, so this is what stops an unverified
+   claim reaching production unnoticed. */
+function VerificationRegister() {
+  return (
+    <div className="z8-compare-col" style={{ padding: "clamp(20px,3vw,32px)" }}>
+      <div className="z8-stack z8-g3">
+        <p className="z8-label">Before anything ships</p>
+        <h2 className="z8-display-m">Verify with Zone 8</h2>
+        <p className="z8-small" style={{ maxWidth: "62ch" }}>
+          The prospect-facing pages read as a finished website by design. Everything below is unconfirmed and must be
+          checked with the business before launch. Append <code>?internal=1</code> to any preview URL to see these
+          flags inline on the pages themselves.
+        </p>
+      </div>
+      <ul className="z8-stack z8-g4" style={{ marginTop: 20 }}>
+        {verificationItems.map((item) => (
+          <li key={item.area} style={{ display: "grid", gap: 4, paddingBottom: 14, borderBottom: "1px solid var(--z8-line-inverse)" }}>
+            <span className="z8-heading" style={{ color: "#fff" }}>{item.area}</span>
+            <span className="z8-small">{item.detail}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -205,17 +263,17 @@ export function PitchPage() {
       </section>
 
       <section className="z8-section z8-section-tight">
-        <div className="z8-container">
+        <div className="z8-container z8-stack z8-g5">
           <div className="z8-compare-col" style={{ padding: "clamp(20px,3vw,32px)" }}>
             <h2 className="z8-heading">What this preview deliberately does not do</h2>
             <p className="z8-small" style={{ maxWidth: "62ch" }}>
               No prices are invented. No customer quotes or names are fabricated. No licences, certifications,
-              guarantees, warranties, response times or years in business are claimed. Service categories and
-              neighbourhood coverage are marked as unverified wherever they appear. Nothing on this build has
+              guarantees, warranties, response times or years in business are claimed. Nothing on this build has
               touched Zone 8's domain, Google Business Profile, phone system or any other live system — and Ellis
               AI Studio has not contacted the business.
             </p>
           </div>
+          <VerificationRegister />
         </div>
       </section>
 

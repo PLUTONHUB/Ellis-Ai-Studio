@@ -68,8 +68,8 @@ export function RequestForm() {
           <div className="z8-routing-row"><span className="z8-routing-key">Urgency</span><span className="z8-routing-val">{when}</span></div>
         </div>
         <p className="z8-xs" style={{ maxWidth: "46ch" }}>
-          <strong>Preview only:</strong> this concept form does not transmit or store anything. No request
-          was sent to Zone 8. For a real plumbing problem, call{" "}
+          This is a concept site and the form is not connected yet, so nothing was actually sent. For a real
+          plumbing problem, call{" "}
           <a className="z8-textlink" href={business.phoneHref}>{business.phone}</a>.
         </p>
         <button type="button" className="z8-btn z8-btn-outline z8-btn-sm" onClick={() => setSent(false)}>
@@ -161,7 +161,7 @@ export function RequestForm() {
           <div className="z8-upload">
             <Icon name="camera" size={19} />
             <span><strong>Add a photo</strong> — optional, and it usually speeds up the quote</span>
-            <span>Photo upload is shown for the concept and is not active in this preview</span>
+            <span>Photo upload is not connected on this concept site</span>
           </div>
         </div>
       </div>
@@ -172,7 +172,7 @@ export function RequestForm() {
           Urgent? Calling is faster — <a className="z8-textlink" href={business.phoneHref}>{business.phone}</a>
         </p>
         <p className="z8-xs" style={{ textAlign: "center" }}>
-          Concept preview — this form does not send or store anything.
+          Concept site — the form is not connected yet, so nothing is sent or stored.
         </p>
       </div>
     </form>

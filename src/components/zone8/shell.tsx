@@ -16,10 +16,11 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { business, disclaimer, nav } from "~/data/zone8";
 import { CallButton, Icon, RequestButton } from "~/components/zone8/primitives";
+import { InternalNote } from "~/components/zone8/internal";
 
 function Wordmark() {
   return (
-    <Link className="z8-wordmark" to="/preview/zone8" aria-label={`${business.name} — preview home`}>
+    <Link className="z8-wordmark" to="/preview/zone8" aria-label={`${business.name} — home`}>
       <span className="z8-mark" aria-hidden>Z8</span>
       <span className="z8-wordmark-text">
         <span className="z8-wordmark-name">Zone 8</span>
@@ -29,16 +30,27 @@ function Wordmark() {
   );
 }
 
+/*
+ * Build-provenance ribbon.
+ *
+ * Internal mode only. On a prospect walkthrough a permanent amber banner reads
+ * as an unfinished internal tool; the concept / non-affiliation disclosure it
+ * carried lives in the footer on every route instead, where it stays visible
+ * without framing the whole page as a prototype. Every route also remains
+ * noindex, nofollow.
+ */
 function PreviewRibbon() {
   return (
-    <div className="z8-ribbon">
-      <div className="z8-container z8-ribbon-inner">
-        <p>
-          <strong>Concept preview</strong> · Built by Ellis AI Studio · Not affiliated with Zone 8 ·{" "}
-          <Link to="/preview/zone8/pitch">Pitch view</Link>
-        </p>
+    <InternalNote>
+      <div className="z8-ribbon">
+        <div className="z8-container z8-ribbon-inner">
+          <p>
+            <strong>Internal view</strong> · Ellis AI Studio concept · Not affiliated with Zone 8 ·{" "}
+            <Link to="/preview/zone8/pitch">Pitch view</Link>
+          </p>
+        </div>
       </div>
-    </div>
+    </InternalNote>
   );
 }
 
@@ -131,10 +143,7 @@ function Footer() {
         </div>
         <div className="z8-footer-bottom">
           <p className="z8-disclaimer">{disclaimer}</p>
-          <p className="z8-disclaimer">
-            © {new Date().getFullYear()} Zone 8 Plumbing &amp; Sewer trade name used for demonstration only ·{" "}
-            <Link to="/preview/zone8/pitch" style={{ borderBottom: "1px solid currentColor" }}>Ellis AI Studio pitch view</Link>
-          </p>
+          <p className="z8-disclaimer">© {new Date().getFullYear()} Zone 8 Plumbing &amp; Sewer</p>
         </div>
       </div>
     </footer>

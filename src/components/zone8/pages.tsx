@@ -13,6 +13,7 @@ import {
 } from "~/data/zone8";
 import { CallButton, Icon, Rating, RequestButton, SectionHead, VerifyBadge } from "~/components/zone8/primitives";
 import { PricingExplorer } from "~/components/zone8/pricing-explorer";
+import { InternalNote } from "~/components/zone8/internal";
 import { RequestForm } from "~/components/zone8/request-form";
 import { AreaGraphic, FaqList, FinalCta } from "~/components/zone8/home";
 
@@ -87,9 +88,11 @@ export function ServicesPage() {
               );
             })}
           </div>
-          <p className="z8-xs" style={{ marginTop: 18, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <VerifyBadge /> This catalogue is inferred from Zone 8's public listing and trade name. Confirm the real service list before production.
-          </p>
+          <InternalNote>
+            <p className="z8-xs" style={{ marginTop: 18, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <VerifyBadge /> This catalogue is inferred from Zone 8's public listing and trade name. Confirm the real service list before production.
+            </p>
+          </InternalNote>
         </div>
       </section>
       <FinalCta />
@@ -154,9 +157,11 @@ export function ServiceDetailPage({ service }: { service: Service }) {
               </div>
             ))}
           </div>
-          <p className="z8-xs" style={{ marginTop: 18, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            <VerifyBadge /> Service scope and process described here are preview concepts, not statements confirmed by the business.
-          </p>
+          <InternalNote>
+            <p className="z8-xs" style={{ marginTop: 18, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <VerifyBadge /> Service scope and process described here are preview concepts, not statements confirmed by the business.
+            </p>
+          </InternalNote>
         </div>
       </section>
 
@@ -218,14 +223,24 @@ export function PricingPage() {
                 ))}
               </div>
               <div className="z8-card" style={{ background: "var(--z8-canvas-alt)" }}>
-                <p className="z8-label">A note on this page</p>
+                <p className="z8-label">How to get your number</p>
                 <p className="z8-small">
-                  Zone 8's real prices are not published publicly, so this preview shows none. Every figure in the
-                  panel is a blurred placeholder with no value behind it. At production these become Zone 8's own
-                  confirmed prices — or the panel becomes a "call for your price" flow, whichever the business prefers.
+                  Prices depend on what the job actually turns out to be, so the figure that matters is the one Zone 8
+                  confirms for your scope before the work starts. Call or send a request and you will have it in hand
+                  before committing to anything.
                 </p>
-                <p><VerifyBadge>Pricing model to confirm</VerifyBadge></p>
               </div>
+              <InternalNote>
+                <div className="z8-card" style={{ background: "var(--z8-canvas-alt)" }}>
+                  <p className="z8-label">Internal note</p>
+                  <p className="z8-small">
+                    Zone 8's real prices are not public, so this preview shows none. Every figure in the panel is a
+                    blurred placeholder with no value behind it. At production these become Zone 8's own confirmed
+                    prices — or the panel becomes a "call for your price" flow, whichever the business prefers.
+                  </p>
+                  <p><VerifyBadge>Pricing model to confirm</VerifyBadge></p>
+                </div>
+              </InternalNote>
             </div>
             <PricingExplorer />
           </div>
@@ -258,14 +273,17 @@ export function ServiceAreaPage() {
         <div className="z8-container">
           <div className="z8-grid z8-grid-2" style={{ gap: 32, alignItems: "center" }}>
             <div className="z8-stack z8-g5">
-              <SectionHead label="Where we work" title="Neighbourhoods in the preview." lede="Listed for the concept only — the confirmed coverage list comes from the business." />
+              <SectionHead label="Where we work" title="Around Seattle and West Seattle." lede="Zone 8 works across Seattle and the west side of the city." />
               <div className="z8-areas">
                 {serviceAreas.primary.map((a) => <span key={a} className="z8-area z8-area-primary">{a}</span>)}
                 {serviceAreas.neighbourhoods.map((a) => <span key={a} className="z8-area">{a}</span>)}
               </div>
-              <p className="z8-xs" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                <VerifyBadge /> Neighbourhood list is an unconfirmed preview placeholder. No street-level coverage or response time is claimed.
-              </p>
+              <p className="z8-xs">Not sure whether you are in range? Call and ask — it takes a moment to confirm.</p>
+              <InternalNote>
+                <p className="z8-xs" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <VerifyBadge /> Neighbourhood list is an unconfirmed preview placeholder. No street-level coverage or response time is claimed.
+                </p>
+              </InternalNote>
               <div className="z8-hero-ctas" style={{ marginTop: 0 }}>
                 <CallButton className="z8-btn z8-btn-call" label="Ask if we cover you" />
                 <RequestButton className="z8-btn z8-btn-outline" />
@@ -287,8 +305,8 @@ export function ReviewsPage() {
     <>
       <PageHero
         label="Reviews"
-        title="Built on repeat customers and referrals."
-        lede="Zone 8's existing reputation is one of its biggest assets — a 4.9-star average across 62 Google reviews."
+        title="Rated 4.9 by 62 Seattle reviewers."
+        lede="What Seattle-area homeowners say about working with Zone 8, summarised from public Google reviews."
       >
         <div className="z8-hero-trust"><Rating /></div>
       </PageHero>
@@ -317,7 +335,7 @@ export function ReviewsPage() {
           <SectionHead
             label="What reviewers mention"
             title="Themes from public feedback."
-            lede="Summarised in Ellis AI Studio's words — these are not customer quotes, and no reviewer is named or invented."
+            lede="Recurring themes across Zone 8's public Google reviews, summarised rather than quoted."
             action={<a className="z8-btn z8-btn-outline z8-btn-sm" href={business.reviewsUrl} target="_blank" rel="noreferrer noopener">Read Google reviews <Icon name="arrow" size={15} /></a>}
           />
           <div className="z8-grid z8-grid-3">
@@ -330,15 +348,17 @@ export function ReviewsPage() {
               </article>
             ))}
           </div>
-          <div className="z8-card" style={{ marginTop: 22, background: "var(--z8-canvas-alt)" }}>
-            <p className="z8-label">Production note</p>
-            <p className="z8-small">
-              At launch this page pulls real, attributed Google reviews through the Business Profile API so the
-              rating and the newest reviews stay current. Nothing here is fabricated in the meantime: no names, no
-              quotes, no invented star counts.
-            </p>
-            <p><VerifyBadge>Review import pending</VerifyBadge></p>
-          </div>
+          <InternalNote>
+            <div className="z8-card" style={{ marginTop: 22, background: "var(--z8-canvas-alt)" }}>
+              <p className="z8-label">Production note</p>
+              <p className="z8-small">
+                At launch this page pulls real, attributed Google reviews through the Business Profile API so the
+                rating and the newest reviews stay current. Nothing here is fabricated in the meantime: no names, no
+                quotes, no invented star counts.
+              </p>
+              <p><VerifyBadge>Review import pending</VerifyBadge></p>
+            </div>
+          </InternalNote>
         </div>
       </section>
       <FinalCta />
@@ -386,11 +406,13 @@ export function RequestServicePage() {
                   ))}
                 </ol>
               </div>
+              {/* Kept visible on purpose. A real visitor could submit this form,
+                  and letting them believe Zone 8 received it would be the one
+                  genuinely harmful thing this preview could do. */}
               <div className="z8-card" style={{ background: "var(--z8-canvas-alt)" }}>
-                <p className="z8-label">Preview notice</p>
                 <p className="z8-small">
-                  This concept form does not transmit or store anything. No submission reaches Zone 8, Ellis AI
-                  Studio or any third party. For a real plumbing problem, call{" "}
+                  This is a concept site — the form is not connected yet, so nothing is sent or stored. For a real
+                  plumbing problem, call{" "}
                   <a className="z8-textlink" href={business.phoneHref}>{business.phone}</a>.
                 </p>
               </div>

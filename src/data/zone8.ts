@@ -409,3 +409,50 @@ export const nav: NavItem[] = [
 
 export const disclaimer =
   "Concept website created by Ellis AI Studio for demonstration purposes. Zone 8 Plumbing & Sewer has not commissioned or reviewed this preview, and Ellis AI Studio claims no affiliation with the business. Business information, service details, pricing and coverage must be verified before any production launch.";
+
+// ------------------------------------------------------- verification register
+
+/*
+ * THE list of everything in this preview that Zone 8 has not confirmed.
+ *
+ * Inline VERIFY badges are hidden from the prospect-facing presentation (see
+ * ~/components/zone8/internal), so this register is the safety net: it renders
+ * in full on /preview/zone8/pitch and behind ?internal=1 on any route. Nothing
+ * unconfirmed should exist in the build without a line here.
+ *
+ * Rule for adding preview content: if it asserts something about the business
+ * that is not visible on the public Google Business Profile, it belongs here.
+ */
+export type VerificationItem = { area: string; detail: string };
+
+export const verificationItems: VerificationItem[] = [
+  { area: "Service catalogue", detail: "All eight service categories are inferred from the \"Plumbing & Sewer\" trade name. Zone 8 has confirmed none of them." },
+  { area: "Service area", detail: "Admiral, Alki, Fauntleroy, Delridge, White Center and Burien are preview placeholders. Only Seattle and West Seattle come from the public listing." },
+  { area: "Pricing model", detail: "\"One Service. One Price.\" is drawn from Zone 8's own historical positioning, but the current billing model — flat-rate vs hourly, what a quoted scope includes — is unconfirmed. No figures are published anywhere in this build." },
+  { area: "Service process", detail: "The step-by-step approach described on each service landing page is Ellis-authored concept copy, not Zone 8's documented process." },
+  { area: "Review themes", detail: "Theme summaries are Ellis's paraphrase of public feedback. Individual review text was not captured, and no reviewer is named or quoted." },
+  { area: "Rating currency", detail: "4.9 from 62 reviews was accurate at audit time. Re-check before presenting — the count moves." },
+  { area: "Google Business Profile URL", detail: "Review links point at a Maps search for the business; the canonical GBP short link was not captured." },
+  { area: "Hero imagery", detail: "The hero uses a designed dispatch panel, not photography. Commissioned photography of Zone 8's own work should replace it at production." },
+  { area: "Licensing & credentials", detail: "Deliberately absent. No licence number, bonding, insurance, certification, warranty, guarantee, award, response time or years-in-business claim appears anywhere — add only what Zone 8 can evidence." },
+  { area: "Intake destination", detail: "The request form is inert by design. Before launch it needs a real destination, an owner, and a response commitment." },
+];
+
+/*
+ * Path to the captured screenshot of Zone 8's current expired website, used on
+ * the pitch page as proof of the broken customer journey.
+ *
+ * NOT SUPPLIED as of this build — no capture file was provided, so the pitch
+ * renders a clearly-labelled reconstruction instead. To use the real capture:
+ * drop the image at `public/preview/zone8-expired-site.png` and set this to
+ * "/preview/zone8-expired-site.png". Nothing else needs to change; the
+ * component swaps automatically and falls back if the file is missing.
+ *
+ * Do not retouch or edit the capture — its evidentiary value is that it is
+ * exactly what a customer sees.
+ */
+export const expiredSiteScreenshot: string | null = null;
+
+/** The URL Zone 8's Google listing currently points at, shown in the mock chrome.
+ *  VERIFY: the exact domain was not captured during the audit. */
+export const expiredSiteUrl = "zone8plumbing.com";

@@ -104,8 +104,13 @@
 }
 
 /* The host body still carries Ellis's canvas colour; neutralise it under the
-   preview so overscroll and the fixed bar sit on Zone 8's own ground. */
-body:has(.z8) { background: var(--z8-canvas, #F7F5F1); }
+   preview so overscroll and the fixed bar sit on Zone 8's own ground.
+   Literal values, not var(): the tokens are declared on `.z8`, so a custom
+   property referenced from `body` resolves to its fallback rather than to the
+   preview palette. The dark pitch route needs its own rule for the same reason —
+   otherwise an iOS rubber-band overscroll flashes off-white behind a dark page. */
+body:has(.z8) { background: #F7F5F1; }
+body:has(.z8-pitch) { background: #09111A; }
 
 /* --------------------------------------------------------------- primitives */
 
@@ -732,3 +737,13 @@ a.z8-card:hover .z8-card-cta .z8-arrow { transform: translateX(3px); }
   transition: top var(--z8-dur) var(--z8-ease);
 }
 .z8-skip:focus-visible { top: 8px; }
+
+/* Sample-price label. Deliberately legible and permanent: the blurred figures
+   must never be mistaken for Zone 8's real pricing, so this is a customer-facing
+   statement of fact, not an internal build marker, and is never gated. */
+.z8-price-sample {
+  display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 4px;
+  font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.01em;
+  background: rgba(243, 246, 248, 0.09); color: var(--z8-inverse-muted);
+  border: 1px solid var(--z8-line-inverse);
+}

@@ -14,6 +14,7 @@ import {
   business, faqs, reviewThemes, serviceAreas, services,
 } from "~/data/zone8";
 import { CallButton, Icon, Rating, RequestButton, SectionHead, VerifyBadge } from "~/components/zone8/primitives";
+import { InternalNote } from "~/components/zone8/internal";
 import { PricingExplorer } from "~/components/zone8/pricing-explorer";
 
 /* ------------------------------------------------------------------- hero */
@@ -99,7 +100,7 @@ function HeroPanel() {
         </div>
         <div className="z8-panel-foot">
           <span className="z8-panel-title">Price agreed before work begins</span>
-          <span className="z8-verify">Illustrative</span>
+          <span className="z8-price-sample">Illustrative — not live pricing</span>
         </div>
       </div>
     </div>
@@ -133,7 +134,7 @@ function Trust() {
           <SectionHead
             label="Reputation"
             title="Seattle homeowners trust Zone 8."
-            lede="A 4.9-star average across 62 Google reviews, built on repeat customers rather than advertising."
+            lede="A 4.9-star average across 62 Google reviews from Seattle-area homeowners."
             action={<Link className="z8-btn z8-btn-outline z8-btn-sm" to="/preview/zone8/reviews">Read reviews</Link>}
           />
           <div className="z8-grid z8-grid-4" style={{ alignItems: "stretch" }}>
@@ -147,7 +148,7 @@ function Trust() {
                 <p className="z8-label">{r.theme}</p>
                 <p className="z8-review-quote">{r.summary}</p>
                 <p className="z8-review-source">
-                  <Icon name="check" size={13} /> Summary of public review themes — not a customer quote
+                  <Icon name="check" size={13} /> Theme from public Google reviews — not a customer quote
                 </p>
               </article>
             ))}
@@ -189,9 +190,11 @@ function ServiceGrid() {
             );
           })}
         </div>
-        <p className="z8-xs" style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <VerifyBadge /> Service categories are inferred from public information and must be confirmed with Zone 8 before production.
-        </p>
+        <InternalNote>
+          <p className="z8-xs" style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <VerifyBadge /> Service categories are inferred from public information and must be confirmed with Zone 8 before production.
+          </p>
+        </InternalNote>
       </div>
     </section>
   );
@@ -274,7 +277,7 @@ function WhyZone8() {
   return (
     <section className="z8-section z8-section-dark" id="why">
       <div className="z8-container">
-        <SectionHead label="Why Zone 8" title="Four reasons homeowners call back." />
+        <SectionHead label="Why Zone 8" title="Why homeowners choose Zone 8." />
         <div className="z8-grid z8-grid-4">
           {pillars.map((p) => (
             <div key={p.t} className="z8-pillar">
@@ -299,16 +302,18 @@ function ServiceArea() {
           <div className="z8-stack z8-g5">
             <SectionHead
               label="Service area"
-              title="Rooted in West Seattle."
+              title="Serving Seattle and West Seattle."
               lede="Zone 8’s public listing places the business in the Seattle and West Seattle area."
             />
             <div className="z8-areas">
               {serviceAreas.primary.map((a) => <span key={a} className="z8-area z8-area-primary">{a}</span>)}
               {serviceAreas.neighbourhoods.map((a) => <span key={a} className="z8-area">{a}</span>)}
             </div>
-            <p className="z8-xs" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <VerifyBadge /> Neighbourhood coverage is a preview placeholder pending confirmation.
-            </p>
+            <InternalNote>
+              <p className="z8-xs" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <VerifyBadge /> Neighbourhood coverage is a preview placeholder pending confirmation.
+              </p>
+            </InternalNote>
             <div>
               <Link className="z8-btn z8-btn-outline" to="/preview/zone8/service-area">Check your area <Icon name="arrow" size={15} /></Link>
             </div>
@@ -350,7 +355,7 @@ export function AreaGraphic() {
           </g>
         ))}
       </svg>
-      <p className="z8-map-caption">Illustrative only — not a coverage map. Exact service area to be confirmed with Zone 8.</p>
+      <p className="z8-map-caption">Illustrative — call to confirm coverage at your address.</p>
     </div>
   );
 }
@@ -368,7 +373,7 @@ export function FaqList({ items = faqs }: { items?: typeof faqs }) {
           </summary>
           <div className="z8-faq-body">
             {f.a.map((para) => <p key={para}>{para}</p>)}
-            {f.provenance === "unverified" ? <p><VerifyBadge /></p> : null}
+            {f.provenance === "unverified" ? <InternalNote><p><VerifyBadge /></p></InternalNote> : null}
           </div>
         </details>
       ))}
