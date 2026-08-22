@@ -1,0 +1,749 @@
+/*
+ * Zone 8 Plumbing & Sewer — preview design system.
+ *
+ * SCOPE NOTE: every token and class here is namespaced under `.z8`. This file is
+ * loaded only by the /preview/zone8/* routes, and it deliberately does not touch
+ * Ellis AI Studio's own tokens (tokens.css) or primitives (base.css). Zone 8 is a
+ * different brand living inside this repo as a pitch asset — it gets its own
+ * palette, its own scale and its own components so neither identity contaminates
+ * the other.
+ *
+ * The system: near-black navy carries the authority moments (header, hero,
+ * emergency, final CTA). A warm off-white is the working canvas. A muted steel
+ * teal does all the accent work. Green is reserved for status/trust only, and a
+ * warm amber appears in exactly two places (emergency, star rating).
+ */
+
+.z8 {
+  /* ---- surfaces ---- */
+  --z8-navy-900: #09111A;
+  --z8-navy-800: #0F1B27;
+  --z8-navy-700: #16283A;
+  --z8-navy-600: #1F384E;
+  --z8-canvas: #F7F5F1;
+  --z8-canvas-alt: #EFEDE6;
+  --z8-raised: #FFFFFF;
+  --z8-sunken: #E9E6DE;
+
+  /* ---- text ---- */
+  --z8-ink: #111A22;
+  --z8-body: #4C5762;
+  --z8-muted: #7C8792;
+  --z8-faint: #A9B2BB;
+  --z8-inverse: #F3F6F8;
+  --z8-inverse-muted: #A2B2C0;
+
+  /* ---- lines ---- */
+  --z8-line: #E3E0D8;
+  --z8-line-strong: #CFCBC1;
+  --z8-line-inverse: rgba(243, 246, 248, 0.13);
+
+  /* ---- accent: steel teal (primary) ---- */
+  --z8-steel-700: #14545F;
+  --z8-steel-600: #1C6B79;
+  --z8-steel-500: #2A8494;
+  --z8-steel-400: #4CA7B6;
+  --z8-steel-dim: rgba(42, 132, 148, 0.10);
+  --z8-steel-dim-strong: rgba(42, 132, 148, 0.18);
+
+  /* ---- status green (trust only, never decorative) ---- */
+  --z8-green: #2F7D55;
+  --z8-green-dim: rgba(47, 125, 85, 0.12);
+
+  /* ---- warm accent (emergency + stars only) ---- */
+  --z8-amber: #B96F26;
+  --z8-amber-dim: rgba(185, 111, 38, 0.11);
+  --z8-star: #DFA22C;
+
+  /* ---- type ---- */
+  --z8-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --z8-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Compact and controlled: the hero headline must never eat the 390px viewport
+     before the CTAs are reachable. */
+  --z8-hero: clamp(2.05rem, 5.6vw, 3.4rem);
+  --z8-display-l: clamp(1.7rem, 3.4vw, 2.5rem);
+  --z8-display-m: clamp(1.35rem, 2.2vw, 1.75rem);
+  --z8-heading: clamp(1.05rem, 1.3vw, 1.2rem);
+  --z8-lede: clamp(1.0rem, 1.1vw, 1.125rem);
+  --z8-small: 0.875rem;
+  --z8-xs: 0.8125rem;
+  --z8-label: 0.6875rem;
+
+  /* ---- space ---- */
+  --z8-gutter: clamp(18px, 4.5vw, 48px);
+  --z8-container: 1200px;
+  --z8-section: clamp(52px, 6.5vw, 104px);
+  --z8-section-tight: clamp(34px, 4vw, 60px);
+
+  --z8-r-sm: 8px;
+  --z8-r-md: 12px;
+  --z8-r-lg: 18px;
+
+  --z8-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --z8-dur: 240ms;
+
+  --z8-shadow-sm: 0 1px 2px rgba(9, 17, 26, 0.05), 0 2px 8px rgba(9, 17, 26, 0.04);
+  --z8-shadow-md: 0 2px 6px rgba(9, 17, 26, 0.06), 0 12px 32px rgba(9, 17, 26, 0.08);
+  --z8-shadow-lg: 0 8px 20px rgba(9, 17, 26, 0.10), 0 32px 64px rgba(9, 17, 26, 0.14);
+
+  /* Height of the fixed mobile action bar; sections reserve room for it. */
+  --z8-actionbar: 0px;
+
+  background: var(--z8-canvas);
+  color: var(--z8-ink);
+  font-family: var(--z8-sans);
+  min-height: 100dvh;
+  /* The preview is a full-bleed brand of its own — nothing from the host page
+     shows through, including on overscroll. */
+  isolation: isolate;
+}
+
+@media (max-width: 860px) {
+  .z8 { --z8-actionbar: 68px; }
+}
+
+/* The host body still carries Ellis's canvas colour; neutralise it under the
+   preview so overscroll and the fixed bar sit on Zone 8's own ground.
+   Literal values, not var(): the tokens are declared on `.z8`, so a custom
+   property referenced from `body` resolves to its fallback rather than to the
+   preview palette. The dark pitch route needs its own rule for the same reason —
+   otherwise an iOS rubber-band overscroll flashes off-white behind a dark page. */
+body:has(.z8) { background: #F7F5F1; }
+body:has(.z8-pitch) { background: #09111A; }
+
+/* --------------------------------------------------------------- primitives */
+
+.z8-container { width: min(var(--z8-container), 100% - var(--z8-gutter) * 2); margin-inline: auto; }
+.z8-narrow { width: min(760px, 100% - var(--z8-gutter) * 2); margin-inline: auto; }
+
+.z8-section { padding-block: var(--z8-section); background: var(--z8-canvas); }
+.z8-section-tight { padding-block: var(--z8-section-tight); }
+.z8-section-alt { background: var(--z8-canvas-alt); }
+.z8-section-dark { background: var(--z8-navy-800); color: var(--z8-inverse); }
+.z8-section-ruled { border-top: 1px solid var(--z8-line); }
+
+.z8-stack { display: grid; align-content: start; }
+.z8-g2 { gap: 8px; } .z8-g3 { gap: 12px; } .z8-g4 { gap: 16px; }
+.z8-g5 { gap: 24px; } .z8-g6 { gap: 32px; } .z8-g7 { gap: 44px; }
+
+/* --------------------------------------------------------------- typography */
+
+.z8 h1, .z8 h2, .z8 h3, .z8 h4 { margin: 0; font-weight: 600; text-wrap: balance; }
+.z8 p { margin: 0; }
+.z8 ul, .z8 ol { margin: 0; padding: 0; list-style: none; }
+.z8 a { color: inherit; text-decoration: none; }
+.z8 img, .z8 svg { display: block; max-width: 100%; }
+.z8 button, .z8 input, .z8 select, .z8 textarea { font: inherit; color: inherit; }
+
+.z8-hero-type { font-size: var(--z8-hero); line-height: 1.05; letter-spacing: -0.025em; font-weight: 600; }
+.z8-display-l { font-size: var(--z8-display-l); line-height: 1.1; letter-spacing: -0.02em; font-weight: 600; }
+.z8-display-m { font-size: var(--z8-display-m); line-height: 1.18; letter-spacing: -0.015em; font-weight: 600; }
+.z8-heading { font-size: var(--z8-heading); line-height: 1.3; letter-spacing: -0.01em; font-weight: 600; }
+.z8-lede { font-size: var(--z8-lede); line-height: 1.6; color: var(--z8-body); text-wrap: pretty; }
+.z8-body { color: var(--z8-body); line-height: 1.62; text-wrap: pretty; }
+.z8-small { font-size: var(--z8-small); color: var(--z8-muted); line-height: 1.55; }
+.z8-xs { font-size: var(--z8-xs); color: var(--z8-muted); line-height: 1.5; }
+.z8-measure { max-width: 58ch; }
+
+.z8-label {
+  font-family: var(--z8-mono); font-size: var(--z8-label); font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--z8-steel-600);
+}
+.z8-section-dark .z8-label { color: var(--z8-steel-400); }
+.z8-section-dark .z8-lede, .z8-section-dark .z8-body { color: var(--z8-inverse-muted); }
+.z8-section-dark .z8-small, .z8-section-dark .z8-xs { color: var(--z8-inverse-muted); }
+
+/* ------------------------------------------------------------------ buttons */
+
+.z8-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+  padding: 13px 22px; border-radius: var(--z8-r-sm); border: 1px solid transparent;
+  font-size: 0.9375rem; font-weight: 600; letter-spacing: -0.005em; cursor: pointer;
+  transition: background var(--z8-dur) var(--z8-ease), border-color var(--z8-dur) var(--z8-ease),
+              color var(--z8-dur) var(--z8-ease), transform var(--z8-dur) var(--z8-ease);
+  /* Comfortable thumb target on mobile without looking chunky on desktop. */
+  min-height: 48px; text-align: center;
+}
+.z8-btn:active { transform: translateY(1px); }
+.z8-btn svg { flex: none; }
+
+.z8-btn-primary { background: var(--z8-steel-600); color: #fff; }
+.z8-btn-primary:hover { background: var(--z8-steel-500); }
+
+.z8-btn-call { background: var(--z8-green); color: #fff; }
+.z8-btn-call:hover { background: #358C5F; }
+
+.z8-btn-dark { background: var(--z8-navy-800); color: var(--z8-inverse); }
+.z8-btn-dark:hover { background: var(--z8-navy-700); }
+
+.z8-btn-outline { background: transparent; border-color: var(--z8-line-strong); color: var(--z8-ink); }
+.z8-btn-outline:hover { border-color: var(--z8-steel-500); color: var(--z8-steel-600); background: var(--z8-steel-dim); }
+
+.z8-btn-ghost-inverse { background: rgba(243, 246, 248, 0.07); border-color: var(--z8-line-inverse); color: var(--z8-inverse); }
+.z8-btn-ghost-inverse:hover { background: rgba(243, 246, 248, 0.13); border-color: rgba(243, 246, 248, 0.3); }
+
+/* 44px floor even on the compact variant — these are still finger targets. */
+.z8-btn-sm { padding: 9px 15px; min-height: 44px; font-size: 0.875rem; }
+.z8-btn-block { width: 100%; }
+
+.z8-textlink {
+  display: inline-flex; align-items: center; gap: 6px; font-size: var(--z8-small);
+  font-weight: 500; color: var(--z8-steel-600); border-bottom: 1px solid var(--z8-steel-dim-strong);
+  padding-bottom: 2px; transition: border-color var(--z8-dur) var(--z8-ease), color var(--z8-dur) var(--z8-ease);
+}
+.z8-textlink:hover { color: var(--z8-steel-500); border-bottom-color: var(--z8-steel-500); }
+.z8-section-dark .z8-textlink { color: var(--z8-steel-400); border-bottom-color: rgba(76, 167, 182, 0.35); }
+
+.z8 :focus-visible { outline: 2px solid var(--z8-steel-500); outline-offset: 3px; border-radius: 3px; }
+.z8-section-dark :focus-visible { outline-color: var(--z8-steel-400); }
+
+/* ------------------------------------------------------------------- rating */
+
+.z8-rating { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.z8-stars { display: inline-flex; gap: 2px; color: var(--z8-star); }
+.z8-stars svg { width: 15px; height: 15px; }
+.z8-rating-text { font-size: var(--z8-small); font-weight: 500; color: var(--z8-body); }
+.z8-section-dark .z8-rating-text, .z8-hero .z8-rating-text { color: var(--z8-inverse-muted); }
+.z8-rating-score { color: var(--z8-ink); font-weight: 600; }
+.z8-section-dark .z8-rating-score, .z8-hero .z8-rating-score { color: var(--z8-inverse); }
+
+/* -------------------------------------------------------------------- pills */
+
+.z8-pill {
+  display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px;
+  border-radius: 999px; font-size: var(--z8-xs); font-weight: 500;
+  border: 1px solid var(--z8-line); background: var(--z8-raised); color: var(--z8-body);
+}
+.z8-pill-live { background: var(--z8-green-dim); border-color: transparent; color: var(--z8-green); }
+.z8-pill-inverse { background: rgba(243, 246, 248, 0.08); border-color: var(--z8-line-inverse); color: var(--z8-inverse-muted); }
+.z8-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.z8-dot-pulse { animation: z8-pulse 2.4s var(--z8-ease) infinite; }
+@keyframes z8-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .z8-dot-pulse { animation: none; } }
+
+/* Internal build marker — visible to Ellis, never dressed up as client copy. */
+.z8-verify {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 4px;
+  font-family: var(--z8-mono); font-size: 0.625rem; letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--z8-amber-dim); color: var(--z8-amber); font-weight: 500;
+}
+
+/* ------------------------------------------------------------------- header */
+
+.z8-header {
+  position: sticky; top: 0; z-index: 40;
+  background: rgba(15, 27, 39, 0.94);
+  backdrop-filter: saturate(140%) blur(12px);
+  border-bottom: 1px solid var(--z8-line-inverse);
+  color: var(--z8-inverse);
+}
+.z8-header-inner { display: flex; align-items: center; gap: 20px; height: 62px; }
+@media (min-width: 861px) { .z8-header-inner { height: 70px; } }
+
+.z8-wordmark { display: inline-flex; align-items: center; gap: 10px; flex: none; }
+.z8-mark {
+  width: 32px; height: 32px; border-radius: 7px; flex: none;
+  display: grid; place-items: center;
+  background: linear-gradient(150deg, var(--z8-steel-500), var(--z8-steel-700));
+  color: #fff; font-weight: 700; font-size: 0.8125rem; letter-spacing: -0.02em;
+}
+.z8-wordmark-text { display: grid; line-height: 1.05; }
+.z8-wordmark-name { font-size: 0.9375rem; font-weight: 600; letter-spacing: -0.015em; color: var(--z8-inverse); }
+.z8-wordmark-sub {
+  font-family: var(--z8-mono); font-size: 0.5625rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--z8-inverse-muted);
+}
+
+.z8-nav { display: none; align-items: center; gap: 4px; margin-inline-start: auto; }
+@media (min-width: 1000px) { .z8-nav { display: flex; } }
+.z8-nav a {
+  padding: 8px 11px; border-radius: 6px; font-size: 0.875rem; font-weight: 500;
+  color: var(--z8-inverse-muted); transition: color var(--z8-dur) var(--z8-ease), background var(--z8-dur) var(--z8-ease);
+}
+.z8-nav a:hover { color: var(--z8-inverse); background: rgba(243, 246, 248, 0.07); }
+.z8-nav a[aria-current="page"] { color: var(--z8-inverse); background: rgba(243, 246, 248, 0.09); }
+
+.z8-header-actions { display: flex; align-items: center; gap: 10px; margin-inline-start: auto; }
+@media (min-width: 1000px) { .z8-header-actions { margin-inline-start: 14px; } }
+.z8-header-call {
+  display: none; align-items: center; gap: 7px; font-size: 0.875rem; font-weight: 600;
+  color: var(--z8-inverse); padding: 8px 12px; border-radius: 6px;
+  border: 1px solid var(--z8-line-inverse); transition: border-color var(--z8-dur) var(--z8-ease), background var(--z8-dur) var(--z8-ease);
+}
+.z8-header-call:hover { border-color: rgba(243, 246, 248, 0.32); background: rgba(243, 246, 248, 0.07); }
+@media (min-width: 620px) { .z8-header-call { display: inline-flex; } }
+.z8-header-cta { display: none; }
+@media (min-width: 1000px) { .z8-header-cta { display: inline-flex; } }
+
+.z8-menu-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  width: auto; padding: 8px 12px; min-height: 40px; border-radius: 6px; cursor: pointer;
+  background: rgba(243, 246, 248, 0.08); border: 1px solid var(--z8-line-inverse);
+  color: var(--z8-inverse); font-size: 0.8125rem; font-weight: 600;
+}
+@media (min-width: 1000px) { .z8-menu-btn { display: none; } }
+.z8-menu-icon { display: grid; gap: 4px; width: 16px; }
+.z8-menu-icon span { height: 1.5px; background: currentColor; border-radius: 1px; transition: transform var(--z8-dur) var(--z8-ease), opacity var(--z8-dur) var(--z8-ease); }
+.z8-menu-btn[aria-expanded="true"] .z8-menu-icon span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.z8-menu-btn[aria-expanded="true"] .z8-menu-icon span:nth-child(2) { opacity: 0; }
+.z8-menu-btn[aria-expanded="true"] .z8-menu-icon span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+.z8-drawer {
+  background: var(--z8-navy-800); border-bottom: 1px solid var(--z8-line-inverse);
+  padding-block: 10px 18px;
+}
+@media (min-width: 1000px) { .z8-drawer { display: none; } }
+.z8-drawer-nav { display: grid; }
+.z8-drawer-nav a {
+  padding: 13px 2px; font-size: 0.9375rem; font-weight: 500; color: var(--z8-inverse-muted);
+  border-bottom: 1px solid var(--z8-line-inverse);
+}
+.z8-drawer-nav a:hover, .z8-drawer-nav a[aria-current="page"] { color: var(--z8-inverse); }
+.z8-drawer-actions { display: grid; gap: 10px; margin-top: 18px; }
+
+/* -------------------------------------------------- fixed mobile action bar */
+
+.z8-actionbar {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 50;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px;
+  padding: 9px var(--z8-gutter) calc(9px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.93);
+  backdrop-filter: saturate(150%) blur(14px);
+  border-top: 1px solid var(--z8-line);
+}
+@media (min-width: 861px) { .z8-actionbar { display: none; } }
+.z8-actionbar .z8-btn { padding-inline: 10px; font-size: 0.9375rem; }
+
+/* --------------------------------------------------------------------- hero */
+
+.z8-hero {
+  position: relative; overflow: hidden; color: var(--z8-inverse);
+  background: var(--z8-navy-900);
+  padding-block: clamp(38px, 6vw, 84px) clamp(44px, 6vw, 92px);
+}
+/* Depth without a "blue gradient template" look: one warm-cool wash plus a
+   faint engineered grid, both very low contrast. */
+.z8-hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 85% at 82% 8%, rgba(42, 132, 148, 0.30), transparent 58%),
+    radial-gradient(90% 70% at 8% 96%, rgba(31, 56, 78, 0.72), transparent 62%);
+}
+.z8-hero::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.32;
+  background-image:
+    linear-gradient(to right, rgba(243, 246, 248, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(243, 246, 248, 0.045) 1px, transparent 1px);
+  background-size: 68px 68px;
+  mask-image: radial-gradient(120% 90% at 70% 20%, #000 10%, transparent 72%);
+}
+.z8-hero > * { position: relative; z-index: 1; }
+
+.z8-hero-grid { display: grid; gap: clamp(30px, 4vw, 52px); align-items: center; }
+@media (min-width: 980px) { .z8-hero-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 56px; } }
+
+.z8-hero-eyebrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.z8-hero h1 { color: #fff; }
+.z8-hero-lede { color: var(--z8-inverse-muted); font-size: var(--z8-lede); line-height: 1.58; max-width: 46ch; margin-top: 20px; }
+.z8-hero-trust {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 22px;
+  padding-top: 20px; border-top: 1px solid var(--z8-line-inverse);
+}
+.z8-hero-ctas { display: grid; gap: 10px; margin-top: 22px; }
+@media (min-width: 460px) { .z8-hero-ctas { grid-template-columns: auto auto; justify-content: start; } }
+.z8-hero-foot { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 18px; }
+.z8-hero-locale { display: inline-flex; align-items: center; gap: 7px; font-size: var(--z8-xs); color: var(--z8-inverse-muted); }
+
+/* Hero visual: a mock dispatch panel. It sells the product (upfront price,
+   24/7 intake) instead of decorating with a stock plumber photograph.
+   VERIFY WITH CLIENT — replace with commissioned photography at production. */
+.z8-hero-visual { position: relative; }
+.z8-panel {
+  background: rgba(15, 27, 39, 0.72); border: 1px solid var(--z8-line-inverse);
+  border-radius: var(--z8-r-lg); padding: 18px; backdrop-filter: blur(8px);
+  box-shadow: var(--z8-shadow-lg);
+}
+.z8-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.z8-panel-title { font-family: var(--z8-mono); font-size: 0.625rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--z8-inverse-muted); }
+.z8-panel-rows { display: grid; gap: 9px; }
+.z8-panel-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 13px 14px; border-radius: var(--z8-r-sm);
+  background: rgba(243, 246, 248, 0.05); border: 1px solid var(--z8-line-inverse);
+}
+.z8-panel-row-active { background: var(--z8-steel-dim-strong); border-color: rgba(76, 167, 182, 0.36); }
+.z8-panel-row-label { font-size: 0.875rem; font-weight: 500; color: var(--z8-inverse); }
+.z8-panel-row-meta { font-size: var(--z8-xs); color: var(--z8-inverse-muted); margin-top: 2px; }
+.z8-panel-price { font-family: var(--z8-mono); font-size: 0.8125rem; color: var(--z8-steel-400); font-weight: 500; text-align: right; flex: none; }
+.z8-panel-foot { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--z8-line-inverse); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------- emergency strip */
+
+.z8-emergency { background: var(--z8-navy-700); color: var(--z8-inverse); padding-block: clamp(22px, 3vw, 32px); }
+.z8-emergency-inner { display: grid; gap: 18px; align-items: center; }
+@media (min-width: 800px) { .z8-emergency-inner { grid-template-columns: 1fr auto; gap: 32px; } }
+.z8-emergency-badge {
+  display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 999px;
+  background: rgba(223, 162, 44, 0.16); color: #F0C167; font-size: var(--z8-xs); font-weight: 600;
+}
+.z8-emergency h2 { font-size: clamp(1.2rem, 2vw, 1.5rem); color: #fff; }
+.z8-emergency p { color: var(--z8-inverse-muted); font-size: var(--z8-small); margin-top: 5px; max-width: 62ch; }
+
+/* --------------------------------------------------------------- section head */
+
+.z8-head { display: grid; gap: 12px; margin-bottom: clamp(28px, 3.5vw, 44px); }
+.z8-head-row { display: grid; gap: 18px; align-items: end; }
+@media (min-width: 860px) { .z8-head-row { grid-template-columns: minmax(0, 1fr) auto; } }
+
+/* ---------------------------------------------------------------- card grids */
+
+.z8-grid { display: grid; gap: 14px; }
+.z8-grid-2 { grid-template-columns: 1fr; }
+.z8-grid-3 { grid-template-columns: 1fr; }
+.z8-grid-4 { grid-template-columns: 1fr 1fr; }
+@media (min-width: 620px) { .z8-grid-2, .z8-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 980px) {
+  .z8-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .z8-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .z8-grid { gap: 16px; }
+}
+
+.z8-card {
+  background: var(--z8-raised); border: 1px solid var(--z8-line); border-radius: var(--z8-r-md);
+  padding: 20px; display: flex; flex-direction: column; gap: 10px;
+  transition: border-color var(--z8-dur) var(--z8-ease), box-shadow var(--z8-dur) var(--z8-ease),
+              transform var(--z8-dur) var(--z8-ease);
+}
+a.z8-card:hover { border-color: var(--z8-steel-400); box-shadow: var(--z8-shadow-md); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { a.z8-card:hover { transform: none; } }
+.z8-card-icon {
+  width: 34px; height: 34px; border-radius: var(--z8-r-sm); display: grid; place-items: center;
+  background: var(--z8-steel-dim); color: var(--z8-steel-600); flex: none;
+}
+.z8-card-icon svg { width: 17px; height: 17px; }
+.z8-card h3 { font-size: 1rem; letter-spacing: -0.01em; }
+.z8-card p { font-size: var(--z8-small); color: var(--z8-body); line-height: 1.55; }
+.z8-card-cta {
+  margin-top: auto; padding-top: 6px; display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--z8-xs); font-weight: 600; color: var(--z8-steel-600);
+}
+a.z8-card:hover .z8-card-cta { color: var(--z8-steel-500); }
+a.z8-card:hover .z8-card-cta .z8-arrow { transform: translateX(3px); }
+.z8-arrow { transition: transform var(--z8-dur) var(--z8-ease); }
+
+/* ------------------------------------------------------------- review cards */
+
+.z8-review {
+  background: var(--z8-raised); border: 1px solid var(--z8-line); border-radius: var(--z8-r-md);
+  padding: 20px; display: grid; gap: 12px; align-content: start;
+}
+.z8-review-quote { font-size: 0.9375rem; line-height: 1.55; color: var(--z8-ink); font-weight: 500; }
+.z8-review-source {
+  display: flex; align-items: center; gap: 8px; padding-top: 12px;
+  border-top: 1px solid var(--z8-line); font-size: var(--z8-xs); color: var(--z8-muted);
+}
+
+.z8-score {
+  display: grid; gap: 4px; place-items: center; text-align: center;
+  padding: 22px 18px; border-radius: var(--z8-r-md);
+  background: var(--z8-navy-800); color: var(--z8-inverse);
+}
+.z8-score-num { font-size: clamp(2.4rem, 5vw, 3.2rem); font-weight: 600; line-height: 1; letter-spacing: -0.03em; }
+.z8-score-label { font-family: var(--z8-mono); font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--z8-inverse-muted); }
+
+/* ------------------------------------------------------------------ pricing */
+
+.z8-price-shell {
+  background: var(--z8-navy-800); border-radius: var(--z8-r-lg); padding: clamp(20px, 3vw, 34px);
+  color: var(--z8-inverse); box-shadow: var(--z8-shadow-lg);
+}
+.z8-price-search { position: relative; margin-bottom: 16px; }
+.z8-price-search svg { position: absolute; inset-block: 0; margin-block: auto; inset-inline-start: 14px; width: 17px; height: 17px; color: var(--z8-inverse-muted); pointer-events: none; }
+.z8-price-search input {
+  width: 100%; padding: 15px 16px 15px 42px; border-radius: var(--z8-r-sm);
+  background: rgba(243, 246, 248, 0.06); border: 1px solid var(--z8-line-inverse);
+  color: var(--z8-inverse); font-size: 0.9375rem;
+  transition: border-color var(--z8-dur) var(--z8-ease), background var(--z8-dur) var(--z8-ease);
+}
+.z8-price-search input::placeholder { color: var(--z8-inverse-muted); }
+.z8-price-search input:focus { border-color: var(--z8-steel-400); background: rgba(243, 246, 248, 0.09); }
+
+.z8-price-list { display: grid; gap: 8px; }
+.z8-price-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%;
+  padding: 15px 16px; border-radius: var(--z8-r-sm); text-align: start; cursor: pointer;
+  background: rgba(243, 246, 248, 0.045); border: 1px solid var(--z8-line-inverse);
+  transition: background var(--z8-dur) var(--z8-ease), border-color var(--z8-dur) var(--z8-ease);
+}
+.z8-price-row:hover { background: rgba(243, 246, 248, 0.08); border-color: rgba(243, 246, 248, 0.24); }
+.z8-price-row[aria-pressed="true"] { background: var(--z8-steel-dim-strong); border-color: rgba(76, 167, 182, 0.4); }
+/* Both live inside an inline <span>, so they must be made block-level or the
+   service name and its description render on the same line. */
+.z8-price-name { display: block; font-size: 0.9375rem; font-weight: 500; color: var(--z8-inverse); }
+.z8-price-desc { display: block; font-size: var(--z8-xs); color: var(--z8-inverse-muted); margin-top: 3px; }
+.z8-price-value { flex: none; text-align: end; display: grid; gap: 3px; justify-items: end; }
+/* The placeholder figure is deliberately unreadable so it can never be mistaken
+   for a real Zone 8 price. */
+.z8-price-blur {
+  font-family: var(--z8-mono); font-size: 0.9375rem; font-weight: 500; color: var(--z8-inverse);
+  filter: blur(4.5px); user-select: none; opacity: 0.72;
+}
+.z8-price-note { font-family: var(--z8-mono); font-size: 0.5625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--z8-steel-400); }
+.z8-price-empty { padding: 22px 16px; text-align: center; font-size: var(--z8-small); color: var(--z8-inverse-muted); }
+.z8-price-detail {
+  margin-top: 14px; padding: 16px; border-radius: var(--z8-r-sm);
+  background: rgba(243, 246, 248, 0.05); border: 1px solid var(--z8-line-inverse);
+  display: grid; gap: 12px;
+}
+
+/* --------------------------------------------------------------- how it works */
+
+.z8-steps { display: grid; gap: 14px; counter-reset: z8step; }
+@media (min-width: 860px) { .z8-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
+.z8-step { display: grid; gap: 9px; align-content: start; padding-top: 18px; border-top: 2px solid var(--z8-line-strong); }
+.z8-step-num { font-family: var(--z8-mono); font-size: 0.6875rem; letter-spacing: 0.14em; color: var(--z8-steel-600); }
+.z8-step h3 { font-size: 1.0625rem; }
+.z8-step p { font-size: var(--z8-small); color: var(--z8-body); line-height: 1.55; }
+
+/* ------------------------------------------------------------------ pillars */
+
+.z8-pillar { display: grid; gap: 8px; align-content: start; }
+.z8-pillar-icon { width: 30px; height: 30px; border-radius: 7px; display: grid; place-items: center; background: var(--z8-steel-dim); color: var(--z8-steel-600); }
+.z8-section-dark .z8-pillar-icon { background: rgba(76, 167, 182, 0.16); color: var(--z8-steel-400); }
+.z8-pillar h3 { font-size: 1rem; margin-top: 4px; }
+.z8-pillar p { font-size: var(--z8-small); color: var(--z8-body); line-height: 1.55; }
+
+/* --------------------------------------------------------------------- form */
+
+.z8-form { display: grid; gap: 16px; }
+.z8-form-grid { display: grid; gap: 16px; }
+@media (min-width: 620px) { .z8-form-grid { grid-template-columns: 1fr 1fr; } }
+.z8-field { display: grid; gap: 6px; }
+.z8-field-full { grid-column: 1 / -1; }
+.z8-field label { font-size: var(--z8-xs); font-weight: 600; color: var(--z8-ink); }
+.z8-optional { font-weight: 400; color: var(--z8-muted); }
+.z8-input, .z8-select, .z8-textarea {
+  width: 100%; padding: 13px 14px; border-radius: var(--z8-r-sm);
+  background: var(--z8-raised); border: 1px solid var(--z8-line-strong); color: var(--z8-ink);
+  font-size: 1rem; /* 16px keeps iOS from zooming the viewport on focus */
+  transition: border-color var(--z8-dur) var(--z8-ease), box-shadow var(--z8-dur) var(--z8-ease);
+}
+.z8-input::placeholder, .z8-textarea::placeholder { color: var(--z8-faint); }
+.z8-input:focus, .z8-select:focus, .z8-textarea:focus {
+  border-color: var(--z8-steel-500); box-shadow: 0 0 0 3px var(--z8-steel-dim); outline: none;
+}
+.z8-textarea { min-height: 118px; resize: vertical; line-height: 1.55; }
+.z8-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%237C8792' stroke-width='1.6'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 11px; padding-right: 36px; }
+.z8-error { font-size: var(--z8-xs); color: #A6402C; font-weight: 500; }
+.z8-input[aria-invalid="true"], .z8-select[aria-invalid="true"] { border-color: #A6402C; }
+
+/* Upload affordance is presentational in the preview — no file is transmitted. */
+.z8-upload {
+  display: grid; gap: 5px; place-items: center; text-align: center; padding: 20px 16px;
+  border: 1px dashed var(--z8-line-strong); border-radius: var(--z8-r-sm);
+  background: var(--z8-canvas-alt); color: var(--z8-muted); font-size: var(--z8-xs);
+}
+.z8-upload svg { width: 19px; height: 19px; color: var(--z8-faint); }
+
+/* Smart Request Routing — the Ellis capability demo. Reads as an internal
+   summary card, never as customer-facing "AI" language. */
+.z8-routing {
+  border: 1px solid var(--z8-steel-dim-strong); border-radius: var(--z8-r-sm);
+  background: var(--z8-steel-dim); padding: 15px; display: grid; gap: 11px;
+  animation: z8-fade var(--z8-dur) var(--z8-ease);
+}
+@keyframes z8-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .z8-routing { animation: none; } }
+.z8-routing-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.z8-routing-title { font-size: var(--z8-xs); font-weight: 700; color: var(--z8-steel-700); }
+.z8-routing-tag {
+  font-family: var(--z8-mono); font-size: 0.5625rem; letter-spacing: 0.11em; text-transform: uppercase;
+  color: var(--z8-steel-600); background: var(--z8-raised); padding: 3px 7px; border-radius: 4px;
+}
+.z8-routing-rows { display: grid; gap: 7px; }
+.z8-routing-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: var(--z8-xs); }
+.z8-routing-key { color: var(--z8-body); }
+.z8-routing-val { font-weight: 600; color: var(--z8-ink); text-align: end; }
+
+.z8-confirm {
+  display: grid; gap: 14px; justify-items: center; text-align: center;
+  padding: clamp(28px, 4vw, 44px) 22px; border-radius: var(--z8-r-md);
+  background: var(--z8-raised); border: 1px solid var(--z8-line);
+}
+.z8-confirm-mark { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--z8-green-dim); color: var(--z8-green); }
+.z8-confirm-mark svg { width: 22px; height: 22px; }
+.z8-confirm-summary {
+  width: 100%; max-width: 420px; text-align: start; display: grid; gap: 7px;
+  padding: 14px; border-radius: var(--z8-r-sm); background: var(--z8-canvas-alt);
+}
+
+/* ---------------------------------------------------------------------- faq */
+
+.z8-faq { display: grid; }
+.z8-faq-item { border-top: 1px solid var(--z8-line); }
+.z8-faq-item:last-child { border-bottom: 1px solid var(--z8-line); }
+.z8-faq summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 2px; cursor: pointer; list-style: none;
+  font-size: 1rem; font-weight: 600; color: var(--z8-ink); letter-spacing: -0.01em;
+}
+.z8-faq summary::-webkit-details-marker { display: none; }
+.z8-faq summary:hover { color: var(--z8-steel-600); }
+.z8-faq-sign { flex: none; width: 18px; height: 18px; color: var(--z8-muted); transition: transform var(--z8-dur) var(--z8-ease); }
+.z8-faq-item[open] .z8-faq-sign { transform: rotate(45deg); }
+.z8-faq-body { padding: 0 2px 20px; display: grid; gap: 10px; }
+.z8-faq-body p { font-size: var(--z8-small); color: var(--z8-body); line-height: 1.6; max-width: 68ch; }
+
+/* -------------------------------------------------------------- service area */
+
+.z8-areas { display: flex; flex-wrap: wrap; gap: 8px; }
+.z8-area {
+  padding: 9px 14px; border-radius: 999px; border: 1px solid var(--z8-line-strong);
+  background: var(--z8-raised); font-size: var(--z8-small); font-weight: 500; color: var(--z8-body);
+}
+.z8-area-primary { background: var(--z8-navy-800); border-color: transparent; color: var(--z8-inverse); font-weight: 600; }
+
+/* Abstract locality graphic — a coastline/grid impression, not a real map and
+   not a claim about street-level coverage. */
+.z8-map {
+  position: relative; border-radius: var(--z8-r-md); overflow: hidden;
+  background: var(--z8-navy-800); border: 1px solid var(--z8-line-inverse);
+  aspect-ratio: 4 / 3; min-height: 240px;
+}
+.z8-map svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.z8-map-caption {
+  position: absolute; inset-inline: 12px; bottom: 12px; padding: 9px 12px; border-radius: var(--z8-r-sm);
+  background: rgba(9, 17, 26, 0.78); backdrop-filter: blur(6px);
+  font-size: 0.6875rem; color: var(--z8-inverse-muted); border: 1px solid var(--z8-line-inverse);
+}
+
+/* ------------------------------------------------------------------- footer */
+
+.z8-footer { background: var(--z8-navy-900); color: var(--z8-inverse); padding-block: clamp(38px, 5vw, 64px) 26px; }
+.z8-footer-grid { display: grid; gap: 30px; }
+@media (min-width: 800px) { .z8-footer-grid { grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(0, 1fr)); gap: 40px; } }
+.z8-footer h3 { font-family: var(--z8-mono); font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--z8-inverse-muted); margin-bottom: 12px; font-weight: 500; }
+.z8-footer-links { display: grid; gap: 9px; }
+.z8-footer-links a { font-size: var(--z8-small); color: var(--z8-inverse-muted); transition: color var(--z8-dur) var(--z8-ease); }
+.z8-footer-links a:hover { color: var(--z8-inverse); }
+.z8-footer-bottom {
+  margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--z8-line-inverse);
+  display: grid; gap: 12px;
+}
+.z8-disclaimer { font-size: 0.6875rem; line-height: 1.6; color: #7D8B98; max-width: 78ch; }
+
+/* ---------------------------------------------------------------- pitch page */
+
+.z8-pitch { background: var(--z8-navy-900); color: var(--z8-inverse); min-height: 100dvh; }
+.z8-pitch .z8-section { background: transparent; }
+.z8-pitch-hero { padding-block: clamp(46px, 7vw, 96px) clamp(30px, 4vw, 52px); }
+.z8-pitch h1, .z8-pitch h2, .z8-pitch h3 { color: #fff; }
+.z8-pitch .z8-lede, .z8-pitch .z8-body, .z8-pitch .z8-small, .z8-pitch .z8-xs { color: var(--z8-inverse-muted); }
+
+.z8-compare { display: grid; gap: 16px; }
+@media (min-width: 900px) { .z8-compare { grid-template-columns: 1fr 1fr; gap: 20px; } }
+.z8-compare-col {
+  border-radius: var(--z8-r-lg); padding: 22px; border: 1px solid var(--z8-line-inverse);
+  background: rgba(243, 246, 248, 0.035); display: grid; gap: 16px; align-content: start;
+}
+.z8-compare-now { border-color: rgba(166, 64, 44, 0.34); background: rgba(166, 64, 44, 0.07); }
+.z8-compare-next { border-color: rgba(76, 167, 182, 0.34); background: rgba(42, 132, 148, 0.08); }
+.z8-compare-title { display: flex; align-items: center; gap: 9px; font-size: 0.9375rem; font-weight: 600; color: #fff; }
+
+.z8-flow { display: grid; gap: 0; }
+.z8-flow-node {
+  display: flex; align-items: center; gap: 11px; padding: 12px 14px; border-radius: var(--z8-r-sm);
+  background: rgba(243, 246, 248, 0.05); border: 1px solid var(--z8-line-inverse);
+  font-size: var(--z8-small); color: var(--z8-inverse);
+}
+.z8-flow-node-fail { background: rgba(166, 64, 44, 0.16); border-color: rgba(214, 106, 82, 0.4); color: #F0B3A2; font-weight: 600; }
+.z8-flow-node-win { background: rgba(47, 125, 85, 0.18); border-color: rgba(88, 178, 132, 0.42); color: #9EDCBB; font-weight: 600; }
+.z8-flow-index { font-family: var(--z8-mono); font-size: 0.625rem; color: var(--z8-inverse-muted); flex: none; }
+.z8-flow-arrow { justify-self: start; margin-inline-start: 26px; height: 16px; width: 1px; background: var(--z8-line-inverse); position: relative; }
+.z8-flow-arrow::after { content: ""; position: absolute; bottom: 0; left: -2.5px; width: 6px; height: 6px; border-right: 1px solid var(--z8-line-inverse); border-bottom: 1px solid var(--z8-line-inverse); transform: rotate(45deg); }
+
+.z8-improve { display: grid; gap: 10px; }
+@media (min-width: 700px) { .z8-improve { grid-template-columns: 1fr 1fr; gap: 10px 22px; } }
+.z8-improve li {
+  display: flex; align-items: flex-start; gap: 10px; padding: 11px 0;
+  border-bottom: 1px solid var(--z8-line-inverse); font-size: var(--z8-small); color: var(--z8-inverse);
+}
+.z8-improve svg { flex: none; width: 15px; height: 15px; color: var(--z8-steel-400); margin-top: 3px; }
+
+.z8-metric { display: grid; gap: 3px; padding: 16px 18px; border-radius: var(--z8-r-md); background: rgba(243, 246, 248, 0.05); border: 1px solid var(--z8-line-inverse); }
+.z8-metric-num { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.025em; color: #fff; line-height: 1.1; }
+.z8-metric-label { font-size: var(--z8-xs); color: var(--z8-inverse-muted); }
+
+/* The expired-site proof shot: the real mobile capture, shown whole and
+   unaltered. Only the display size is constrained — no crop, no drawn browser
+   frame, no reconstruction. Appears on the pitch route only. */
+.z8-expired { display: grid; justify-items: center; gap: 10px; }
+.z8-expired-shot {
+  width: auto; height: auto;
+  /* Sized so the "Website Expired" message stays legible in a screen share —
+     this panel is the evidence the whole pitch turns on. Capped so the column
+     does not run away from the one beside it. */
+  max-width: min(100%, 332px);
+  max-height: 720px;
+  border-radius: var(--z8-r-md);
+  border: 1px solid var(--z8-line-inverse);
+  box-shadow: var(--z8-shadow-lg);
+  background: #fff;
+}
+.z8-expired-caption {
+  font-size: var(--z8-xs); color: var(--z8-inverse-muted); text-align: center; max-width: 40ch;
+}
+
+/* ------------------------------------------------------------ preview ribbon */
+
+/* Always-visible provenance. Nobody should be able to mistake this build for a
+   live Zone 8 property, on any route. */
+.z8-ribbon {
+  background: var(--z8-navy-900); color: var(--z8-inverse-muted);
+  border-bottom: 1px solid var(--z8-line-inverse); padding-block: 7px;
+}
+.z8-ribbon-inner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; text-align: center; }
+.z8-ribbon p { font-family: var(--z8-mono); font-size: 0.625rem; letter-spacing: 0.06em; }
+.z8-ribbon strong { color: var(--z8-steel-400); font-weight: 500; }
+.z8-ribbon a { color: var(--z8-inverse); border-bottom: 1px solid var(--z8-line-inverse); }
+.z8-ribbon a:hover { border-bottom-color: var(--z8-steel-400); }
+
+/* --------------------------------------------------------------- page bottom */
+
+/* Reserve the fixed action bar's height on the whole page, so the bar rests
+   below the footer instead of covering its last line. */
+.z8-pagefoot { padding-bottom: var(--z8-actionbar); }
+
+/* ------------------------------------------------------------------- reveal */
+
+.z8-reveal { animation: z8-rise var(--z8-dur) var(--z8-ease) both; }
+@keyframes z8-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .z8-reveal { animation: none; } }
+
+/* Visually hidden, still announced. */
+.z8-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* Skip link — first tab stop, so keyboard users are not walked through the
+   ribbon and full nav on every route before reaching the content. */
+.z8-skip {
+  position: absolute; left: 8px; top: -60px; z-index: 60;
+  padding: 11px 16px; border-radius: var(--z8-r-sm);
+  background: var(--z8-navy-800); color: var(--z8-inverse);
+  font-size: 0.875rem; font-weight: 600;
+  transition: top var(--z8-dur) var(--z8-ease);
+}
+.z8-skip:focus-visible { top: 8px; }
+
+/* Sample-price label. Deliberately legible and permanent: the blurred figures
+   must never be mistaken for Zone 8's real pricing, so this is a customer-facing
+   statement of fact, not an internal build marker, and is never gated. */
+.z8-price-sample {
+  display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 4px;
+  font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.01em;
+  background: rgba(243, 246, 248, 0.09); color: var(--z8-inverse-muted);
+  border: 1px solid var(--z8-line-inverse);
+}
